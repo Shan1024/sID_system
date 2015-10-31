@@ -62,7 +62,7 @@ module.exports = function (app, passport) {
 
     // process the login form
     app.post('/login', passport.authenticate('local-login', {
-        successRedirect: '/profile', // redirect to the secure profile section
+        successRedirect: '/home', // redirect to the secure profile section
         failureRedirect: '/login', // redirect back to the signup page if there is an error
         failureFlash: true // allow flash messages
     }));
@@ -75,7 +75,7 @@ module.exports = function (app, passport) {
 
     // process the signup form
     app.post('/signup', passport.authenticate('local-signup', {
-        successRedirect: '/profile', // redirect to the secure profile section
+        successRedirect: '/home', // redirect to the secure profile section
         failureRedirect: '/signup', // redirect back to the signup page if there is an error
         failureFlash: true // allow flash messages
     }));
@@ -88,7 +88,7 @@ module.exports = function (app, passport) {
     // handle the callback after facebook has authenticated the user
     app.get('/auth/facebook/callback',
         passport.authenticate('facebook', {
-            successRedirect: '/profile',
+            successRedirect: '/home',
             failureRedirect: '/'
         }));
 
@@ -96,7 +96,7 @@ module.exports = function (app, passport) {
 
     app.get('/auth/linkedin/callback',
         passport.authenticate('linkedin', {
-            successRedirect: '/profile',
+            successRedirect: '/home',
             failureRedirect: '/'
         })
         //,
@@ -123,22 +123,39 @@ module.exports = function (app, passport) {
     // facebook -------------------------------
 
     // send to facebook to do the authentication
-    app.get('/connect/facebook', passport.authorize('facebook', {scope: 'email'}));
+    app.get('/connect/facebook', passport.authenticate('facebook-authz', {failureRedirect: '/failed'}));
 
     // handle the callback after facebook has authorized the user
     app.get('/connect/facebook/callback',
-        passport.authorize('facebook', {
-            successRedirect: '/profile',
-            failureRedirect: '/'
-        }));
 
-    app.get('/connect/linkedin', passport.authorize('linkedin', {
+
+        //passport.authorize('facebook-authz', {
+        //    successRedirect: '/okk',
+        //    failureRedirect: '/failed'
+        //}),
+        //function (req, res) {
+        //    var user = req.user;
+        //
+        //    console.log(chalk.blue("facebook-authz: " + JSON.stringify(user, null, "\t")));
+        //
+        //    if (user) {
+        //        return ;
+        //    }
+        //}
+
+        passport.authenticate('facebook-authz', {
+            successRedirect: '/profile',
+            failureRedirect: '/failure'
+        })
+    );
+
+    app.get('/connect/linkedin', passport.authenticate('linkedin-authz', {
         res: ['r_basicprofile', 'r_fullprofile', 'r_emailaddress']
     }));
 
     // the callback after google has authorized the user
     app.get('/connect/linkedin/callback',
-        passport.authorize('linkedin', {
+        passport.authenticate('linkedin-authz', {
             successRedirect: '/profile',
             failureRedirect: '/failure'
         }));
@@ -190,18 +207,19 @@ module.exports = function (app, passport) {
     // FRIENDS SECTION =========================
     app.get('/facebook/friends', isLoggedIn, function (req, res) {
 
-        facebook.getFbData(req.user.facebook.token, '/me/friends', function (data) {
-            // console.log(data);
-            // console.log("-------------------------------------");
-            // var jsonPretty = JSON.stringify(JSON.parse(data),null,2);
-            // console.log(jsonPretty);
+        facebook.getFbData(req, '/me/friends', function (data) {
+             console.log(data);
+             console.log("-------------------------------------");
+             var jsonPretty = JSON.stringify(JSON.parse(data),null,2);
+             console.log(jsonPretty);
 
             obj = JSON.parse(data);
 
             console.log("obj.data: " + obj);
+            console.log(JSON.stringify("obj.data: " +JSON.parse(data),null,2));
 
             res.render('friends.ejs', {
-                friends: obj
+                friends: obj.data
             });
 
         });
@@ -210,7 +228,9 @@ module.exports = function (app, passport) {
 
     });
 
-
+    app.get('/home', function (req, res) {
+        res.render('home.ejs');
+    });
 };
 
 // route middleware to ensure user is logged in
