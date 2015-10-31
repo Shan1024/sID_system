@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="webpage" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="C:/Program Files/nodejs/node" path-to-js-file="webpage.js" working-dir="$PROJECT_DIR$">
+    <envs>
+      <env name="DEBUG" value="sid_api_new:*" />
+    </envs>
+    <browser url="http://localhost:3000/" />
+    <method />
+  </configuration>
+</component>

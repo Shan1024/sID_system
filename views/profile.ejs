@@ -1,0 +1,109 @@
+﻿<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <style>
+        body {
+            padding-top: 20px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="page-header text-center">
+        <h1><span class="fa fa-anchor"></span> Profile Page</h1>
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+        <a href="/facebook/friends" class="btn btn-default btn-sm">Friends</a>
+    </div>
+
+    <div class="row">
+
+        <!-- LOCAL INFORMATION -->
+        <div class="col-sm-6">
+            <div class="well">
+                <h3><span class="fa fa-user"></span> Local</h3>
+
+                <% if (user.userDetails.local.username) { %>
+                <p>
+                    <strong>id</strong>: <%= user._id %><br>
+                    <strong>email</strong>: <%= user.userDetails.local.username %><br>
+                    <strong>password</strong>: <%= user.userDetails.local.password %>
+                </p>
+
+                <a href="/unlink/local" class="btn btn-default">Unlink</a>
+                <% } else { %>
+                <a href="/connect/local" class="btn btn-default">Connect Local</a>
+                <% } %>
+
+            </div>
+        </div>
+
+        <!-- FACEBOOK INFORMATION -->
+        <div class="col-sm-6">
+            <div class="well">
+                <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
+
+                <!-- check if the user has this token (is the user authenticated with this social account) -->
+                <% if (user.userDetails.facebook) { %>
+                <% if (user.userDetails.facebook.token) { %>
+                <p>
+                    <strong>id</strong>: <%= user.userDetails.facebook.id %><br>
+                    <strong>name</strong>: <%= user.userDetails.facebook.name %><br>
+                    <strong>email</strong>: <%= user.userDetails.facebook.email %><br>
+                    <strong>token</strong>: <%= user.userDetails.facebook.token %><br>
+                </p>
+
+                <a href="/unlink/facebook" class="btn btn-primary">Unlink</a>
+                <% } else { %>
+                <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                <% } %>
+                <% } else { %>
+                <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                <% } %>
+
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
+        <!--TWITTER INFORMATION -->
+        <div class="col-sm-6">
+            <div class="well">
+                <h3 class="text-info"><span class="fa fa-linkedin"></span> LinkedIn</h3>
+
+                <% if (user.userDetails.linkedin) { %>
+                <% if (user.userDetails.linkedin.token) { %>
+                <p>
+                    <strong>id</strong>: <%= user.userDetails.linkedin.id %><br>
+                    <strong>display name</strong>: <%= user.userDetails.linkedin.name %><br>
+                    <strong>username</strong>: <%= user.userDetails.linkedin.email %><br>
+                    <strong>token</strong>: <%= user.userDetails.linkedin.token %><br>
+                </p>
+
+                <a href="/unlink/linkedin" class="btn btn-info">Unlink</a>
+                <% } else { %>
+                <a href="/connect/linkedin" class="btn btn-info">Connect LinkedIn</a>
+                <% } %>
+                <% } else { %>
+                <a href="/connect/linkedin" class="btn btn-info">Connect LinkedIn</a>
+                <% } %>
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="text-center">
+        <p>© Team 13</p>
+
+        <p>UoM - 2015</p>
+    </div>
+
+</div>
+</body>
+</html>

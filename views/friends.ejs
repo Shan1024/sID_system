@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <style>
+        body {
+            padding-top: 20px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <ol class="breadcrumb">
+        <li><a href="/profile">Profile</a></li>
+        <li class="active">Friends</li>
+    </ol>
+
+    <div class="page-header text-center">
+        <h1><span class="fa fa-anchor"></span> Friends Page</h1>
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+        <a href="/profile" class="btn btn-default btn-sm">Profile</a>
+    </div>
+
+    <% if (friends.data) { %>
+    <h3><span class="fa"></span>Your Friends - <%= friends.length %></h3>
+    <% }else{ %>
+    <h3><span class="fa"></span>No friends found</h3>
+    <% } %>
+
+    <% if (friends.data) { %>
+    <% for(var i = 0; i < friends.length ; i += 2) { %>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="well">
+                <img src="https://graph.facebook.com/v2.3/<%= friends.data[i].id %>/picture">
+                <strong> <%= friends.data[i].name %></strong>
+
+                <div class="pull-right">
+                    <a href="#" class="btn btn-primary btn-sm">Yes</a>
+                    <a href="#" class="btn btn-default btn-sm">No</a>
+                </div>
+            </div>
+        </div>
+
+        <% if( friends[i + 1]) { %>
+        <div class="col-sm-6">
+            <div class="well">
+                <img src="https://graph.facebook.com/v2.3/<%= friends.data[i + 1].id %>/picture">
+                <strong> <%= friends.data[i + 1].name %></strong>
+
+                <div class="pull-right">
+                    <a href="#" class="btn btn-primary btn-sm">Yes</a>
+                    <a href="#" class="btn btn-default btn-sm">No</a>
+                </div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+
+    <% } %>
+    <% } %>
+</div>
+</body>
+</html>
