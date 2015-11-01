@@ -25,10 +25,10 @@
             <div class="well">
                 <h3><span class="fa fa-user"></span> Local</h3>
 
-                <% if (user.userDetails.local.username) { %>
+                <% if (user.userDetails.local.email) { %>
                 <p>
                     <strong>id</strong>: <%= user._id %><br>
-                    <strong>email</strong>: <%= user.userDetails.local.username %><br>
+                    <strong>email</strong>: <%= user.userDetails.local.email %><br>
                     <strong>password</strong>: <%= user.userDetails.local.password %>
                 </p>
 

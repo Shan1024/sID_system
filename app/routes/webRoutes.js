@@ -17,7 +17,15 @@ module.exports = function (app, passport) {
 
     // show the home page (will also have our login links)
     app.get('/', function (req, res) {
-        res.render('index.ejs');
+
+        req.user.userDetails.local.email
+
+        if(req.user){
+            res.redirect('/home');
+        }else{
+            res.render('index.ejs');
+        }
+
     });
 
     // PROFILE SECTION =========================
@@ -172,7 +180,7 @@ module.exports = function (app, passport) {
     // local -----------------------------------
     app.get('/unlink/local', isLoggedIn, function (req, res) {
         var user = req.user;
-        user.userDetails.local.username = undefined;
+        user.userDetails.local.email = undefined;
         user.userDetails.local.password = undefined;
         user.save(function (err) {
             res.redirect('/profile');
@@ -230,7 +238,7 @@ module.exports = function (app, passport) {
 
     });
 
-    app.get('/home', function (req, res) {
+    app.get('/home', isLoggedIn,  function (req, res) {
         res.render('home.ejs');
     });
 
