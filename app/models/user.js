@@ -10,6 +10,8 @@ var Facebook = require('./linkedin');
 var userSchema = mongoose.Schema({
     userDetails: {
         local: {
+            firstname: String,
+            lastname: String,
             username: String,
             password: String,
             verified: Boolean
