@@ -4,6 +4,8 @@ var chalk = require('chalk');
 
 var mongoose = require('mongoose');
 
+var rest = require('restler');
+
 var User = require('../models/user');
 var Facebook = require('../models/facebook');
 var Entry = require("../models/entry");
@@ -230,6 +232,35 @@ module.exports = function (app, passport) {
 
     app.get('/home', function (req, res) {
         res.render('home.ejs');
+    });
+
+    app.get('/usersummary', function(req, res){
+      rest.post('http://localhost:8080/claimRating', {
+        data: { sender: 'Pubudu', target: 'Dodangoda', cClass: 'cClassTest', claimId: 334 },
+        }).on('complete', function(data, response) {
+        //if (response.statusCode == 201) { // you can get at the raw response like this...
+          var summary = [];
+          //summary.push({'positive': data.positive, 'negative': data.negative, 'uncertain': data.uncertain});
+          summary.push({
+              "label": 'positive',
+              "value" : data.positive,
+              "color" : "#33CC33"
+            },
+            {
+              "label": 'negative',
+              "value" : data.negative,
+              "color" : "#FF0000"
+            },
+            {
+              "label": 'uncertain',
+              "value" : data.uncertain,
+              "color" : "#FF9900"
+            }
+          );
+          //console.log(summary);
+          res.render('usersummary.ejs', {summary: summary});
+        //}
+      });
     });
 };
 
