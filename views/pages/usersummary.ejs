@@ -17,7 +17,8 @@
           .x(function(d) { return d.label })
           .y(function(d) { return d.value })
 
-          .showLabels(true);
+          .showLabels(true)
+          .showLegend(false);
 
         d3.select("#chart svg")
             .datum(data)
