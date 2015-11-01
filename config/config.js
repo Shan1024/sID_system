@@ -9,11 +9,11 @@ module.exports = {
 
     'database': 'mongodb://127.0.0.1/api_test4',
 
-    'httpPort': '9090',
+    'httpPort': '8080',
     'httpsPort': '9000',
 
     //host for sending verification email
-    'host': 'http://127.0.0.1:9090',
+    'host': 'http://127.0.0.1:8080',
 
     //gmail account details
     'username': 'fyp.social.id@gmail.com',
