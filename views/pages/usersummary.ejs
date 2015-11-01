@@ -1,6 +1,7 @@
 <html>
 <head>
-    <a href="/home" class="btn btn-primary"><span class="fa"></span> Home</a>
+  <% include ../partials/head %>
+
 
     <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
     <script src="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.min.js" charset="utf-8"></script>
@@ -8,6 +9,11 @@
     <style>
         #chart svg {
             height: 400px;
+        }
+
+        body {
+            padding-top: 0px;
+            word-wrap: break-word;
         }
     </style>
 
@@ -36,6 +42,9 @@
     </script>
 </head>
 <body>
+  <% include ../partials/navbar %>
+
+  <a href="/home" class="btn btn-primary"><span class="fa"></span> Home</a>
 <div class="container">
 
     <div id="chart">
