@@ -1,13 +1,13 @@
-var facebook = require('../config/facebook.js');
+var facebook = require('../../config/facebook.js');
 
 var chalk = require('chalk');
 
 var mongoose = require('mongoose');
 
-var User = require('../app/models/user');
-var Facebook = require('../app/models/facebook');
-var Entry = require("../app/models/entry");
-var LinkedIn = require("../app/models/linkedin");
+var User = require('../models/user');
+var Facebook = require('../models/facebook');
+var Entry = require("../models/entry");
+var LinkedIn = require("../models/linkedin");
 
 module.exports = function (app, passport) {
 

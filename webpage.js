@@ -5,22 +5,36 @@
 
 var express  = require('express');
 var app      = express();
-var port     = 8080;//process.env.PORT ||
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
-
+var path = require('path');
+var https = require('https');
+var http = require('http');
+var fs = require('fs');
+var chalk = require('chalk');
 var morgan       = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var session      = require('express-session');
 
-var configDB = require('./config/database.js');
+var config = require('./config/config'); // get our config file
+
+// This line is from the Node.js HTTPS documentation.
+var options = {
+    key: fs.readFileSync(config.key),
+    cert: fs.readFileSync(config.cert)
+};
 
 // configuration ===============================================================
-mongoose.connect(configDB.url); // connect to our database
+mongoose.connect(config.database); // connect to database
 
 require('./config/passport')(passport); // pass passport for configuration
+
+app.set('apiSecret', config.apiSecret); // secret variable
+app.set('host', config.host);
+app.set('username', config.username);
+app.set('password', config.password);
 
 // set up our express application
 app.use(morgan('dev')); // log every request to the console
@@ -30,18 +44,31 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs'); // set up ejs for templating
 
+app.use(express.static(__dirname + '/public'));
+
+app.use(session({
+    secret: config.sessionSecret
+})); // session secret
+
 // required for passport
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 // routes ======================================================================
-require('./app/routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
+require('./app/routes/webRoutes.js')(app, passport); // load our routes and pass in our app and fully configured passport
 
 // launch ======================================================================
-app.listen(port);
-console.log('The magic happens on port ' + port);
+//app.listen(port);
+//console.log('The magic happens on port ' + port);
+
+
+http.createServer(app).listen(config.httpPort);
+console.log(chalk.green("http server started at port " + config.httpPort));
+
+// Create an HTTPS service identical to the HTTP service.
+https.createServer(options, app).listen(config.httpsPort);
+console.log(chalk.green("https server started at port " + config.httpsPort));
 
 
 //*********************
