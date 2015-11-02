@@ -31,12 +31,12 @@
         <div class="col-sm-6">
             <div class="well">
                 <img src="https://graph.facebook.com/v2.3/<%= friends[i].id %>/picture">
-                <strong> <%= friends[i].name %></strong>
+                <strong><a href="https://www.facebook.com/<%= friends[i].id %>"> <%= friends[i].name %> </a></strong>
 
-                <div class="pull-right">
+                <!-- <div class="pull-right">
                     <a href="#" class="btn btn-primary btn-sm">Yes</a>
                     <a href="#" class="btn btn-default btn-sm">No</a>
-                </div>
+                </div> -->
             </div>
         </div>
 
@@ -44,12 +44,12 @@
         <div class="col-sm-6">
             <div class="well">
                 <img src="https://graph.facebook.com/v2.3/<%= friends[i + 1].id %>/picture">
-                <strong> <%= friends[i + 1].name %></strong>
+                <strong><a href="https://www.facebook.com/<%= friends[i].id %>"> <%= friends[i+1].name %> </a> </strong>
 
-                <div class="pull-right">
+                <!-- <div class="pull-right">
                     <a href="#" class="btn btn-primary btn-sm">Yes</a>
                     <a href="#" class="btn btn-default btn-sm">No</a>
-                </div>
+                </div> -->
             </div>
         </div>
         <% } %>
