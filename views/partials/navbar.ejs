@@ -1,0 +1,27 @@
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#indexPageNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/home">sID Social Identity</a>
+        </div>
+        <div class="collapse navbar-collapse" id="indexPageNavbar">
+            <% if (user) { %>
+              <ul class="nav navbar-nav navbar-right">
+                  <li><a href="/profile"><span class="glyphicon glyphicon-user"></span><%= user.userDetails.local.username %></a></li>
+                  <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li>
+              </ul>
+              <!--<a href="/unlink/local" class="btn btn-default">Unlink</a>-->
+              <% } else { %>
+              <!--<a href="/connect/local" class="btn btn-default">Connect Local</a>-->
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Sign Up </a></li>
+                    <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Sign In </a></li>
+                </ul>
+              <% } %>
+        </div>
+    </div>
+</nav>

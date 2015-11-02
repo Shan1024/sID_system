@@ -18,12 +18,12 @@ module.exports = function (app, passport) {
     // show the home page (will also have our login links)
     app.get('/', function (req, res) {
 
-        req.user.userDetails.local.email
+        //req.user.userDetails.local.email
 
         if(req.user){
             res.redirect('/home');
         }else{
-            res.render('index.ejs');
+            res.render('index.ejs', { user: req.user});
         }
 
     });
@@ -239,7 +239,7 @@ module.exports = function (app, passport) {
     });
 
     app.get('/home', isLoggedIn,  function (req, res) {
-        res.render('home.ejs');
+        res.render('home.ejs', { user: req.user});
     });
 
     app.get('/usersummary', function(req, res){
@@ -266,7 +266,7 @@ module.exports = function (app, passport) {
             }
           );
           //console.log(summary);
-          res.render('usersummary.ejs', {summary: summary});
+          res.render('usersummary.ejs', { user: req.user, summary: summary});
         //}
       });
     });
