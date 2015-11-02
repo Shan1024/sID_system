@@ -229,7 +229,8 @@ module.exports = function (app, passport) {
             console.log(JSON.stringify("obj.data: " +JSON.parse(data),null,2));
 
             res.render('friends.ejs', {
-                friends: obj.data
+                friends: obj.data,
+                user: req.user
             });
 
         });
