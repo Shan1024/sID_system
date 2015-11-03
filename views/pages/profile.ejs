@@ -2,6 +2,9 @@
 <html>
 <head>
     <% include ../partials/head %>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+    <script src="/scripts/angular-validator-app.js"></script>
+    <script src="/scripts/angular-validator.js"></script>
 </head>
 <body>
   <% include ../partials/navbar %>
@@ -26,6 +29,74 @@
                     <strong>name</strong>: <%= user.userDetails.local.firstname %> <%= user.userDetails.local.lastname %><br>
                     <strong>email</strong>: <%= user.userDetails.local.email %><br>
                     <strong>password</strong>: <%= user.userDetails.local.password %>
+
+                    <!-- Trigger the modal with a button -->
+                    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Reset Password</button>
+
+                    <!-- Modal -->
+                    <div id="myModal" class="modal fade" role="dialog">
+                      <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Change Profile</h4>
+                          </div>
+                          <div class="modal-body">
+                            <strong>Name</strong>: <%= user.userDetails.local.firstname %> <%= user.userDetails.local.lastname %><br>
+                            <!-- LOGIN FORM -->
+                            <div ng-app="angular-validator-demo" ng-controller="DemoCtrl">
+                                <form action="/changepassword" method="post" name="myForm" class="form-horizontal" novalidate angular-validator>
+                                    <div class="form-group">
+                                        <label >Old Password</label>
+                                            <input  type = "password"
+                                                    name = "oldpassword"
+                                                    class = "form-control"
+                                                    ng-model = "form.oldpassword"
+                                                    invalid-message = "passwordValidator(form.password)"
+                                                    validate-on="dirty"
+                                                    required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label >Password</label>
+                                            <input  type = "password"
+                                                    name = "password"
+                                                    class = "form-control"
+                                                    ng-model = "form.password"
+                                                    invalid-message = "passwordValidator(form.password)"
+                                                    validate-on="dirty"
+                                                    required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Confirm Password</label>
+                                            <input  type = "password"
+                                                    name = "confirmPassword"
+                                                    class = "form-control"
+                                                    ng-model = "form.confirmPassword"
+                                                    validator = "form.password === form.confirmPassword"
+                                                    validate-on="dirty"
+                                                    invalid-message = "'Passwords do not match!'"
+                                                    required>
+                                    </div>
+                                    <hr>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <button type="button" ng-click="myForm.reset()" class="btn btn-primary">Reset</button>
+                                            <button type="submit" class="btn btn-primary">Submit</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+
                 </p>
 
                 <!--<a href="/unlink/local" class="btn btn-default">Unlink</a>-->
