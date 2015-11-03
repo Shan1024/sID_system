@@ -12,11 +12,14 @@
 </head>
 <body>
 
-  <% include ../partials/navbar %>
+<% include ../partials/navbar %>
+
+<% if( message.length > 0) { %>
+<div class="alert alert-danger"><p class="text-center"><strong></strong>Error: </strong> <%= message %></p></div>
+<% } %>
 
 <div class="container">
     <div class=" text-center">
-
 
         <h1>sID - Social Identity</h1>
 

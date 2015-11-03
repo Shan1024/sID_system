@@ -70,8 +70,8 @@ http.createServer(app).listen(config.httpPort);
 console.log(chalk.green("http server started at port " + config.httpPort));
 
 // Create an HTTPS service identical to the HTTP service.
-https.createServer(options, app).listen(config.httpsPort);
-console.log(chalk.green("https server started at port " + config.httpsPort));
+//https.createServer(options, app).listen(config.httpsPort);
+//console.log(chalk.green("https server started at port " + config.httpsPort));
 
 
 //*********************

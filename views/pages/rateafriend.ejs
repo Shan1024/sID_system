@@ -5,32 +5,71 @@
     <link rel="stylesheet" href="/stylesheets/sidepanel.css">
 </head>
 <body>
-  <% include ../partials/navbar %>
-  <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
-          <ul class="nav nav-sidebar">
-              <li class="active"><a>Actions</a></li>
-              <li><a href="/myratings">My Ratings</a></li>
-              <li><a href="/history">History</a></li>
-              <li><a href="/rateafriend">Rate a friend</a></li>
-          </ul>
-        </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <div class="page-header text-center">
-              <h1><span class="fa fa-anchor"></span> Rate a friend</h1>
-              <a href="/logout" class="btn btn-default btn-sm">Logout</a>
-              <a href="/profile" class="btn btn-default btn-sm">Profile</a>
-          </div>
+<% include ../partials/navbar %>
 
-          <div class="text-center">
-              <p>� Team 13</p>
+<div class="container">
+    <div class="row">
 
-              <p>UoM - 2015</p>
-          </div>
+        <div class="col-sm-2 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li><a>Actions</a></li>
+                <li><a href="/myratings">My Ratings</a></li>
+                <li><a href="/history">History</a></li>
+                <li class="active"><a href="/rateafriend">Rate a friend</a></li>
+            </ul>
         </div>
-      </div>
+
+        <div class="col-sm-10 col-md-10 col-sm-offset-2 col-md-offset-2">
+
+            <div class="page-header text-center">
+                <h1><span class="fa"></span> History Panel</h1>
+
+            </div>
+
+            <% if (friends) { %>
+            <h3><span class="fa"></span>Your Friends - <%= friends.length %></h3>
+            <% }else{ %>
+            <h3><span class="fa"></span>No friends found</h3>
+            <% } %>
+
+            <% if (friends) { %>
+            <% for(var i = 0; i < friends.length ; i += 2) { %>
+
+            <div class="row">
+                <div class="col-sm-6 col-md-6">
+                    <div class="well">
+                        <img src="https://graph.facebook.com/v2.3/<%= friends[i].id %>/picture">
+                        <!--<strong><a href="/facebook?url=<%= friends[i].id %>" target="_blank"> <%= friends[i].name %> </a></strong>-->
+                        <strong><a href="https://www.facebook.com/<%= friends[i].id %>"
+                                   target="_blank"> <%= friends[i].name %> </a></strong>
+                        <!-- <div class="pull-right">
+                            <a href="#" class="btn btn-primary btn-sm">Yes</a>
+                            <a href="#" class="btn btn-default btn-sm">No</a>
+                        </div> -->
+                    </div>
+                </div>
+
+                <% if( friends[i + 1]) { %>
+                <div class="col-sm-6 col-md-6">
+                    <div class="well">
+                        <img src="https://graph.facebook.com/v2.3/<%= friends[i + 1].id %>/picture">
+                        <strong><a href="https://www.facebook.com/<%= friends[i + 1].id %>"
+                                   target="_blank"> <%= friends[i + 1].name %> </a> </strong>
+                        <!--<strong><a href="/facebook?url=<%= friends[i].id %>" target="_blank"> <%= friends[i].name %> </a></strong>-->
+                        <!-- <div class="pull-right">
+                            <a href="#" class="btn btn-primary btn-sm">Yes</a>
+                            <a href="#" class="btn btn-default btn-sm">No</a>
+                        </div> -->
+                    </div>
+                </div>
+                <% } %>
+            </div>
+
+            <% } %>
+            <% } %>
+        </div>
     </div>
+</div>
 
 </body>
 </html>

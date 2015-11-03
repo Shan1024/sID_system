@@ -214,30 +214,33 @@ module.exports = function (passport) {
 
                             } else {
                                 // if there is no user, create them
-                                var newFacebook = new Facebook();
+                                //var newFacebook = new Facebook();
+                                //
+                                //newFacebook.id = profile.id;
+                                //newFacebook.token = token;
+                                //newFacebook.name = profile.displayName;
+                                //newFacebook.email = (profile.emails[0].value || '').toLowerCase();
+                                //
+                                //var newFbUser = new User({
+                                //    'userDetails.facebook': newFacebook._id
+                                //});
+                                //
+                                //newFbUser.save(function (err) {
+                                //    if (err) {
+                                //        return done(err);
+                                //    }
+                                //    newFacebook.user = newFbUser._id;
+                                //
+                                //    newFacebook.save(function (err) {
+                                //        if (err) {
+                                //            return done(err);
+                                //        }
+                                //        return done(null, newFbUser);
+                                //    });
+                                //});
 
-                                newFacebook.id = profile.id;
-                                newFacebook.token = token;
-                                newFacebook.name = profile.displayName;
-                                newFacebook.email = (profile.emails[0].value || '').toLowerCase();
+                                return done(null);
 
-                                var newFbUser = new User({
-                                    'userDetails.facebook': newFacebook._id
-                                });
-
-                                newFbUser.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    newFacebook.user = newFbUser._id;
-
-                                    newFacebook.save(function (err) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        return done(null, newFbUser);
-                                    });
-                                });
                             }
                         });
 

@@ -31,7 +31,10 @@ module.exports = function (app, passport) {
         if (req.user) {
             res.redirect('/home');
         } else {
-            res.render('index.ejs', {user: req.user});
+            res.render('index.ejs', {
+                user: req.user,
+                message: req.flash('error')
+            });
         }
 
     });
@@ -107,15 +110,18 @@ module.exports = function (app, passport) {
     app.get('/auth/facebook/callback',
         passport.authenticate('facebook', {
             successRedirect: '/home',
-            failureRedirect: '/'
-        }));
+            failureRedirect: '/',
+            failureFlash: 'Facebook account is not linked to any local user account. Please create a local user account and link the Facebook account to use the login with Facebook.'
+        })
+    );
 
     app.get('/auth/linkedin', passport.authenticate('linkedin'));
 
     app.get('/auth/linkedin/callback',
         passport.authenticate('linkedin', {
             successRedirect: '/home',
-            failureRedirect: '/'
+            failureRedirect: '/',
+            failureFlash: 'LinkedIn account is not linked to any local user account. Please create a local user account and link the LinkedIn account to use the login with LinkedIn.'
         })
         //,
         //function (req, res) {
@@ -260,7 +266,24 @@ module.exports = function (app, passport) {
     });
 
     app.get('/rateafriend', isLoggedIn, function (req, res) {
-        res.render('rateafriend.ejs', {user: req.user});
+
+        facebook.getFbData(req, '/me/friends', function (data) {
+            console.log(data);
+            console.log("-------------------------------------");
+            var jsonPretty = JSON.stringify(JSON.parse(data), null, 2);
+            console.log(jsonPretty);
+
+            obj = JSON.parse(data);
+
+            console.log("obj.data: " + obj);
+            console.log(JSON.stringify("obj.data: " + JSON.parse(data), null, 2));
+
+            res.render('rateafriend.ejs', {
+                friends: obj.data,
+                user: req.user
+            });
+
+        });
     });
 
     app.get('/usersummary', function (req, res) {
@@ -300,21 +323,21 @@ module.exports = function (app, passport) {
             //.populate('facebook.ratedByMe')
             .exec(function (error, user) {
                 //console.log(JSON.stringify(user, null, "\t"));
-                if(user.validPassword(req.body.oldpassword)){
-                  console.log('passwords match');
-                  user.userDetails.local.password = user.generateHash(req.body.password);
-                  user.save(function (err) {
-                      if (err) {
-                          return done(err);
-                      }
-                      res.render('profile.ejs', {
-                          user: user
-                      });
-                  });
-                }else{
-                  console.log('passwords dont match');
-                  req.flash('loginMessage', 'Passwords do not match.');
-                  res.render('login.ejs', {message: req.flash('loginMessage')});
+                if (user.validPassword(req.body.oldpassword)) {
+                    console.log('passwords match');
+                    user.userDetails.local.password = user.generateHash(req.body.password);
+                    user.save(function (err) {
+                        if (err) {
+                            return done(err);
+                        }
+                        res.render('profile.ejs', {
+                            user: user
+                        });
+                    });
+                } else {
+                    console.log('passwords dont match');
+                    req.flash('loginMessage', 'Passwords do not match.');
+                    res.render('login.ejs', {message: req.flash('loginMessage')});
                 }
 
                 //res.render('partials/profile', {user: user});
