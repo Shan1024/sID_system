@@ -13,13 +13,11 @@ var Entry = require("../models/entry");
 var LinkedIn = require("../models/linkedin");
 
 //var rest = require('restler');
-var http = require('http');
-var FileCookieStore = require('tough-cookie-filestore');
-var request = require('request');
+//var http = require('http');
+//var request = require('request');
 //.defaults({jar: true});
-request = request.defaults({jar: true});
+//request = request.defaults({jar: true});
 
-var cheerio = require('cheerio');
 
 module.exports = function (app, passport) {
 
@@ -350,101 +348,101 @@ module.exports = function (app, passport) {
     //);
 
 
-    app.get("/facebook", function (req, res) {
+    //app.get("/facebook", function (req, res) {
+    //
+    //    //var j = request.jar();
+    //    //var cookie = request.cookie('key1=value1');
+    //    var url = "https://www.facebook.com/login.php?login_attempt=1&lwv=110";
+    //    //j.setCookie(cookie, url);
+    //
+    //    var j = request.jar(new FileCookieStore('cookies.json'));
+    //
+    //    request({
+    //        url: url,
+    //        method: "POST",
+    //        form: {//we can use 'qs' here for queries
+    //            "email": "tharangaseetee@gmail.com",
+    //            "pass": "abc"
+    //        },
+    //        headers: {
+    //            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36'
+    //        }
+    //    }, function (error, response, html) {
+    //        console.log("OK");
+    //        //Checking for errors
+    //        if (!error) {
+    //
+    //            console.log(html);
+    //            // Next, we'll utilize the cheerio library on the returned html which will essentially give us jQuery functionality
+    //            //var $ = cheerio.load(html);
+    //            //
+    //            //// Variables we're going to capture
+    //            //var $code = $('#code');
+    //            //
+    //            ////Extract the id
+    //            //var id = $code.text();
+    //            //
+    //            ////If id available
+    //            //if(id){
+    //            //    console.log(chalk.yellow("ID Found: " + id));
+    //            //    res.json({"app_id": req.params.id, "user_id": $code.text()});
+    //            //}else{
+    //            //    console.log(chalk.red("ID Not Found"));
+    //            //    res.json({"app_id": req.params.id, "user_id": "Not Found"});
+    //            //}
+    //        } else {
+    //            console.log(chalk.red('Error occured: ' + error));
+    //        }
+    //        res.send(200);
+    //    });
+    //});
 
-        //var j = request.jar();
-        //var cookie = request.cookie('key1=value1');
-        var url = "https://www.facebook.com/login.php?login_attempt=1&lwv=110";
-        //j.setCookie(cookie, url);
-
-        var j = request.jar(new FileCookieStore('cookies.json'));
-
-        request({
-            url: url,
-            method: "POST",
-            form: {//we can use 'qs' here for queries
-                "email": "tharangaseetee@gmail.com",
-                "pass": "abc"
-            },
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36'
-            }
-        }, function (error, response, html) {
-            console.log("OK");
-            //Checking for errors
-            if (!error) {
-
-                console.log(html);
-                // Next, we'll utilize the cheerio library on the returned html which will essentially give us jQuery functionality
-                //var $ = cheerio.load(html);
-                //
-                //// Variables we're going to capture
-                //var $code = $('#code');
-                //
-                ////Extract the id
-                //var id = $code.text();
-                //
-                ////If id available
-                //if(id){
-                //    console.log(chalk.yellow("ID Found: " + id));
-                //    res.json({"app_id": req.params.id, "user_id": $code.text()});
-                //}else{
-                //    console.log(chalk.red("ID Not Found"));
-                //    res.json({"app_id": req.params.id, "user_id": "Not Found"});
-                //}
-            } else {
-                console.log(chalk.red('Error occured: ' + error));
-            }
-            res.send(200);
-        });
-    });
-
-    app.get('/facebooklog', function (req, res) {
-        rest.post('https://www.facebook.com/?_rdr=p', {
-            data: {email: 'tharangaseetee@gmail.com', pass: 'abc'},
-        }).on('complete', function (data, response) {
-
-            console.log("OK");
-            // var http = require('http');
-            // var options = {method: 'HEAD', host: 'facebook.com', port: 80, path: '/10204567012270391'};
-            // // var req = http.request(options, function(res) {
-            // //     console.log(JSON.stringify(res.headers));
-            // //     console.log(JSON.stringify(res.statusCode));
-            // //   }
-            // http.get(options, function(res) {
-            //   console.log("Got response: " + res.statusCode);
-            //
-            //   for(var item in res.headers) {
-            //     console.log(item + ": " + res.headers[item]);
-            //   }
-            // }).on('error', function(e) {
-            //   console.log("Got error: " + e.message);
-            // });
-
-
-            // rest.get('https://www.facebook.com/10204567012270391',{
-            //     method: 'HEAD'
-            // }).on('complete', function(data) {
-            //     console.log(data); // auto convert to object
-            // });
-
-            // rest.head('https://www.facebook.com/10204567012270391').on('complete', function(data, response) {
-            //     console.log(data); // auto convert to object
-            //     // console.log(response);
-            //
-            //     console.log(response);
-            //
-            //     res.send(200);
-            // });
-
-
-            rest.get('https://www.facebook.com/10204567012270391').on('complete', function (data, response) {
-                console.log(data.statusCode);
-                console.log(response.statusCode); // auto convert to object
-            });
-
-        });
-    });
+    //app.get('/facebooklog', function (req, res) {
+    //    rest.post('https://www.facebook.com/?_rdr=p', {
+    //        data: {email: 'tharangaseetee@gmail.com', pass: 'abc'},
+    //    }).on('complete', function (data, response) {
+    //
+    //        console.log("OK");
+    //        // var http = require('http');
+    //        // var options = {method: 'HEAD', host: 'facebook.com', port: 80, path: '/10204567012270391'};
+    //        // // var req = http.request(options, function(res) {
+    //        // //     console.log(JSON.stringify(res.headers));
+    //        // //     console.log(JSON.stringify(res.statusCode));
+    //        // //   }
+    //        // http.get(options, function(res) {
+    //        //   console.log("Got response: " + res.statusCode);
+    //        //
+    //        //   for(var item in res.headers) {
+    //        //     console.log(item + ": " + res.headers[item]);
+    //        //   }
+    //        // }).on('error', function(e) {
+    //        //   console.log("Got error: " + e.message);
+    //        // });
+    //
+    //
+    //        // rest.get('https://www.facebook.com/10204567012270391',{
+    //        //     method: 'HEAD'
+    //        // }).on('complete', function(data) {
+    //        //     console.log(data); // auto convert to object
+    //        // });
+    //
+    //        // rest.head('https://www.facebook.com/10204567012270391').on('complete', function(data, response) {
+    //        //     console.log(data); // auto convert to object
+    //        //     // console.log(response);
+    //        //
+    //        //     console.log(response);
+    //        //
+    //        //     res.send(200);
+    //        // });
+    //
+    //
+    //        rest.get('https://www.facebook.com/10204567012270391').on('complete', function (data, response) {
+    //            console.log(data.statusCode);
+    //            console.log(response.statusCode); // auto convert to object
+    //        });
+    //
+    //    });
+    //});
 
 };
 
