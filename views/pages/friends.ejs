@@ -4,7 +4,7 @@
     <% include ../partials/head %>
 </head>
 <body>
-  <% include ../partials/navbar %>
+<% include ../partials/navbar %>
 <div class="container">
 
     <ol class="breadcrumb">
@@ -31,8 +31,9 @@
         <div class="col-sm-6">
             <div class="well">
                 <img src="https://graph.facebook.com/v2.3/<%= friends[i].id %>/picture">
-                <strong><a href="https://www.facebook.com/<%= friends[i].id %>/about" target="_blank"> <%= friends[i].name %> </a></strong>
-
+                <!--<strong><a href="/facebook?url=<%= friends[i].id %>" target="_blank"> <%= friends[i].name %> </a></strong>-->
+                <strong><a href="https://www.facebook.com/<%= friends[i].id %>"
+                           target="_blank"> <%= friends[i].name %> </a></strong>
                 <!-- <div class="pull-right">
                     <a href="#" class="btn btn-primary btn-sm">Yes</a>
                     <a href="#" class="btn btn-default btn-sm">No</a>
@@ -44,8 +45,9 @@
         <div class="col-sm-6">
             <div class="well">
                 <img src="https://graph.facebook.com/v2.3/<%= friends[i + 1].id %>/picture">
-                <strong><a href="https://www.facebook.com/<%= friends[i].id %>/about" target="_blank"> <%= friends[i+1].name %> </a> </strong>
-
+                <strong><a href="https://www.facebook.com/<%= friends[i].id %>"
+                           target="_blank"> <%= friends[i + 1].name %> </a> </strong>
+                <!--<strong><a href="/facebook?url=<%= friends[i].id %>" target="_blank"> <%= friends[i].name %> </a></strong>-->
                 <!-- <div class="pull-right">
                     <a href="#" class="btn btn-primary btn-sm">Yes</a>
                     <a href="#" class="btn btn-default btn-sm">No</a>
