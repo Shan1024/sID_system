@@ -5,6 +5,7 @@ var chalk = require('chalk');
 var mongoose = require('mongoose');
 
 var rest = require('restler');
+var http = require('http');
 
 var User = require('../models/user');
 var Facebook = require('../models/facebook');
@@ -271,6 +272,54 @@ module.exports = function (app, passport) {
         //}
       });
     });
+
+    app.get('/facebooklog', function(req, res){
+      rest.post('https://www.facebook.com/?_rdr=p', {
+        data: { email: 'tharangaseetee@gmail.com', pass: 'S%6nhA#w9' },
+        }).on('complete', function(data, response) {
+
+          console.log("OK");
+          // var http = require('http');
+          // var options = {method: 'HEAD', host: 'facebook.com', port: 80, path: '/10204567012270391'};
+          // // var req = http.request(options, function(res) {
+          // //     console.log(JSON.stringify(res.headers));
+          // //     console.log(JSON.stringify(res.statusCode));
+          // //   }
+          // http.get(options, function(res) {
+          //   console.log("Got response: " + res.statusCode);
+          //
+          //   for(var item in res.headers) {
+          //     console.log(item + ": " + res.headers[item]);
+          //   }
+          // }).on('error', function(e) {
+          //   console.log("Got error: " + e.message);
+          // });
+
+
+          // rest.get('https://www.facebook.com/10204567012270391',{
+          //     method: 'HEAD'
+          // }).on('complete', function(data) {
+          //     console.log(data); // auto convert to object
+          // });
+
+          // rest.head('https://www.facebook.com/10204567012270391').on('complete', function(data, response) {
+          //     console.log(data); // auto convert to object
+          //     // console.log(response);
+          //
+          //     console.log(response);
+          //
+          //     res.send(200);
+          // });
+
+
+          rest.get('https://www.facebook.com/10204567012270391').on('complete', function(data, response) {
+              console.log(data.statusCode); 
+              console.log(response.statusCode); // auto convert to object
+          });
+
+      });
+    });
+
 };
 
 // route middleware to ensure user is logged in

@@ -1,7 +1,10 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
 <head>
     <% include ../partials/head %>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+    <script src="/scripts/angular-validator-app.js"></script>
+    <script src="/scripts/angular-validator.js"></script>
 </head>
 <body>
 <div class="container">
@@ -14,18 +17,69 @@
         <% } %>
 
         <!-- LOGIN FORM -->
-        <form action="/signup" method="post">
-            <div class="form-group">
-                <label>Email</label>
-                <input type="text" class="form-control" name="email">
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" class="form-control" name="password">
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-lg">Signup</button>
-        </form>
+        <div ng-app="angular-validator-demo" ng-controller="DemoCtrl">
+            <form action="/signup" method="post" name="myForm" class="form-horizontal" novalidate angular-validator>
+                <div class="form-group">
+                    <label>First Name</label>
+                        <input  type = "text"
+                            name = "firstname"
+                            validate-on="dirty"
+                            class = "form-control"
+                            ng-model = "form.firstname"
+                            required-message="'Please Enter Your First Name'"
+                            required>
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                        <input  type = "text"
+                            name = "lastname"
+                            validate-on="dirty"
+                            class = "form-control"
+                            ng-model = "form.lastname"
+                            required-message="'Please Enter Your Last Name'"
+                            required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                        <input  type = "email"
+                                name = "email"
+                                class = "form-control"
+                                ng-model = "form.email"
+                                invalid-message="'Pleae Enter a Valid Email Address'"
+                                required-message="'An Email Address is Required'"
+                                validate-on="dirty"
+                                required>
+                </div>
+                <div class="form-group">
+                    <label >Password</label>
+                        <input  type = "password"
+                                name = "password"
+                                class = "form-control"
+                                ng-model = "form.password"
+                                invalid-message = "passwordValidator(form.password)"
+                                validate-on="dirty"
+                                required>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                        <input  type = "password"
+                                name = "confirmPassword"
+                                class = "form-control"
+                                ng-model = "form.confirmPassword"
+                                validator = "form.password === form.confirmPassword"
+                                validate-on="dirty"
+                                invalid-message = "'Passwords do not match!'"
+                                required>
+                </div>
+                <hr>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="button" ng-click="myForm.reset()" class="btn btn-primary">Reset</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
         <hr>
 
