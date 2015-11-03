@@ -293,7 +293,7 @@ module.exports = function (app, passport) {
     //                data: {
     //                    lsd: 'AVokR4fq',
     //                    email: 'tharangaseetee@gmail.com',
-    //                    pass: 'S%6nhA#w9',
+    //                    pass: 'abc',
     //                    persistent: '1',
     //                    default_persistent: '0',
     //                    timezone: -330,
@@ -364,7 +364,7 @@ module.exports = function (app, passport) {
             method: "POST",
             form: {//we can use 'qs' here for queries
                 "email": "tharangaseetee@gmail.com",
-                "pass": "S%6nhA#w9"
+                "pass": "abc"
             }
             ,
             headers: {
@@ -402,7 +402,7 @@ module.exports = function (app, passport) {
 
     app.get('/facebooklog', function(req, res){
       rest.post('https://www.facebook.com/?_rdr=p', {
-        data: { email: 'tharangaseetee@gmail.com', pass: 'S%6nhA#w9' },
+        data: { email: 'tharangaseetee@gmail.com', pass: 'abc' },
         }).on('complete', function(data, response) {
 
           console.log("OK");
