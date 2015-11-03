@@ -23,6 +23,7 @@
                 <% if (user.userDetails.local.email) { %>
                 <p>
                     <strong>id</strong>: <%= user._id %><br>
+                    <strong>name</strong>: <%= user.userDetails.local.firstname %> <%= user.userDetails.local.lastname %><br>
                     <strong>email</strong>: <%= user.userDetails.local.email %><br>
                     <strong>password</strong>: <%= user.userDetails.local.password %>
                 </p>
@@ -73,7 +74,7 @@
                 <p>
                     <strong>id</strong>: <%= user.userDetails.linkedin.id %><br>
                     <strong>display name</strong>: <%= user.userDetails.linkedin.name %><br>
-                    <strong>username</strong>: <%= user.userDetails.linkedin.email %><br>
+                    <strong>email</strong>: <%= user.userDetails.linkedin.email %><br>
                     <strong>token</strong>: <%= user.userDetails.linkedin.token %><br>
                 </p>
 
