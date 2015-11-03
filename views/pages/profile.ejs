@@ -20,7 +20,7 @@
     <div class="row">
 
         <!-- LOCAL INFORMATION -->
-        <div class="col-sm-6">
+        <div class="col-sm-offset-3 col-sm-6">
             <div class="well">
                 <h3><span class="fa fa-user"></span> Local</h3>
 
@@ -35,10 +35,11 @@
                 </p>
                 <hr>
                 <!-- Trigger the modal with a button -->
-                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
-                    Change Password
-                </button>
-
+                <div align="center">
+                    <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">
+                        Change Password
+                    </button>
+                </div>
 
                 <!-- Modal -->
                 <div id="myModal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog">
@@ -141,12 +142,15 @@
                     <strong>token</strong>: <%= user.userDetails.facebook.token %><br>
                 </p>
                 <hr>
-                <a href="/unlink/facebook" class="btn btn-primary">Unlink</a>
+                <div align="center">
+                    <a href="/unlink/facebook" class="btn btn-primary">Unlink</a></div>
                 <% } else { %>
-                <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                <div align="center">
+                    <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a></div>
                 <% } %>
                 <% } else { %>
-                <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                <div align="center">
+                    <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a></div>
                 <% } %>
 
             </div>
@@ -167,24 +171,22 @@
                     <strong>token</strong>: <%= user.userDetails.linkedin.token %><br>
                 </p>
                 <hr>
-                <a href="/unlink/linkedin" class="btn btn-info">Unlink</a>
+                <div align="center">
+                    <a href="/unlink/linkedin" class="btn btn-info">Unlink</a></div>
                 <% } else { %>
-                <a href="/connect/linkedin" class="btn btn-info">Connect LinkedIn</a>
-                <% } %>
-                <% } else { %>
-                <a href="/connect/linkedin" class="btn btn-info">Connect LinkedIn</a>
+                <div align="center">
+                    <a href="/connect/linkedin" class="btn btn-info">Connect LinkedIn</a></div>
                 <% } %>
 
+                <% } else { %>
+                <div align="center">
+                    <a href="/connect/linkedin" class="btn btn-info">Connect LinkedIn</a>
+                    <% } %>
+                </div>
             </div>
         </div>
 
 
-    </div>
-
-    <div class="text-center">
-        <p>© Team 13</p>
-
-        <p>UoM - 2015</p>
     </div>
 
 </div>
