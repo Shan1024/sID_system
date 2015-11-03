@@ -1,0 +1,7 @@
+<div class=container>
+    <% if( user) { %>
+    <% if(!user.userDetails.local.verified) { %>
+    <% include ../partials/verifiednotification %>
+    <% } %>
+    <% } %>
+</div>

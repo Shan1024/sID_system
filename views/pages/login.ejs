@@ -4,6 +4,8 @@
     <% include ../partials/head %>
 </head>
 <body>
+<% include ../partials/navbar_other %>
+
 <div class="container">
     <div class="col-sm-6 col-sm-offset-3">
 
@@ -23,23 +25,28 @@
                 <label>Password</label>
                 <input type="password" class="form-control" name="password">
             </div>
-
-            <button type="submit" class="btn btn-primary btn-lg">Login</button>
+            <div align="center">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
         </form>
 
         <hr>
 
-        <div class="row">
-
-            <a href="/auth/facebook" class="btn btn-primary login-social-buttons"><span class="fa fa-facebook"></span>
-                Facebook</a>
-            <a href="/auth/linkedin" class="btn btn-primary login-social-buttons"><span class="fa fa-linkedin"></span>
-                LinkedIn</a>
+        <div align="center">
+            <h3>or</h3>
         </div>
 
-        <br>
+        <hr>
 
-        <br>
+        <div class="row" align="center">
+
+            <a href="/auth/facebook" class="btn btn-primary login-social-buttons" role="button"><span
+                        class="fa fa-facebook" role="button"></span>
+                Facebook</a>
+            <a href="/auth/linkedin" class="btn btn-primary login-social-buttons" role="button"><span
+                        class="fa fa-linkedin" role="button"></span>
+                LinkedIn</a>
+        </div>
 
         <hr>
 
@@ -47,13 +54,11 @@
 
         <p>Or go <a href="/">home</a>.</p>
 
-        <div class="text-center">
-            <p>© Team 13</p>
-
-            <p>UoM - 2015</p>
-        </div>
 
     </div>
 </div>
+
+<% include ../partials/footer %>
+
 </body>
 </html>
