@@ -251,6 +251,18 @@ module.exports = function (app, passport) {
         res.render('home.ejs', {user: req.user});
     });
 
+    app.get('/myratings', isLoggedIn, function (req, res) {
+        res.render('myratings.ejs', {user: req.user});
+    });
+
+    app.get('/history', isLoggedIn, function (req, res) {
+        res.render('history.ejs', {user: req.user});
+    });
+
+    app.get('/rateafriend', isLoggedIn, function (req, res) {
+        res.render('rateafriend.ejs', {user: req.user});
+    });
+
     app.get('/usersummary', function (req, res) {
         rest.post('http://localhost:8080/claimRating', {
             data: {sender: 'Pubudu', target: 'Dodangoda', cClass: 'cClassTest', claimId: 334},
