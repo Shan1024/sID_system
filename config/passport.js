@@ -325,7 +325,7 @@ module.exports = function (passport) {
     passport.use('facebook-authz', new FacebookStrategy({
                 clientID: configAuth.facebookAuth.clientID,
                 clientSecret: configAuth.facebookAuth.clientSecret,
-                callbackURL: "http://localhost:8080/connect/facebook/callback",
+                callbackURL: configAuth.facebookAuth.callbackURL2,
                 passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
 
             },
@@ -496,7 +496,7 @@ module.exports = function (passport) {
     passport.use('linkedin-authz', new LinkedInStrategy({
             clientID: configAuth.linkedinAuth.consumerKey,
             clientSecret: configAuth.linkedinAuth.consumerSecret,
-            callbackURL: 'http://localhost:8080/connect/linkedin/callback',
+            callbackURL: configAuth.linkedinAuth.callbackURL2,
             passReqToCallback: true, // allows us to pass in the req from our route (lets us check if a user is logged in or not)
             state: true,
             profileFields: ['id', 'first-name', 'last-name', 'email-address'],
