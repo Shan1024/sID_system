@@ -55,7 +55,9 @@ module.exports = function (app, passport) {
             .exec(function (error, user) {
                 console.log(JSON.stringify(user, null, "\t"));
                 res.render('profile.ejs', {
-                    user: user
+                    user: user,
+                    errorMessage: req.flash('passwordChangeError'),
+                    successMessage: req.flash('passwordChangeSuccess')
                 });
 
                 //res.render('partials/profile', {user: user});
@@ -318,8 +320,8 @@ module.exports = function (app, passport) {
     app.post('/changepassword', isLoggedIn, function (req, res) {
 
         User.findById(req.user._id)
-            .populate('userDetails.facebook')
-            .populate('userDetails.linkedin')
+            //.populate('userDetails.facebook')
+            //.populate('userDetails.linkedin')
             //.populate('facebook.ratedByMe')
             .exec(function (error, user) {
                 //console.log(JSON.stringify(user, null, "\t"));
@@ -330,14 +332,18 @@ module.exports = function (app, passport) {
                         if (err) {
                             return done(err);
                         }
-                        res.render('profile.ejs', {
-                            user: user
-                        });
+                        req.flash('passwordChangeSuccess', 'Password changed successfully.');
+                        res.redirect('/profile');
+                        //res.render('profile.ejs', {
+                        //    user: user,
+                        //    errorMessage: req.flash('passwordChangeError'),
+                        //    successMessage: req.flash('passwordChangeSuccess')
+                        //});
                     });
                 } else {
                     console.log('passwords dont match');
-                    req.flash('loginMessage', 'Passwords do not match.');
-                    res.render('login.ejs', {message: req.flash('loginMessage')});
+                    req.flash('passwordChangeError', 'Current password that you have entered is incorrect. Please try again.');
+                    res.redirect('/profile');
                 }
 
                 //res.render('partials/profile', {user: user});
