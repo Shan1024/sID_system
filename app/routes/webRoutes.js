@@ -292,6 +292,37 @@ module.exports = function (app, passport) {
         });
     });
 
+    app.post('/changepassword', isLoggedIn, function (req, res) {
+
+        User.findById(req.user._id)
+            .populate('userDetails.facebook')
+            .populate('userDetails.linkedin')
+            //.populate('facebook.ratedByMe')
+            .exec(function (error, user) {
+                //console.log(JSON.stringify(user, null, "\t"));
+                if(user.validPassword(req.body.oldpassword)){
+                  console.log('passwords match');
+                  user.userDetails.local.password = user.generateHash(req.body.password);
+                  user.save(function (err) {
+                      if (err) {
+                          return done(err);
+                      }
+                      res.render('profile.ejs', {
+                          user: user
+                      });
+                  });
+                }else{
+                  console.log('passwords dont match');
+                  req.flash('loginMessage', 'Passwords do not match.');
+                  res.render('login.ejs', {message: req.flash('loginMessage')});
+                }
+
+                //res.render('partials/profile', {user: user});
+            });
+
+
+    });
+
     //app.get('/facebook', isLoggedIn,  function (req, res) {
     //console.log("");
     //    res.render('facebook.ejs', { url: req.query.url});
