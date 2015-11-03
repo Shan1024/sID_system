@@ -11,6 +11,7 @@
         <div class="collapse navbar-collapse" id="indexPageNavbar">
             <% if (user) { %>
               <ul class="nav navbar-nav navbar-right">
+                  <li><a href="/home"><span class="glyphicon glyphicon-home"></span> Home </a></li>
                   <li><a href="/profile"><span class="glyphicon glyphicon-user"></span> <%= user.userDetails.local.firstname %></a></li>
                   <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li>
               </ul>
