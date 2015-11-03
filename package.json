@@ -24,5 +24,19 @@
     "request": "^2.65.0",
     "restler": "^3.4.0",
     "tough-cookie-filestore": "0.0.1"
+  },
+  "scripts": {
+    "test": "grunt --verbose"
+  },
+  "devDependencies": {
+    "cli":"latest",
+    "grunt": "latest",
+    "grunt-cli": "latest",
+    "grunt-contrib-jshint": "latest",
+    "grunt-mocha-test": "latest",
+    "grunt-apidoc": "latest",
+    "lodash":"latest",
+    "minimatch":"latest",
+    "shelljs":"latest"
   }
 }

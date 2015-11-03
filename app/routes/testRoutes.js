@@ -57,15 +57,18 @@ module.exports = function (app, express) {
     testRouter.route('/createLocalUser')
         .post(function (req, res) {
 
-            var username = req.body.username;
+            var firstname = req.body.firstname;
+            var lastname = req.body.lastname;
+            var email = req.body.email;
             var password = req.body.password;
 
             var user = new User({
                 userDetails: {
                     local: {
-                        username: username,
-                        password: password,
-                        verified: false
+                        firstname:firstname,
+                        lastname:lastname,
+                        email: email,
+                        password: password
                     }
                 }
             });
