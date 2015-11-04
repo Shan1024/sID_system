@@ -21,9 +21,10 @@
 
         <div class="col-sm-10 col-md-10 col-sm-offset-2 col-md-offset-2">
 
-            <div class="page-header text-center">
-                <h1><span class="fa"></span> History Panel</h1>
+            <% include ../partials/message %>
 
+            <div class="page-header text-center">
+                <h1><span class="fa"></span> Rate a Friend</h1>
             </div>
 
             <% if (friends) { %>
@@ -70,6 +71,8 @@
         </div>
     </div>
 </div>
+
+<% include ../partials/footer %>
 
 </body>
 </html>

@@ -1,16 +1,16 @@
-var facebook = require('../../config/facebook.js');
-
 var chalk = require('chalk');
-
 var mongoose = require('mongoose');
-
 var rest = require('restler');
 var http = require('http');
+
+var facebook = require('../../config/facebook.js');
 
 var User = require('../models/user');
 var Facebook = require('../models/facebook');
 var Entry = require("../models/entry");
 var LinkedIn = require("../models/linkedin");
+
+var controller = require('../controllers/controllers');
 
 //var rest = require('restler');
 //var http = require('http');
@@ -33,11 +33,13 @@ module.exports = function (app, passport) {
         } else {
             res.render('index.ejs', {
                 user: req.user,
-                message: req.flash('error')
+                failureFlash: req.flash('error'),
+                successFlash: req.flash('success')
             });
         }
 
     });
+
 
     // PROFILE SECTION =========================
     app.get('/profile', isLoggedIn, function (req, res) {
@@ -55,7 +57,9 @@ module.exports = function (app, passport) {
             .exec(function (error, user) {
                 console.log(JSON.stringify(user, null, "\t"));
                 res.render('profile.ejs', {
-                    user: user
+                    user: user,
+                    errorMessage: req.flash('passwordChangeError'),
+                    successMessage: req.flash('passwordChangeSuccess')
                 });
 
                 //res.render('partials/profile', {user: user});
@@ -78,7 +82,10 @@ module.exports = function (app, passport) {
     // LOGIN ===============================
     // show the login form
     app.get('/login', function (req, res) {
-        res.render('login.ejs', {message: req.flash('loginMessage')});
+        res.render('login.ejs', {
+            message: req.flash('loginMessage'),
+            successFlash: req.flash('success')
+        });
     });
 
     // process the login form
@@ -91,14 +98,17 @@ module.exports = function (app, passport) {
     // SIGNUP =================================
     // show the signup form
     app.get('/signup', function (req, res) {
-        res.render('signup.ejs', {message: req.flash('signupMessage')});
+        res.render('signup.ejs', {
+            message: req.flash('signupMessage')
+        });
     });
 
     // process the signup form
     app.post('/signup', passport.authenticate('local-signup', {
-        successRedirect: '/home', // redirect to the secure profile section
+        successRedirect: '/login', // redirect to the secure profile section
         failureRedirect: '/signup', // redirect back to the signup page if there is an error
-        failureFlash: true // allow flash messages
+        successFlash: "Account created successfully. Please login.",
+        failureFlash: "Error occurred while creating an account. Please try again." // allow flash messages
     }));
 
     // facebook -------------------------------
@@ -231,26 +241,47 @@ module.exports = function (app, passport) {
     // FRIENDS SECTION =========================
     app.get('/facebook/friends', isLoggedIn, function (req, res) {
 
-        facebook.getFbData(req, '/me/friends', function (data) {
-            console.log(data);
-            console.log("-------------------------------------");
-            var jsonPretty = JSON.stringify(JSON.parse(data), null, 2);
-            console.log(jsonPretty);
+        if (req.user.userDetails.facebook) {
+            if (req.user.userDetails.facebook.token) {
+                facebook.getFbData(req, '/me/friends', function (data) {
+                    console.log(data);
+                    console.log("-------------------------------------");
+                    var jsonPretty = JSON.stringify(JSON.parse(data), null, 2);
+                    console.log(jsonPretty);
 
-            obj = JSON.parse(data);
+                    obj = JSON.parse(data);
 
-            console.log("obj.data: " + obj);
-            console.log(JSON.stringify("obj.data: " + JSON.parse(data), null, 2));
+                    console.log("obj.data: " + obj);
+                    console.log(JSON.stringify("obj.data: " + JSON.parse(data), null, 2));
 
+                    res.render('friends.ejs', {
+                        friends: obj.data,
+                        user: req.user,
+                        errorMessage: ''
+                    });
+
+                });
+            } else {
+                res.render('friends.ejs', {
+                    friends: '',
+                    user: req.user,
+                    errorMessage: 'FB account is not linked.'
+                });
+            }
+        } else {
             res.render('friends.ejs', {
-                friends: obj.data,
-                user: req.user
+                friends: '',
+                user: req.user,
+                errorMessage: 'FB account is not linked.'
             });
-
-        });
-
+        }
         // res.redirect('/profile');
 
+    });
+
+    app.get('/verify', function (req, res) {
+        console.log("/verify called");
+        controller.verifyEmail(req, res);
     });
 
     app.get('/home', isLoggedIn, function (req, res) {
@@ -267,23 +298,30 @@ module.exports = function (app, passport) {
 
     app.get('/rateafriend', isLoggedIn, function (req, res) {
 
-        facebook.getFbData(req, '/me/friends', function (data) {
-            console.log(data);
-            console.log("-------------------------------------");
-            var jsonPretty = JSON.stringify(JSON.parse(data), null, 2);
-            console.log(jsonPretty);
+        if (req.user.userDetails.facebook) {
+            facebook.getFbData(req, '/me/friends', function (data) {
+                console.log(data);
+                console.log("-------------------------------------");
+                var jsonPretty = JSON.stringify(JSON.parse(data), null, 2);
+                console.log(jsonPretty);
 
-            obj = JSON.parse(data);
+                obj = JSON.parse(data);
 
-            console.log("obj.data: " + obj);
-            console.log(JSON.stringify("obj.data: " + JSON.parse(data), null, 2));
+                console.log("obj.data: " + obj);
+                console.log(JSON.stringify("obj.data: " + JSON.parse(data), null, 2));
 
+                res.render('rateafriend.ejs', {
+                    friends: obj.data,
+                    user: req.user
+                });
+
+            });
+        } else {
             res.render('rateafriend.ejs', {
-                friends: obj.data,
+                friends: undefined,
                 user: req.user
             });
-
-        });
+        }
     });
 
     app.get('/usersummary', function (req, res) {
@@ -318,8 +356,8 @@ module.exports = function (app, passport) {
     app.post('/changepassword', isLoggedIn, function (req, res) {
 
         User.findById(req.user._id)
-            .populate('userDetails.facebook')
-            .populate('userDetails.linkedin')
+            //.populate('userDetails.facebook')
+            //.populate('userDetails.linkedin')
             //.populate('facebook.ratedByMe')
             .exec(function (error, user) {
                 //console.log(JSON.stringify(user, null, "\t"));
@@ -330,14 +368,18 @@ module.exports = function (app, passport) {
                         if (err) {
                             return done(err);
                         }
-                        res.render('profile.ejs', {
-                            user: user
-                        });
+                        req.flash('passwordChangeSuccess', 'Password changed successfully.');
+                        res.redirect('/profile');
+                        //res.render('profile.ejs', {
+                        //    user: user,
+                        //    errorMessage: req.flash('passwordChangeError'),
+                        //    successMessage: req.flash('passwordChangeSuccess')
+                        //});
                     });
                 } else {
                     console.log('passwords dont match');
-                    req.flash('loginMessage', 'Passwords do not match.');
-                    res.render('login.ejs', {message: req.flash('loginMessage')});
+                    req.flash('passwordChangeError', 'Current password that you have entered is incorrect. Please try again.');
+                    res.redirect('/profile');
                 }
 
                 //res.render('partials/profile', {user: user});

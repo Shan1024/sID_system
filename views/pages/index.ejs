@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="/stylesheets/index.css" rel="stylesheet">
+    <link href="/stylesheets/style.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </head>
@@ -14,27 +15,42 @@
 
 <% include ../partials/navbar %>
 
-<% if( message.length > 0) { %>
-<div class="alert alert-danger"><p class="text-center"><strong></strong>Error: </strong> <%= message %></p></div>
-<% } %>
-
 <div class="container">
-    <div class=" text-center">
 
-        <h1>sID - Social Identity</h1>
+    <% if( failureFlash.length > 0) { %>
+    <div class="alert alert-danger"><p class="text-center"><%= failureFlash %></p></div>
+    <% } %>
 
-        <hr>
+    <% if( successFlash.length > 0) { %>
+    <div class="alert alert-success"><p class="text-center"><%= successFlash %></p></div>
+    <% } %>
 
-        <div class="row">
-            <label class="col-md-2 col-sm-4 col-xs-12">Enter FB User ID</label><input
-                    class="col-md-10 col-sm-8 col-xs-12" type="text" class="form-control" name="url">
-            <a href="/usersummary" class="btn btn-primary"><span class="fa"></span> Get Summary</a>
+    <div class="page-header text-center">
+        <h1><span class="fa"></span> sID - Social Identity</h1>
+    </div>
+
+    <div class="row">
+        <div align="center">
+
+            <hr>
+
+            <div class="row">
+
+                <label class="col-md-2 col-sm-4 col-xs-12">Enter FB User ID</label><input
+                        class="col-md-10 col-sm-8 col-xs-12" type="text" class="form-control" name="url">
+
+                <br>
+                <br>
+                <a href="/usersummary" class="btn btn-primary"><span class="fa"></span> Get Summary</a>
+            </div>
+
+            <hr>
+
         </div>
-
-        <hr>
-
     </div>
 </div>
+
+<% include ../partials/footer %>
 
 </body>
 </html>

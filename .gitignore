@@ -1,3 +1,6 @@
+/public/facebook.html
+/app/routes/baseRoutes.js
+/app/routes/secureRoutes.js
 lib-cov
 *.seed
 *.log
