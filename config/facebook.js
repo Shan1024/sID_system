@@ -10,7 +10,7 @@ exports.getFbData = function (req, apiPath, callback) {
         .exec(function (error, user) {
             console.log(JSON.stringify(user, null, "\t"));
 
-            if (user) {
+            if (user.userDetails.facebook) {
                 var accessToken = user.userDetails.facebook.token;
 
                 var options = {
