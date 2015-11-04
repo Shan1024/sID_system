@@ -157,7 +157,7 @@ module.exports = function (app, passport) {
     // facebook -------------------------------
 
     // send to facebook to do the authentication
-    app.get('/connect/facebook', passport.authenticate('facebook-authz', {failureRedirect: '/failed'}));
+    app.get('/connect/facebook', passport.authenticate('facebook-connect', {failureRedirect: '/failed'}));
 
     // handle the callback after facebook has authorized the user
     app.get('/connect/facebook/callback',
@@ -177,19 +177,19 @@ module.exports = function (app, passport) {
         //    }
         //}
 
-        passport.authenticate('facebook-authz', {
+        passport.authenticate('facebook-connect', {
             successRedirect: '/profile',
             failureRedirect: '/failure'
         })
     );
 
-    app.get('/connect/linkedin', passport.authenticate('linkedin-authz', {
+    app.get('/connect/linkedin', passport.authenticate('linkedin-connect', {
         res: ['r_basicprofile', 'r_fullprofile', 'r_emailaddress']
     }));
 
     // the callback after google has authorized the user
     app.get('/connect/linkedin/callback',
-        passport.authenticate('linkedin-authz', {
+        passport.authenticate('linkedin-connect', {
             successRedirect: '/profile',
             failureRedirect: '/failure'
         }));

@@ -2,8 +2,10 @@
  * Created by Shan on 11/4/2015.
  */
 var chalk = require('chalk');
+var cheerio = require('cheerio');
 var jwt = require('jsonwebtoken');
 var nodemailer = require("nodemailer");
+var request = require('request');
 
 var config = require('../../config/config');
 var User = require('../models/user');
@@ -15,7 +17,6 @@ var transporter = nodemailer.createTransport({
         pass: config.password
     }
 });
-
 
 module.exports.sendEmail = function (req, res) {
 
@@ -96,7 +97,7 @@ module.exports.verifyEmail = function (req, res) {
 
     var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
-    console.log("token: "+token);
+    console.log("token: " + token);
 
     // decode token
     if (token) {
@@ -110,7 +111,7 @@ module.exports.verifyEmail = function (req, res) {
                 //});
                 req.flash('error', 'Token is not valid.');
                 res.redirect('/');
-                console.log('token is not valid')
+                console.log('token is not valid');
             } else {
                 // if everything is good, save to request for use in other routes
                 // req.decoded = decoded;
@@ -190,5 +191,51 @@ module.exports.verifyEmail = function (req, res) {
         //});
         res.redirect('/');
     }
+
+};
+
+
+module.exports.getID = function (id, callback) {
+
+    console.log(chalk.yellow("ID lookup for " + id + " requested"));
+    console.log(chalk.yellow("Searching . . ."));
+    //Send a POST request with the fb app id
+    request({
+        url: "https://lookup-id.com",
+        method: "POST",
+        form: {//we can use 'qs' here for queries
+            "fburl": "https://www.facebook.com/" +id,
+            "check": "Lookup"
+        }
+    }, function (error, response, html) {
+
+        //Checking for errors
+        if (!error) {
+
+            // Next, we'll utilize the cheerio library on the returned html which will essentially give us jQuery functionality
+            var $ = cheerio.load(html);
+
+            // Variables we're going to capture
+            var $code = $('#code');
+
+            //Extract the id
+            var id = $code.text();
+
+            //If id available
+            if (id) {
+                console.log(chalk.yellow("ID Found: " + id));
+                //res.json({"app_id": req.params.id, "user_id": $code.text()});
+                callback(null, $code.text());
+            } else {
+                console.log(chalk.red("ID Not Found"));
+                //res.json({"app_id": req.params.id, "user_id": "Not Found"});
+                callback('ID not found', null);
+            }
+
+        } else {
+            console.log(chalk.red('Error occurred: ' + error));
+            callback(error, null);
+        }
+    });
 
 };

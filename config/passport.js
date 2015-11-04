@@ -168,9 +168,9 @@ module.exports = function (passport) {
             },
             function (req, token, refreshToken, profile, done) {
 
-                console.log(chalk.blue("TOKEN: " + JSON.stringify(token, null, "\t")));
+                console.log(chalk.blue("TOKEN1: " + JSON.stringify(token, null, "\t")));
                 //console.log(chalk.blue("TOKEN SECRET: " + JSON.stringify(tokenSecret, null, "\t")));
-                console.log(chalk.blue("PROFILE: " + JSON.stringify(profile, null, "\t")));
+                console.log(chalk.blue("PROFILE1: " + JSON.stringify(profile, null, "\t")));
 
                 // asynchronous
                 process.nextTick(function () {
@@ -332,7 +332,7 @@ module.exports = function (passport) {
             })
     );
 
-    passport.use('facebook-authz', new FacebookStrategy({
+    passport.use('facebook-connect', new FacebookStrategy({
                 clientID: configAuth.facebookAuth.clientID,
                 clientSecret: configAuth.facebookAuth.clientSecret,
                 callbackURL: configAuth.facebookAuth.callbackURL2,
@@ -408,6 +408,7 @@ module.exports = function (passport) {
                                     'userDetails.facebook': newFacebook._id
                                 });
 
+
                                 newFbUser.save(function (err) {
                                     if (err) {
                                         return done(err);
@@ -482,19 +483,33 @@ module.exports = function (passport) {
 
                                 facebook.user = newUser._id;
 
-                                facebook.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    newUser.userDetails.facebook = facebook._id;
+                                console.log("++++++++++++++++++++++++++++++++++++++")
+                                console.log('getting user ID')
+                                controller.getID(profile.id, function (error, uid) {
 
-                                    newUser.save(function (err) {
+                                    if (!error) {
+                                        facebook.uid = uid;
+                                        console.log("UID: " + uid);
+                                    } else {
+                                        console.log(error)
+                                    }
+
+                                    facebook.save(function (err) {
                                         if (err) {
                                             return done(err);
                                         }
-                                        return done(null, newUser);
+                                        newUser.userDetails.facebook = facebook._id;
+
+                                        newUser.save(function (err) {
+                                            if (err) {
+                                                return done(err);
+                                            }
+                                            return done(null, newUser);
+                                        });
                                     });
+
                                 });
+
 
                             }
                         });
@@ -503,7 +518,7 @@ module.exports = function (passport) {
             })
     );
 
-    passport.use('linkedin-authz', new LinkedInStrategy({
+    passport.use('linkedin-connect', new LinkedInStrategy({
             clientID: configAuth.linkedinAuth.consumerKey,
             clientSecret: configAuth.linkedinAuth.consumerSecret,
             callbackURL: configAuth.linkedinAuth.callbackURL2,

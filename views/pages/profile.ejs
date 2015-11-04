@@ -26,7 +26,7 @@
     <div class="row">
 
         <!-- LOCAL INFORMATION -->
-        <div class="col-sm-offset-3 col-sm-6">
+        <div class="col-sm-12 col-md-6 col-md-offset-3">
             <div class="well">
                 <h3><span class="fa fa-user"></span> Local</h3>
 
@@ -135,7 +135,7 @@
     <div class="row">
 
         <!-- FACEBOOK INFORMATION -->
-        <div class="col-sm-6">
+        <div class="col-sm-12 col-md-6">
             <div class="well">
                 <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
 
@@ -144,6 +144,9 @@
                 <% if (user.userDetails.facebook.token) { %>
                 <p>
                     <strong>id</strong>: <%= user.userDetails.facebook.id %><br>
+                    <% if (user.userDetails.facebook.uid) { %>
+                    <strong>uid</strong>: <%= user.userDetails.facebook.uid %><br>
+                    <% } %>
                     <strong>name</strong>: <%= user.userDetails.facebook.name %><br>
                     <strong>email</strong>: <%= user.userDetails.facebook.email %><br>
                     <strong>token</strong>: <%= user.userDetails.facebook.token %><br>
@@ -165,7 +168,7 @@
 
 
         <!--TWITTER INFORMATION -->
-        <div class="col-sm-6">
+        <div class="col-sm-12 col-md-6">
             <div class="well">
                 <h3 class="text-info"><span class="fa fa-linkedin"></span> LinkedIn</h3>
 
