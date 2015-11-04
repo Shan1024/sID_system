@@ -204,7 +204,7 @@ module.exports.getID = function (id, callback) {
         url: "https://lookup-id.com",
         method: "POST",
         form: {//we can use 'qs' here for queries
-            "fburl": "https://www.facebook.com/" +id,
+            "fburl": "https://www.facebook.com/" + id,
             "check": "Lookup"
         }
     }, function (error, response, html) {
@@ -236,6 +236,53 @@ module.exports.getID = function (id, callback) {
             console.log(chalk.red('Error occurred: ' + error));
             callback(error, null);
         }
+    });
+
+};
+
+
+module.exports.getUserID = function (uid, callback) {
+    //var j = request.jar();
+    //var cookie = request.cookie('key1=value1');
+    var url = "https://www.facebook.com/100000211592969";
+    //j.setCookie(cookie, url);
+
+    request({
+        url: url,
+        method: "GET",
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36'
+        }
+    }, function (error, response, html) {
+        console.log("OK");
+        //Checking for errors
+        if (!error) {
+
+            console.log("PATH: " + response.req.path);
+            // Next, we'll utilize the cheerio library on the returned html which will essentially give us jQuery functionality
+            //var $ = cheerio.load(html);
+            //
+            //// Variables we're going to capture
+            //var $code = $('#code');
+            //
+            ////Extract the id
+            //var id = $code.text();
+            //
+            ////If id available
+            //if(id){
+            //    console.log(chalk.yellow("ID Found: " + id));
+            //    res.json({"app_id": req.params.id, "user_id": $code.text()});
+            //}else{
+            //    console.log(chalk.red("ID Not Found"));
+            //    res.json({"app_id": req.params.id, "user_id": "Not Found"});
+            //}
+
+            callback(null, response.req.path);
+        } else {
+            console.log(chalk.red('Error occured: ' + error));
+            callback(error, null);
+        }
+        //res.json({path: response.req.path});
     });
 
 };
