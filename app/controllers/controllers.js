@@ -6,6 +6,7 @@ var jwt = require('jsonwebtoken');
 var nodemailer = require("nodemailer");
 
 var config = require('../../config/config');
+var User = require('../models/user');
 
 var transporter = nodemailer.createTransport({
     service: "gmail",
@@ -43,7 +44,7 @@ module.exports.sendEmail = function (req, res) {
 
         var host = config.host;
 
-        console.log("Host: "+host);
+        console.log("Host: " + host);
 
         var mailOptions = {
             from: 'sID <' + config.username + '>', // sender address
@@ -88,4 +89,106 @@ module.exports.sendEmail = function (req, res) {
     //   subject: 'hello',
     //   text: 'hello world!'
     // });
+};
+
+
+module.exports.verifyEmail = function (req, res) {
+
+    var token = req.body.token || req.query.token || req.headers['x-access-token'];
+
+    console.log("token: "+token);
+
+    // decode token
+    if (token) {
+
+        // verifies secret and checks exp
+        jwt.verify(token, config.apiSecret, function (err, decoded) {
+            if (err) {
+                //return res.json({
+                //    success: false,
+                //    message: 'Failed to authenticate token.'
+                //});
+                req.flash('error', 'Token is not valid.');
+                res.redirect('/');
+                console.log('token is not valid')
+            } else {
+                // if everything is good, save to request for use in other routes
+                // req.decoded = decoded;
+
+                var email = decoded.context.email;
+
+                console.log(chalk.yellow('decoded: ' + decoded));
+                console.log(chalk.magenta('Email: ' + email));
+
+                User.findOne({
+                    'userDetails.local.email': email
+                }, function (err, user) {
+                    if (err) {
+                        //res.status(403).json({
+                        //    success: false,
+                        //    message: 'Error occured - ' + err
+                        //});
+                        req.flash('error', 'Invalid Token.');
+                        res.redirect('/');
+                        console.log(chalk.red('Error: ' + err));
+                    } else {
+
+                        if (user) {
+
+                            if (user.userDetails.local.verified === true) {
+                                //res.json({
+                                //    success: false,
+                                //    message: username + ' already verified'
+                                //});
+                                req.flash('success', 'Email already verified.');
+                                res.redirect('/');
+                                console.log(chalk.red(email + ' already verified'));
+                            } else {
+                                user.userDetails.local.verified = true;
+
+                                console.log(chalk.cyan('User: ' + user));
+
+                                user.save(function (err) {
+                                    if (err) {
+                                        //res.status(403).json({
+                                        //    success: false,
+                                        //    message: 'Error occured - ' + err
+                                        //});
+                                        req.flash('error', 'Error occurred. Please try again.');
+                                        res.redirect('/');
+                                        console.log(chalk.red('Error: ' + err));
+                                    } else {
+                                        //res.json({
+                                        //    success: true,
+                                        //    message: username + ' verified'
+                                        //});
+                                        req.flash('success', 'Email verified successfully.');
+                                        res.redirect('/');
+                                        console.log(chalk.green(email + ' verified'));
+                                    }
+                                });
+                            }
+                        } else {
+                            //res.status(403).json({
+                            //    success: false,
+                            //    message: 'Username not found'
+                            //});
+                            console.log(chalk.red('Email, ' + email + ' not found'));
+                            req.flash('error', 'Invalid email address.');
+                            res.redirect('/');
+                        }
+                    }
+                });
+            }
+        });
+    } else {
+        // if there is no token
+        // return an error
+        //return res.status(403).send({
+        //    success: false,
+        //    message: 'No token provided.'
+        //});
+        res.redirect('/');
+    }
+
 };

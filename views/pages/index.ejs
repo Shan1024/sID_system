@@ -15,15 +15,18 @@
 
 <% include ../partials/navbar %>
 
-<% if( message.length > 0) { %>
-<div class="alert alert-danger"><p class="text-center"><strong></strong>Error: </strong> <%= message %></p></div>
-<% } %>
-
 <div class="container">
+
+    <% if( failureFlash.length > 0) { %>
+    <div class="alert alert-danger"><p class="text-center"><%= failureFlash %></p></div>
+    <% } %>
+
+    <% if( successFlash.length > 0) { %>
+    <div class="alert alert-success"><p class="text-center"><%= successFlash %></p></div>
+    <% } %>
 
     <div class="page-header text-center">
         <h1><span class="fa"></span> sID - Social Identity</h1>
-
     </div>
 
     <div class="row">

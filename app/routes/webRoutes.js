@@ -10,6 +10,7 @@ var Facebook = require('../models/facebook');
 var Entry = require("../models/entry");
 var LinkedIn = require("../models/linkedin");
 
+var controller = require('../controllers/controllers');
 
 //var rest = require('restler');
 //var http = require('http');
@@ -32,7 +33,8 @@ module.exports = function (app, passport) {
         } else {
             res.render('index.ejs', {
                 user: req.user,
-                message: req.flash('error')
+                failureFlash: req.flash('error'),
+                successFlash: req.flash('success')
             });
         }
 
@@ -277,6 +279,11 @@ module.exports = function (app, passport) {
 
     });
 
+    app.get('/verify', function (req, res) {
+        console.log("/verify called");
+        controller.verifyEmail(req, res);
+    });
+
     app.get('/home', isLoggedIn, function (req, res) {
         res.render('home.ejs', {user: req.user});
     });
@@ -291,23 +298,30 @@ module.exports = function (app, passport) {
 
     app.get('/rateafriend', isLoggedIn, function (req, res) {
 
-        facebook.getFbData(req, '/me/friends', function (data) {
-            console.log(data);
-            console.log("-------------------------------------");
-            var jsonPretty = JSON.stringify(JSON.parse(data), null, 2);
-            console.log(jsonPretty);
+        if (req.user.userDetails.facebook) {
+            facebook.getFbData(req, '/me/friends', function (data) {
+                console.log(data);
+                console.log("-------------------------------------");
+                var jsonPretty = JSON.stringify(JSON.parse(data), null, 2);
+                console.log(jsonPretty);
 
-            obj = JSON.parse(data);
+                obj = JSON.parse(data);
 
-            console.log("obj.data: " + obj);
-            console.log(JSON.stringify("obj.data: " + JSON.parse(data), null, 2));
+                console.log("obj.data: " + obj);
+                console.log(JSON.stringify("obj.data: " + JSON.parse(data), null, 2));
 
+                res.render('rateafriend.ejs', {
+                    friends: obj.data,
+                    user: req.user
+                });
+
+            });
+        } else {
             res.render('rateafriend.ejs', {
-                friends: obj.data,
+                friends: undefined,
                 user: req.user
             });
-
-        });
+        }
     });
 
     app.get('/usersummary', function (req, res) {
