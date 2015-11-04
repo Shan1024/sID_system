@@ -1,16 +1,15 @@
-var facebook = require('../../config/facebook.js');
-
 var chalk = require('chalk');
-
 var mongoose = require('mongoose');
-
 var rest = require('restler');
 var http = require('http');
+
+var facebook = require('../../config/facebook.js');
 
 var User = require('../models/user');
 var Facebook = require('../models/facebook');
 var Entry = require("../models/entry");
 var LinkedIn = require("../models/linkedin");
+
 
 //var rest = require('restler');
 //var http = require('http');
@@ -38,6 +37,7 @@ module.exports = function (app, passport) {
         }
 
     });
+
 
     // PROFILE SECTION =========================
     app.get('/profile', isLoggedIn, function (req, res) {
@@ -80,7 +80,10 @@ module.exports = function (app, passport) {
     // LOGIN ===============================
     // show the login form
     app.get('/login', function (req, res) {
-        res.render('login.ejs', {message: req.flash('loginMessage')});
+        res.render('login.ejs', {
+            message: req.flash('loginMessage'),
+            successFlash: req.flash('success')
+        });
     });
 
     // process the login form
@@ -93,14 +96,17 @@ module.exports = function (app, passport) {
     // SIGNUP =================================
     // show the signup form
     app.get('/signup', function (req, res) {
-        res.render('signup.ejs', {message: req.flash('signupMessage')});
+        res.render('signup.ejs', {
+            message: req.flash('signupMessage')
+        });
     });
 
     // process the signup form
     app.post('/signup', passport.authenticate('local-signup', {
-        successRedirect: '/home', // redirect to the secure profile section
+        successRedirect: '/login', // redirect to the secure profile section
         failureRedirect: '/signup', // redirect back to the signup page if there is an error
-        failureFlash: true // allow flash messages
+        successFlash: "Account created successfully. Please login.",
+        failureFlash: "Error occurred while creating an account. Please try again." // allow flash messages
     }));
 
     // facebook -------------------------------
@@ -233,24 +239,40 @@ module.exports = function (app, passport) {
     // FRIENDS SECTION =========================
     app.get('/facebook/friends', isLoggedIn, function (req, res) {
 
-        facebook.getFbData(req, '/me/friends', function (data) {
-            console.log(data);
-            console.log("-------------------------------------");
-            var jsonPretty = JSON.stringify(JSON.parse(data), null, 2);
-            console.log(jsonPretty);
+        if (req.user.userDetails.facebook) {
+            if (req.user.userDetails.facebook.token) {
+                facebook.getFbData(req, '/me/friends', function (data) {
+                    console.log(data);
+                    console.log("-------------------------------------");
+                    var jsonPretty = JSON.stringify(JSON.parse(data), null, 2);
+                    console.log(jsonPretty);
 
-            obj = JSON.parse(data);
+                    obj = JSON.parse(data);
 
-            console.log("obj.data: " + obj);
-            console.log(JSON.stringify("obj.data: " + JSON.parse(data), null, 2));
+                    console.log("obj.data: " + obj);
+                    console.log(JSON.stringify("obj.data: " + JSON.parse(data), null, 2));
 
+                    res.render('friends.ejs', {
+                        friends: obj.data,
+                        user: req.user,
+                        errorMessage: ''
+                    });
+
+                });
+            } else {
+                res.render('friends.ejs', {
+                    friends: '',
+                    user: req.user,
+                    errorMessage: 'FB account is not linked.'
+                });
+            }
+        } else {
             res.render('friends.ejs', {
-                friends: obj.data,
-                user: req.user
+                friends: '',
+                user: req.user,
+                errorMessage: 'FB account is not linked.'
             });
-
-        });
-
+        }
         // res.redirect('/profile');
 
     });

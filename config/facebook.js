@@ -10,33 +10,33 @@ exports.getFbData = function (req, apiPath, callback) {
         .exec(function (error, user) {
             console.log(JSON.stringify(user, null, "\t"));
 
-            if (user.userDetails.facebook) {
-                var accessToken = user.userDetails.facebook.token;
 
-                var options = {
-                    host: 'graph.facebook.com',
-                    port: 443,
-                    path: apiPath + '?access_token=' + accessToken, //apiPath example: '/me/friends'
-                    method: 'GET'
-                };
+            var accessToken = user.userDetails.facebook.token;
 
-                var buffer = ''; //this buffer will be populated with the chunks of the data received from facebook
-                var request = https.get(options, function (result) {
-                    result.setEncoding('utf8');
-                    result.on('data', function (chunk) {
-                        buffer += chunk;
-                    });
+            var options = {
+                host: 'graph.facebook.com',
+                port: 443,
+                path: apiPath + '?access_token=' + accessToken, //apiPath example: '/me/friends'
+                method: 'GET'
+            };
 
-                    result.on('end', function () {
-                        callback(buffer);
-                    });
+            var buffer = ''; //this buffer will be populated with the chunks of the data received from facebook
+            var request = https.get(options, function (result) {
+                result.setEncoding('utf8');
+                result.on('data', function (chunk) {
+                    buffer += chunk;
                 });
 
-                request.on('error', function (e) {
-                    console.log('error from facebook.getFbData: ' + e.message)
+                result.on('end', function () {
+                    callback(buffer);
                 });
-                request.end();
-            }
+            });
+
+            request.on('error', function (e) {
+                console.log('error from facebook.getFbData: ' + e.message)
+            });
+            request.end();
+
             //res.render('partials/profile', {user: user});
         });
 }

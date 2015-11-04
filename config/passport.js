@@ -1,7 +1,11 @@
 // load all the things we need
+var chalk = require('chalk');
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
+
+// load the auth variables
+var configAuth = require('./auth');
 
 // load up the user model
 var User = require('../app/models/user');
@@ -9,9 +13,7 @@ var Facebook = require('../app/models/facebook');
 var Entry = require("../app/models/entry");
 var LinkedIn = require("../app/models/linkedin");
 
-var chalk = require('chalk');
-// load the auth variables
-var configAuth = require('./auth'); // use this one for testing
+var controller = require('../app/controllers/controllers');
 
 module.exports = function (passport) {
 
@@ -94,7 +96,7 @@ module.exports = function (passport) {
                         }
                         // check to see if theres already a user with that email
                         if (user) {
-                            return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
+                            return done(null, false, req.flash('signupMessage', 'Email that you have entered is already used to create an account.'));
                         } else {
 
                             // create the user
@@ -106,10 +108,14 @@ module.exports = function (passport) {
                             newUser.userDetails.local.email = email;
                             newUser.userDetails.local.password = newUser.generateHash(password);
 
+                            controller.sendEmail(req);
+
+
                             newUser.save(function (err) {
                                 if (err) {
                                     return done(err);
                                 }
+
                                 return done(null, newUser);
                             });
                         }
@@ -124,7 +130,7 @@ module.exports = function (passport) {
                             return done(err);
                         }
                         if (user) {
-                            return done(null, false, req.flash('loginMessage', 'That email is already taken.'));
+                            return done(null, false, req.flash('loginMessage', 'Email that you have entered is already used to create an account.'));
                             // Using 'loginMessage instead of signupMessage because it's used by /connect/local'
                         } else {
                             var tempUser = req.user;//User already used above
@@ -161,6 +167,10 @@ module.exports = function (passport) {
 
             },
             function (req, token, refreshToken, profile, done) {
+
+                console.log(chalk.blue("TOKEN: " + JSON.stringify(token, null, "\t")));
+                //console.log(chalk.blue("TOKEN SECRET: " + JSON.stringify(tokenSecret, null, "\t")));
+                console.log(chalk.blue("PROFILE: " + JSON.stringify(profile, null, "\t")));
 
                 // asynchronous
                 process.nextTick(function () {
