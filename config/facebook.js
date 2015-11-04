@@ -35,11 +35,8 @@ exports.getFbData = function (req, apiPath, callback) {
                 request.on('error', function (e) {
                     console.log('error from facebook.getFbData: ' + e.message)
                 });
+                request.end();
             }
-            request.end();
-
             //res.render('partials/profile', {user: user});
         });
-
-
 }
