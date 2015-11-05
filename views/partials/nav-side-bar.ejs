@@ -1,0 +1,47 @@
+<!-- Navigation -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">sID Social Identity</a>
+    </div>
+    <!-- Top Menu Items -->
+    <ul class="nav navbar-right top-nav">
+        <% if (user) { %>
+          <!-- <ul class="nav navbar-nav navbar-right"> -->
+              <li><a href="/home"><span class="glyphicon glyphicon-home"></span> Home </a></li>
+              <li><a href="/profile"><span
+                              class="glyphicon glyphicon-user"></span> <%= user.userDetails.local.firstname %></a>
+              </li>
+              <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li>
+          <!-- </ul> -->
+          <!--<a href="/unlink/local" class="btn btn-default">Unlink</a>-->
+        <% } else { %>
+          <!--<a href="/connect/local" class="btn btn-default">Connect Local</a>-->
+          <!-- <ul class="nav navbar-nav navbar-right"> -->
+              <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Sign Up </a></li>
+              <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Sign In </a></li>
+          <!-- </ul> -->
+        <% } %>
+    </ul>
+    <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav side-nav">
+            <li>
+                <a href="/myratings"><i class="fa fa-fw fa-file"></i> My Ratings</a>
+            </li>
+            <li>
+                <a href="/rateafriend"><i class="fa fa-fw fa-file"></i> Rate a Friend</a>
+            </li>
+            <li>
+                <a href="/history"><i class="fa fa-fw fa-file"></i> History</a>
+            </li>
+        </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+</nav>
