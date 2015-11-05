@@ -50,21 +50,26 @@ module.exports = function (app, passport) {
         //        console.log(JSON.stringify(user, null, "\t"));
         //    });
 
-        User.findById(req.user._id)
-            .populate('userDetails.facebook')
-            .populate('userDetails.linkedin')
-            //.populate('facebook.ratedByMe')
-            .exec(function (error, user) {
-                console.log(JSON.stringify(user, null, "\t"));
-                res.render('profile.ejs', {
-                    user: user,
-                    errorMessage: req.flash('passwordChangeError'),
-                    successMessage: req.flash('passwordChangeSuccess')
-                });
+        //User.findById(req.user._id)
+        //    .populate('userDetails.facebook')
+        //    .populate('userDetails.linkedin')
+        //    //.populate('facebook.ratedByMe')
+        //    .exec(function (error, user) {
+        //        console.log(JSON.stringify(user, null, "\t"));
+        //        res.render('profile.ejs', {
+        //            user: user,
+        //            errorMessage: req.flash('passwordChangeError'),
+        //            successMessage: req.flash('passwordChangeSuccess')
+        //        });
+        //
+        //        //res.render('partials/profile', {user: user});
+        //    });
 
-                //res.render('partials/profile', {user: user});
-            });
-
+        res.render('profile.ejs', {
+            user: req.user,
+            errorMessage: req.flash('passwordChangeError'),
+            successMessage: req.flash('passwordChangeSuccess')
+        });
 
     });
 

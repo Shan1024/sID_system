@@ -31,9 +31,19 @@ module.exports = function (passport) {
 
     // used to deserialize the user
     passport.deserializeUser(function (id, done) {
-        User.findById(id, function (err, user) {
-            done(err, user);
-        });
+        //User.findById(id, function (err, user) {
+        //    done(err, user);
+        //});
+        User.findById(id)
+            .populate('userDetails.facebook')
+            .populate('userDetails.linkedin')
+            //.populate('facebook.ratedByMe')
+            .exec(function (error, user) {
+                console.log(JSON.stringify(user, null, "\t"));
+                done(error, user);
+
+                //res.render('partials/profile', {user: user});
+            });
     });
 
     // =========================================================================
