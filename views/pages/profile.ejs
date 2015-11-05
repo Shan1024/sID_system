@@ -32,11 +32,12 @@
 
                 <% if (user.userDetails.local.email) { %>
                 <p>
-                    <strong>id</strong>: <%= user._id %><br>
-                    <strong>name</strong>: <%= user.userDetails.local.firstname %> <%= user.userDetails.local.lastname %>
+                    <strong>ID</strong>: <%= user._id %><br>
+                    <strong>Name</strong>: <%= user.userDetails.local.firstname %> <%= user.userDetails.local.lastname %>
                     <br>
-                    <strong>email</strong>: <%= user.userDetails.local.email %><br>
-                    <strong>password</strong>: <%= user.userDetails.local.password %>
+                    <strong>Email</strong>: <%= user.userDetails.local.email %><br>
+                    <strong>Member Since</strong>: <%= user.userDetails.created %><br>
+                    <strong>Password</strong>: <%= user.userDetails.local.password %>
 
                 </p>
                 <hr>
@@ -143,13 +144,13 @@
                 <% if (user.userDetails.facebook) { %>
                 <% if (user.userDetails.facebook.token) { %>
                 <p>
-                    <strong>id</strong>: <%= user.userDetails.facebook.id %><br>
+                    <strong>ID</strong>: <%= user.userDetails.facebook.id %><br>
                     <% if (user.userDetails.facebook.uid) { %>
-                    <strong>uid</strong>: <%= user.userDetails.facebook.uid %><br>
+                    <strong>UID</strong>: <%= user.userDetails.facebook.uid %><br>
                     <% } %>
-                    <strong>name</strong>: <%= user.userDetails.facebook.name %><br>
-                    <strong>email</strong>: <%= user.userDetails.facebook.email %><br>
-                    <strong>token</strong>: <%= user.userDetails.facebook.token %><br>
+                    <strong>Name</strong>: <%= user.userDetails.facebook.name %><br>
+                    <strong>Email</strong>: <%= user.userDetails.facebook.email %><br>
+                    <strong>Token</strong>: <%= user.userDetails.facebook.token %><br>
                 </p>
                 <hr>
                 <div align="center">
@@ -175,10 +176,10 @@
                 <% if (user.userDetails.linkedin) { %>
                 <% if (user.userDetails.linkedin.token) { %>
                 <p>
-                    <strong>id</strong>: <%= user.userDetails.linkedin.id %><br>
-                    <strong>display name</strong>: <%= user.userDetails.linkedin.name %><br>
-                    <strong>email</strong>: <%= user.userDetails.linkedin.email %><br>
-                    <strong>token</strong>: <%= user.userDetails.linkedin.token %><br>
+                    <strong>ID</strong>: <%= user.userDetails.linkedin.id %><br>
+                    <strong>Display name</strong>: <%= user.userDetails.linkedin.name %><br>
+                    <strong>Email</strong>: <%= user.userDetails.linkedin.email %><br>
+                    <strong>Token</strong>: <%= user.userDetails.linkedin.token %><br>
                 </p>
                 <hr>
                 <div align="center">

@@ -23,6 +23,10 @@ var userSchema = mongoose.Schema({
         linkedin: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'LinkedIn'
+        },
+        created: {
+            type: Date,
+            default: Date.now
         }
     },
     facebook: {
