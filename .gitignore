@@ -1,3 +1,4 @@
+/views/pages/facebook.ejs
 /public/facebook.html
 /app/routes/baseRoutes.js
 /app/routes/secureRoutes.js

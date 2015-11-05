@@ -3,80 +3,79 @@
 <head>
     <% include ../partials/head %>
     <link rel="stylesheet" href="/stylesheets/sb-admin.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="/scripts/setheights.js"></script>
 </head>
 <body style="padding: 0px;">
-  <% include ../partials/nav-side-bar %>
-  <div id="wrapper">
-          <div id="page-wrapper">
-              <div class="container-fluid">
-                <div class="row">
-                  <div class="col-lg-12">
-                      <% include ../partials/message %>
-                  </div>
+<% include ../partials/nav-side-bar %>
+<div id="wrapper">
+    <div id="page-wrapper">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <% include ../partials/message %>
                 </div>
+            </div>
 
-                  <div class="row">
-                      <div class="col-lg-12">
-                          <!-- <div class="panel panel-default"> -->
-                            <!-- <div class="col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-2 main"> -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <!-- <div class="panel panel-default"> -->
+                    <!-- <div class="col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-2 main"> -->
 
-                                <div class="page-header text-center">
-                                    <h1><span class="fa fa-anchor"></span> Rate a Friend</h1>
-                                </div>
-                                <% if (friends) { %>
-                                <h3><span class="fa"></span>Your Friends - <%= friends.length %></h3>
-                                <% }else{ %>
-                                <h3><span class="fa"></span>No friends found</h3>
-                                <% } %>
+                    <div class="page-header text-center">
+                        <h1><span class="fa fa-anchor"></span> Rate a Friend</h1>
+                    </div>
+                    <% if (friends) { %>
+                    <h3><span class="fa"></span>Your Friends - <%= friends.length %></h3>
+                    <% }else{ %>
+                    <h3><span class="fa"></span>No friends found</h3>
+                    <% } %>
 
-                                <% if (friends) { %>
-                                <% for(var i = 0; i < friends.length ; i += 2) { %>
+                    <% if (friends) { %>
+                    <% for(var i = 0; i < friends.length ; i += 2) { %>
 
-                                <div class="row">
-                                    <div class="col-sm-6 col-md-6">
-                                        <div class="well">
-                                            <img src="https://graph.facebook.com/v2.3/<%= friends[i].id %>/picture">
-                                            <!--<strong><a href="/facebook?url=<%= friends[i].id %>" target="_blank"> <%= friends[i].name %> </a></strong>-->
-                                            <strong><a href="https://www.facebook.com/<%= friends[i].id %>"
-                                                       target="_blank"> <%= friends[i].name %> </a></strong>
-                                            <!-- <div class="pull-right">
-                                                <a href="#" class="btn btn-primary btn-sm">Yes</a>
-                                                <a href="#" class="btn btn-default btn-sm">No</a>
-                                            </div> -->
-                                        </div>
-                                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 col-md-6">
+                            <div class="well">
+                                <img src="https://graph.facebook.com/v2.3/<%= friends[i].id %>/picture">
+                                <!--<strong><a href="/facebook?url=<%= friends[i].id %>" target="_blank"> <%= friends[i].name %> </a></strong>-->
+                                <strong><a href="https://www.facebook.com/<%= friends[i].id %>"
+                                           target="_blank"> <%= friends[i].name %> </a></strong>
+                                <!-- <div class="pull-right">
+                                    <a href="#" class="btn btn-primary btn-sm">Yes</a>
+                                    <a href="#" class="btn btn-default btn-sm">No</a>
+                                </div> -->
+                            </div>
+                        </div>
 
-                                    <% if( friends[i + 1]) { %>
-                                    <div class="col-sm-6 col-md-6">
-                                        <div class="well">
-                                            <img src="https://graph.facebook.com/v2.3/<%= friends[i + 1].id %>/picture">
-                                            <strong><a href="https://www.facebook.com/<%= friends[i + 1].id %>"
-                                                       target="_blank"> <%= friends[i + 1].name %> </a> </strong>
-                                            <!--<strong><a href="/facebook?url=<%= friends[i].id %>" target="_blank"> <%= friends[i].name %> </a></strong>-->
-                                            <!-- <div class="pull-right">
-                                                <a href="#" class="btn btn-primary btn-sm">Yes</a>
-                                                <a href="#" class="btn btn-default btn-sm">No</a>
-                                            </div> -->
-                                        </div>
-                                    </div>
-                                    <% } %>
-                                </div>
+                        <% if( friends[i + 1]) { %>
+                        <div class="col-sm-6 col-md-6">
+                            <div class="well">
+                                <img src="https://graph.facebook.com/v2.3/<%= friends[i + 1].id %>/picture">
+                                <strong><a href="https://www.facebook.com/<%= friends[i + 1].id %>"
+                                           target="_blank"> <%= friends[i + 1].name %> </a> </strong>
+                                <!--<strong><a href="/facebook?url=<%= friends[i].id %>" target="_blank"> <%= friends[i].name %> </a></strong>-->
+                                <!-- <div class="pull-right">
+                                    <a href="#" class="btn btn-primary btn-sm">Yes</a>
+                                    <a href="#" class="btn btn-default btn-sm">No</a>
+                                </div> -->
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
 
-                                <% } %>
-                                <% } %>
-                            <!-- </div> -->
-                          <!-- </div> -->
-                      </div>
-                  </div>
-                  <!-- /.row -->
-              </div>
-              <!-- /.container-fluid -->
-              <% include ../partials/footer %>
-          </div>
-          <!-- /#page-wrapper -->
-      </div>
-      <!-- /#wrapper -->
+                    <% } %>
+                    <% } %>
+                    <!-- </div> -->
+                    <!-- </div> -->
+                </div>
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+        <% include ../partials/footer %>
+    </div>
+    <!-- /#page-wrapper -->
+</div>
+<!-- /#wrapper -->
+<script src="/scripts/setheights.js"></script>
 </body>
 </html>
