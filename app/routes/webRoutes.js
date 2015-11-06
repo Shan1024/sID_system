@@ -1,4 +1,5 @@
 var chalk = require('chalk');
+var jwt = require('jsonwebtoken');
 var mongoose = require('mongoose');
 var rest = require('restler');
 var http = require('http');
