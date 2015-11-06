@@ -40,7 +40,7 @@ module.exports = function (app, passport) {
 
     });
 
-    app.get('/authenticate',function (req, res) {
+    app.post('/authenticate',function (req, res) {
 
             var username = req.body.username;
             var password = req.body.password;
