@@ -53,7 +53,7 @@ module.exports = function (app, passport) {
                     console.log(chalk.yellow('Password: ' + password));
 
                     User.findOne({
-                        'userDetails.local.username': username
+                        'userDetails.local.email': username
                     }, function (err, user) {
 
                         if (err) throw err;
