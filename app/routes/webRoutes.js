@@ -457,7 +457,8 @@ module.exports = function (app, passport) {
     });
 
     app.get('/usersummary', function (req, res) {
-        rest.post('http://localhost:8080/claimRating', {
+        console.log('sender: ');
+        rest.post(req.protocol + '://' + req.get('host')+'/claimRating', {
             data: {sender: 'Pubudu', target: 'Dodangoda', cClass: 'cClassTest', claimId: 334},
         }).on('complete', function (data, response) {
             //if (response.statusCode == 201) { // you can get at the raw response like this...
