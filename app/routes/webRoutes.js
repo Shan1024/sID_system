@@ -40,6 +40,89 @@ module.exports = function (app, passport) {
 
     });
 
+    app.get('/authenticate',function (req, res) {
+
+            var username = req.body.username;
+            var password = req.body.password;
+
+            if (username) {
+                console.log(chalk.yellow('Username: ' + username));
+                // find the user
+
+                if (password) {
+                    console.log(chalk.yellow('Password: ' + password));
+
+                    User.findOne({
+                        'userDetails.local.username': username
+                    }, function (err, user) {
+
+                        if (err) throw err;
+
+                        if (!user) {
+                            res.json({
+                                success: false,
+                                message: 'Authentication failed. User not found.'
+                            });
+                        } else if (user) {
+
+                            console.log(chalk.blue('User: ' + user));
+
+                            var hash = user.generateHash(password);
+                            console.log(chalk.green('Hash: ' + hash));
+
+                            // check if password matches
+                            if (!user.validPassword(password)) {
+                                res.json({
+                                    success: false,
+                                    message: 'Authentication failed. Wrong password.'
+                                });
+                            } else {
+
+                                console.log(chalk.green('Password correct'));
+
+                                var apiSecret = app.get('apiSecret');
+
+                                console.log(chalk.yellow('apiSecret' + apiSecret));
+                                // if user is found and password is right
+                                // create a token
+
+                                var tempUser = {
+                                    iss: 'sID',
+                                    context: {
+                                        username: user.userDetails.local.username
+                                    }
+                                };
+
+                                var token = jwt.sign(tempUser, apiSecret, {
+                                    expiresInMinutes: 1440 // expires in 24 hours
+                                });
+
+                                // return the information including token as JSON
+                                res.json({
+                                    success: true,
+                                    token: token
+                                });
+                            }
+
+                        }
+
+                    });
+                } else {
+                    console.log(chalk.red('Authentication failed. Password required.'));
+                    res.status(400).json({
+                        success: false,
+                        message: 'Authentication failed. Password required.'
+                    });
+                }
+
+            } else {
+                res.status(400).json({
+                    success: false,
+                    message: 'Authentication failed. Username required.'
+                });
+            }
+        });
+
     app.get('/verify', function (req, res) {
         console.log("/verify called");
         controller.verifyEmail(req, res);
