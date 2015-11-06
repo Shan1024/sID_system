@@ -4,6 +4,7 @@ var bcrypt = require('bcrypt-nodejs');
 var chalk = require('chalk');
 
 var Entry = require('./entry');
+var FacebookRatedByMe = require('./facebookRatedByMe');
 var Facebook = require('./facebook');
 var Facebook = require('./linkedin');
 
@@ -31,16 +32,8 @@ var userSchema = mongoose.Schema({
     },
     facebook: {
         ratedByMe: [{
-            targetid: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Facebook'
-            },
-            entries: {
-                basic_info: [Entry],
-                work_edu: [Entry],
-                places_lived: [Entry],
-                life_events: [Entry]
-            }
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'FacebookRatedByMe'
         }],
         ratedByOthers: [{
             type: mongoose.Schema.Types.ObjectId,

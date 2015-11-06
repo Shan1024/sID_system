@@ -1,6 +1,7 @@
 var chalk = require('chalk');
 
 var Entry = require("../models/entry");
+var FacebookRatedByMe = require('../models/facebookRatedByMe');
 var Facebook = require("../models/facebook");
 var User = require("../models/user");
 
@@ -119,52 +120,69 @@ module.exports = function (app, express) {
                                 } else {
                                     console.log(chalk.yellow('Rating not available'));
 
+                                    var entry = new Entry({
+                                        data: claim,
+                                        rating: rating
+                                    });
 
-                                    //User.findOne({
-                                    //    _id: me.user
-                                    //}, function (err, me) {
-                                    //    console.log(chalk.cyan('Me: ' + JSON.stringify(me, null, "\t")));
-                                    //
-                                    //
-                                    //});
+                                    entry.save(function (err) {
+                                        if (err) {
+                                            console.log(chalk.red('Error: ' + err));
+                                        } else {
 
-                                    var entry = {
-                                        targetid: target._id
-                                    };
+                                            var facebookRatedByMe = new FacebookRatedByMe({
+                                                id: target._id
+                                            });
 
-                                    User.findOneAndUpdate({
-                                            _id: me.user
-                                        },
-                                        {
-                                            $push: {
-                                                'facebook.ratedByMe': {
-                                                    targetid: target._id,
-                                                    entries: {
-                                                        $push: {
-                                                            'facebook.ratedByMe.entries.basic_info': entry
+                                            facebookRatedByMe.save(function (err) {
+
+                                                if (err) {
+                                                    console.log('error1: ' + err);
+                                                } else {
+                                                    console.log('OK');
+
+                                                    FacebookRatedByMe.findOneAndUpdate({
+                                                            id: target._id
+                                                        }, {
+                                                            $push: {
+                                                                entries: entry._id
+                                                            }
+                                                        },
+                                                        {
+                                                            safe: true,
+                                                            upsert: true
+                                                        },
+                                                        function (err, model) {
+                                                            if (err) {
+                                                                console.log('error2: ' + err);
+                                                            } else {
+                                                                console.log(chalk.green('Model: ' + JSON.stringify(model, null, "\t")));
+
+                                                                User.findOneAndUpdate({
+                                                                    _id: me.user
+                                                                }, {
+                                                                    $push: {
+                                                                        'facebook.ratedByMe': facebookRatedByMe._id
+                                                                    }
+                                                                }, {
+                                                                    safe: true,
+                                                                    upsert: true
+                                                                }, function (err, me) {
+
+                                                                    if (err) {
+                                                                        console.log('error3: ' + err);
+                                                                    } else {
+                                                                        console.log(chalk.cyan('Me: ' + JSON.stringify(me, null, "\t")));
+                                                                    }
+
+                                                                });
+                                                            }
                                                         }
-                                                    }
+                                                    );
                                                 }
-                                            }
-                                        },
-                                        {
-                                            safe: true,
-                                            upsert: true
-                                        },
-                                        function (err, model) {
-
-                                            if (err) {
-                                                console.log(chalk.red(err));
-                                                res.json({message: err});
-                                            }
-
-                                            console.log("Model: " + model);
-
-
-                                            res.json({message: "OK"});
+                                            });
                                         }
-                                    );
-
+                                    });
                                 }
                             });
 
@@ -172,17 +190,70 @@ module.exports = function (app, express) {
                             console.log(chalk.red("Target not found"));
                             res.json({message: "Target not found"});
                         }
-
                     });
-
-
                 } else {
                     console.log(chalk.red("Me not found"));
                     res.json({message: "Me not found"});
                 }
             });
-
         });
 
     app.use('/test', testRouter);
+
+
+    //entry.save(function (err) {
+    //    if (err) {
+    //        console.log(chalk.red('Error: ' + err));
+    //    } else {
+    //        User.findOneAndUpdate({
+    //                _id: me.user
+    //            },
+    //            {
+    //                $push: {
+    //                    'facebook.ratedByMe': {
+    //                        targetid: target._id,
+    //                        $push: {
+    //                            'entries.basic_info': entry
+    //                        }
+    //                    },
+    //                }
+    //            },
+    //            {
+    //                safe: true,
+    //                upsert: true
+    //            },
+    //            function (err, model) {
+    //                if (err) {
+    //                    console.log(chalk.red(err));
+    //                    res.json({message: err});
+    //                } else {
+    //                    console.log("Model: " + model);
+    //
+    //                    //User.findOneAndUpdate({
+    //                    //        'facebook.ratedByMe.targetid': target._id
+    //                    //    }, {
+    //                    //        $push: {
+    //                    //            'facebook.ratedByMe.entries.basic_info': entry._id,
+    //                    //        }
+    //                    //    },
+    //                    //    {
+    //                    //        safe: true,
+    //                    //        upsert: true
+    //                    //    }, function (err, updatedUser) {
+    //                    //
+    //                    //        if(err){
+    //                    //            console.log('err: '+err);
+    //                    //        }
+    //                    //        console.log(chalk.green('User found: ' + JSON.stringify(updatedUser, null, "\t")));
+    //                    //
+    //                    //
+    //                    //    });
+    //
+    //                    res.json({message: "OK"});
+    //                }
+    //            }
+    //        );
+    //    }
+    //});
+
 };
