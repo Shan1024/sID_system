@@ -31,9 +31,19 @@ module.exports = function (passport) {
 
     // used to deserialize the user
     passport.deserializeUser(function (id, done) {
-        User.findById(id, function (err, user) {
-            done(err, user);
-        });
+        //User.findById(id, function (err, user) {
+        //    done(err, user);
+        //});
+        User.findById(id)
+            .populate('userDetails.facebook')
+            .populate('userDetails.linkedin')
+            //.populate('facebook.ratedByMe')
+            .exec(function (error, user) {
+                console.log(JSON.stringify(user, null, "\t"));
+                done(error, user);
+
+                //res.render('partials/profile', {user: user});
+            });
     });
 
     // =========================================================================
@@ -157,364 +167,221 @@ module.exports = function (passport) {
     // =========================================================================
     // FACEBOOK ================================================================
     // =========================================================================
-    passport.use(
-        new FacebookStrategy({
 
+    var facebookAuth = function (req, token, refreshToken, profile, done) {
+
+
+        console.log(chalk.blue("TOKEN1: " + JSON.stringify(token, null, "\t")));
+        //console.log(chalk.blue("TOKEN SECRET: " + JSON.stringify(tokenSecret, null, "\t")));
+        console.log(chalk.blue("PROFILE1: " + JSON.stringify(profile, null, "\t")));
+
+        // asynchronous
+        process.nextTick(function () {
+
+            // check if the user is already logged in
+            if (!req.user) {
+
+                Facebook.findOne({
+                    id: profile.id
+                }, function (err, facebook) {
+                    if (err)
+                        return done(err);
+
+                    if (facebook) {
+
+                        // if there is a user id already but no token (user was linked at one point and then removed)
+                        if (!facebook.token) {
+                            facebook.token = token;
+                            facebook.name = profile.displayName;
+                            facebook.email = (profile.emails[0].value || '').toLowerCase();
+
+                            //console.log("USER: "+user);
+
+                            var newUser = new User({
+                                'userDetails.facebook': facebook._id
+                            });
+
+                            facebook.user = newUser._id;
+
+                            facebook.save(function (err) {
+                                if (err) {
+                                    return done(err);
+                                }
+                                newUser.save(function (err) {
+                                    if (err) {
+                                        return done(err);
+                                    }
+                                    return done(null, newUser);
+                                });
+
+                            });
+                        } else {
+
+                            User.findById(facebook.user, function (err, user) {
+                                if (err) {
+                                    return done(err);
+                                }
+                                return done(null, user);
+                            });
+                        }
+
+                    } else {
+                        return done(null);
+                    }
+                });
+
+            } else {
+                return done(null, req.user);
+            }
+        });
+    };
+
+    passport.use('facebook-auth-http', new FacebookStrategy({
                 clientID: configAuth.facebookAuth.clientID,
                 clientSecret: configAuth.facebookAuth.clientSecret,
-                callbackURL: configAuth.facebookAuth.callbackURL,
+                callbackURL: configAuth.facebookAuth.callbackURL_auth_http,
                 passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
 
             },
             function (req, token, refreshToken, profile, done) {
-
-                console.log(chalk.blue("TOKEN1: " + JSON.stringify(token, null, "\t")));
-                //console.log(chalk.blue("TOKEN SECRET: " + JSON.stringify(tokenSecret, null, "\t")));
-                console.log(chalk.blue("PROFILE1: " + JSON.stringify(profile, null, "\t")));
-
-                // asynchronous
-                process.nextTick(function () {
-
-                    // check if the user is already logged in
-                    if (!req.user) {
-
-                        Facebook.findOne({
-                            id: profile.id
-                        }, function (err, facebook) {
-                            if (err)
-                                return done(err);
-
-                            if (facebook) {
-
-                                // if there is a user id already but no token (user was linked at one point and then removed)
-                                if (!facebook.token) {
-                                    facebook.token = token;
-                                    facebook.name = profile.displayName;
-                                    facebook.email = (profile.emails[0].value || '').toLowerCase();
-
-                                    //console.log("USER: "+user);
-
-                                    var newUser = new User({
-                                        'userDetails.facebook': facebook._id
-                                    });
-
-                                    facebook.user = newUser._id;
-
-                                    facebook.save(function (err) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        newUser.save(function (err) {
-                                            if (err) {
-                                                return done(err);
-                                            }
-                                            return done(null, newUser);
-                                        });
-
-                                    });
-                                } else {
-
-                                    User.findById(facebook.user, function (err, user) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        return done(null, user);
-                                    });
-                                }
-
-                            } else {
-                                // if there is no user, create them
-                                //var newFacebook = new Facebook();
-                                //
-                                //newFacebook.id = profile.id;
-                                //newFacebook.token = token;
-                                //newFacebook.name = profile.displayName;
-                                //newFacebook.email = (profile.emails[0].value || '').toLowerCase();
-                                //
-                                //var newFbUser = new User({
-                                //    'userDetails.facebook': newFacebook._id
-                                //});
-                                //
-                                //newFbUser.save(function (err) {
-                                //    if (err) {
-                                //        return done(err);
-                                //    }
-                                //    newFacebook.user = newFbUser._id;
-                                //
-                                //    newFacebook.save(function (err) {
-                                //        if (err) {
-                                //            return done(err);
-                                //        }
-                                //        return done(null, newFbUser);
-                                //    });
-                                //});
-
-                                return done(null);
-
-                            }
-                        });
-
-                    } else {
-                        // user already exists and is logged in, we have to link accounts
-                        var newUser = req.user; // pull the user out of the session
-
-
-                        Facebook.findOne({
-                            id: profile.id
-                        }, function (err, fbUser) {
-
-                            if (fbUser) {
-
-                                fbUser.token = token;
-
-                                var oldUserId = fbUser.user;
-
-                                fbUser.user = newUser._id;
-
-                                fbUser.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    newUser.userDetails.facebook = fbUser._id;
-
-                                    newUser.save(function (err) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        //Content merging
-
-                                        //User.findOne({
-                                        //    _id: oldUserId
-                                        //}, function (err, oldUser) {
-                                        //    User.update(
-                                        //        {_id: newUser._id},
-                                        //        {$addToSet: {'facebook.ratedByMe': {$each: oldUserId.facebook.ratedByMe}}}
-                                        //    )
-                                        //    User.update(
-                                        //        {_id: newUser._id},
-                                        //        {$addToSet: {'facebook.ratedByOthers': {$each: oldUserId.facebook.ratedByOthers}}}
-                                        //    )
-                                        //});
-
-
-                                        return done(null, newUser);
-                                    });
-                                });
-
-                            } else {
-
-                                var facebook = new Facebook();
-
-                                facebook.id = profile.id;
-                                facebook.token = token;
-                                facebook.name = profile.displayName;
-                                facebook.email = (profile.emails[0].value || '').toLowerCase();
-
-                                facebook.user = newUser._id;
-
-                                facebook.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    newUser.userDetails.facebook = facebook._id;
-
-                                    newUser.save(function (err) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        return done(null, newUser);
-                                    });
-                                });
-                            }
-                        });
-                    }
-                });
+                facebookAuth(req, token, refreshToken, profile, done);
             })
     );
 
-    passport.use('facebook-connect', new FacebookStrategy({
+    passport.use('facebook-auth-https', new FacebookStrategy({
                 clientID: configAuth.facebookAuth.clientID,
                 clientSecret: configAuth.facebookAuth.clientSecret,
-                callbackURL: configAuth.facebookAuth.callbackURL2,
+                callbackURL: configAuth.facebookAuth.callbackURL_auth_https,
                 passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
 
             },
-
-
             function (req, token, refreshToken, profile, done) {
-                console.log(chalk.blue("TOKEN: " + JSON.stringify(token, null, "\t")));
-                //console.log(chalk.blue("TOKEN SECRET: " + JSON.stringify(tokenSecret, null, "\t")));
-                console.log(chalk.blue("PROFILE: " + JSON.stringify(profile, null, "\t")));
+                facebookAuth(req, token, refreshToken, profile, done);
+            })
+    );
 
-                // asynchronous
-                process.nextTick(function () {
+    var facebookConnect = function (req, token, refreshToken, profile, done) {
 
-                    // check if the user is already logged in
-                    if (!req.user) {
+        console.log(chalk.blue("TOKEN: " + JSON.stringify(token, null, "\t")));
+        //console.log(chalk.blue("TOKEN SECRET: " + JSON.stringify(tokenSecret, null, "\t")));
+        console.log(chalk.blue("PROFILE: " + JSON.stringify(profile, null, "\t")));
 
-                        Facebook.findOne({
-                            id: profile.id
-                        }, function (err, facebook) {
+        // asynchronous
+        process.nextTick(function () {
+
+            // check if the user is already logged in
+            if (!req.user) {
+                return done(null);
+            } else {
+                // user already exists and is logged in, we have to link accounts
+                var newUser = req.user; // pull the user out of the session
+
+                Facebook.findOne({
+                    id: profile.id
+                }, function (err, fbUser) {
+
+                    if (fbUser) {
+
+                        fbUser.token = token;
+
+                        var oldUserId = fbUser.user;
+
+                        fbUser.user = newUser._id;
+
+                        fbUser.save(function (err) {
                             if (err) {
                                 return done(err);
                             }
-                            if (facebook) {
+                            newUser.userDetails.facebook = fbUser._id;
 
-                                // if there is a user id already but no token (user was linked at one point and then removed)
-                                if (!facebook.token) {
-                                    facebook.token = token;
-                                    facebook.name = profile.displayName;
-                                    facebook.email = (profile.emails[0].value || '').toLowerCase();
-
-                                    //console.log("USER: "+user);
-
-                                    var newUser = new User({
-                                        'userDetails.facebook': facebook._id
-                                    });
-
-                                    facebook.user = newUser._id;
-
-                                    facebook.save(function (err) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        newUser.save(function (err) {
-                                            if (err) {
-                                                return done(err);
-                                            }
-                                            return done(null, newUser);
-                                        });
-                                    });
-                                } else {
-
-                                    User.findById(facebook.user, function (err, user) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        return done(null, user);
-                                    });
+                            newUser.save(function (err) {
+                                if (err) {
+                                    return done(err);
                                 }
+                                //Content merging
 
-                            } else {
-                                // if there is no user, create them
-                                var newFacebook = new Facebook();
+                                //User.findOne({
+                                //    _id: oldUserId
+                                //}, function (err, oldUser) {
+                                //    User.update(
+                                //        {_id: newUser._id},
+                                //        {$addToSet: {'facebook.ratedByMe': {$each: oldUserId.facebook.ratedByMe}}}
+                                //    )
+                                //    User.update(
+                                //        {_id: newUser._id},
+                                //        {$addToSet: {'facebook.ratedByOthers': {$each: oldUserId.facebook.ratedByOthers}}}
+                                //    )
+                                //});
 
-                                newFacebook.id = profile.id;
-                                newFacebook.token = token;
-                                newFacebook.name = profile.displayName;
-                                newFacebook.email = (profile.emails[0].value || '').toLowerCase();
 
-                                var newFbUser = new User({
-                                    'userDetails.facebook': newFacebook._id
-                                });
-
-
-                                newFbUser.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    newFacebook.user = newFbUser._id;
-
-                                    newFacebook.save(function (err) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        return done(null, newFbUser);
-                                    });
-                                });
-                            }
+                                return done(null, newUser);
+                            });
                         });
 
                     } else {
-                        // user already exists and is logged in, we have to link accounts
-                        var newUser = req.user; // pull the user out of the session
 
+                        var facebook = new Facebook();
 
-                        Facebook.findOne({
-                            id: profile.id
-                        }, function (err, fbUser) {
+                        facebook.id = profile.id;
+                        facebook.token = token;
+                        facebook.name = profile.displayName;
+                        facebook.email = (profile.emails[0].value || '').toLowerCase();
 
-                            if (fbUser) {
+                        facebook.user = newUser._id;
 
-                                fbUser.token = token;
+                        console.log("++++++++++++++++++++++++++++++++++++++")
+                        console.log('getting user ID')
+                        controller.getID(profile.id, function (error, uid) {
 
-                                var oldUserId = fbUser.user;
+                            if (!error) {
+                                facebook.uid = uid;
+                                console.log("UID: " + uid);
+                            } else {
+                                console.log(error)
+                            }
 
-                                fbUser.user = newUser._id;
+                            facebook.save(function (err) {
+                                if (err) {
+                                    return done(err);
+                                }
+                                newUser.userDetails.facebook = facebook._id;
 
-                                fbUser.save(function (err) {
+                                newUser.save(function (err) {
                                     if (err) {
                                         return done(err);
                                     }
-                                    newUser.userDetails.facebook = fbUser._id;
-
-                                    newUser.save(function (err) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        //Content merging
-
-                                        //User.findOne({
-                                        //    _id: oldUserId
-                                        //}, function (err, oldUser) {
-                                        //    User.update(
-                                        //        {_id: newUser._id},
-                                        //        {$addToSet: {'facebook.ratedByMe': {$each: oldUserId.facebook.ratedByMe}}}
-                                        //    )
-                                        //    User.update(
-                                        //        {_id: newUser._id},
-                                        //        {$addToSet: {'facebook.ratedByOthers': {$each: oldUserId.facebook.ratedByOthers}}}
-                                        //    )
-                                        //});
-
-
-                                        return done(null, newUser);
-                                    });
+                                    return done(null, newUser);
                                 });
+                            });
 
-                            } else {
-
-                                var facebook = new Facebook();
-
-                                facebook.id = profile.id;
-                                facebook.token = token;
-                                facebook.name = profile.displayName;
-                                facebook.email = (profile.emails[0].value || '').toLowerCase();
-
-                                facebook.user = newUser._id;
-
-                                console.log("++++++++++++++++++++++++++++++++++++++")
-                                console.log('getting user ID')
-                                controller.getID(profile.id, function (error, uid) {
-
-                                    if (!error) {
-                                        facebook.uid = uid;
-                                        console.log("UID: " + uid);
-                                    } else {
-                                        console.log(error)
-                                    }
-
-                                    facebook.save(function (err) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        newUser.userDetails.facebook = facebook._id;
-
-                                        newUser.save(function (err) {
-                                            if (err) {
-                                                return done(err);
-                                            }
-                                            return done(null, newUser);
-                                        });
-                                    });
-
-                                });
-
-
-                            }
                         });
+
+
                     }
                 });
+            }
+        });
+    };
+
+    passport.use('facebook-connect-http', new FacebookStrategy({
+                clientID: configAuth.facebookAuth.clientID,
+                clientSecret: configAuth.facebookAuth.clientSecret,
+                callbackURL: configAuth.facebookAuth.callbackURL_connect_http,
+                passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
+            },
+            function (req, token, refreshToken, profile, done) {
+                facebookConnect(req, token, refreshToken, profile, done);
+            })
+    );
+
+    passport.use('facebook-connect-https', new FacebookStrategy({
+                clientID: configAuth.facebookAuth.clientID,
+                clientSecret: configAuth.facebookAuth.clientSecret,
+                callbackURL: configAuth.facebookAuth.callbackURL_connect_https,
+                passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
+            },
+            function (req, token, refreshToken, profile, done) {
+                facebookConnect(req, token, refreshToken, profile, done);
             })
     );
 

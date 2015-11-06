@@ -12,8 +12,16 @@
             <% if (user) { %>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="/home"><span class="glyphicon glyphicon-home"></span> Home </a></li>
+
+                <% if(user.userDetails.facebook && user.userDetails.facebook.token){ %>
+                <li><a href="/profile"><span><img
+                                    src="https://graph.facebook.com/v2.3/<%= user.userDetails.facebook.uid %>/picture"
+                                    height="25" width="25"></span> <%= user.userDetails.local.firstname %></a>
+                    <% } else { %>
                 <li><a href="/profile"><span
                                 class="glyphicon glyphicon-user"></span> <%= user.userDetails.local.firstname %></a>
+                    <% } %>
+
                 </li>
                 <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li>
             </ul>

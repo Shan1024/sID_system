@@ -58,7 +58,7 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 // routes ======================================================================
 require('./app/routes/webRoutes.js')(app, passport); // load our routes and pass in our app and fully configured passport
-//require('./app/routes/secureRoutes.js')(app, express);
+//require('./app/routes/baseRoutes.js')(app, express);
 require('./app/routes/testRoutes.js')(app, express);
 require('./app/routes/dummyRoutes.js')(app, express);
 // launch ======================================================================
@@ -69,9 +69,9 @@ require('./app/routes/dummyRoutes.js')(app, express);
 http.createServer(app).listen(config.httpPort);
 console.log(chalk.green("http server started at port " + config.httpPort));
 
-// Create an HTTPS service identical to the HTTP service.
-//https.createServer(options, app).listen(config.httpsPort);
-//console.log(chalk.green("https server started at port " + config.httpsPort));
+//Create an HTTPS service identical to the HTTP service.
+https.createServer(options, app).listen(config.httpsPort);
+console.log(chalk.green("https server started at port " + config.httpsPort));
 
 
 //*********************
