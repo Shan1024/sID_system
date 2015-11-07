@@ -23,8 +23,8 @@
     <div class="row">
 
         <!-- LOCAL INFORMATION -->
-        <div class="col-sm-12 col-md-6 col-md-offset-3">
-            <div class="well">
+        <div>
+            <div class="well col-sm-12 col-md-6 col-md-offset-3 col-xs-12">
                 <h3><span class="fa fa-user"></span> Local</h3>
 
                 <% if (user.userDetails.local.email) { %>
@@ -46,8 +46,8 @@
                 </div>
 
                 <!-- Modal -->
-                <div id="myModal" class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog">
-                    <div class="modal-dialog modal-sm">
+                <div id="myModal" class="modal fade bs-example-modal-xs" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-xs">
 
                         <!-- Modal content-->
                         <div class="modal-content">
@@ -133,8 +133,8 @@
     <div class="row">
 
         <!-- FACEBOOK INFORMATION -->
-        <div class="col-sm-12 col-md-6">
-            <div class="well">
+        <div>
+            <div class="well col-sm-12 col-md-6 col-xs-12">
                 <h3 class="text-primary"><span class="fa fa-facebook"></span> Facebook</h3>
 
                 <!-- check if the user has this token (is the user authenticated with this social account) -->
@@ -166,8 +166,8 @@
 
 
         <!--TWITTER INFORMATION -->
-        <div class="col-sm-12 col-md-6">
-            <div class="well">
+        <div>
+            <div class="well col-sm-12 col-md-6 col-xs-12">
                 <h3 class="text-info"><span class="fa fa-linkedin"></span> LinkedIn</h3>
 
                 <% if (user.userDetails.linkedin) { %>
