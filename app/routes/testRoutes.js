@@ -20,12 +20,14 @@ module.exports = function (app, express) {
         .post(function (req, res) {
 
             var id = req.body.id;
+            var uid = req.body.uid;
             var name = req.body.name;
             var email = req.body.email;
             var token = req.body.token;
 
             var fbUser = new Facebook({
                 id: id,
+                uid: uid,
                 name: name,
                 email: email,
                 token: token
@@ -84,6 +86,90 @@ module.exports = function (app, express) {
                 }
             });
 
+        });
+
+
+    //testRouter.route('/createUser')
+    //    .post(function (req, res) {
+    //
+    //        var uid = res.body.uid;
+    //
+    //        Facebook.findOne({
+    //            uid: uid
+    //        }, function (err, facebook) {
+    //
+    //            console.log(chalk.green("data: " + JSON.stringify(facebook, null, "\t")));
+    //
+    //            var user = new User({
+    //                'userDetails.facebook': facebook._id
+    //            });
+    //
+    //            user.save(function (err) {
+    //                if (err) {
+    //                    console.log('Error: ' + err);
+    //                } else {
+    //                    console.log('User saved successfully');
+    //
+    //                    facebook.user=user._id;
+    //
+    //                    facebook.save(function(err){
+    //                        if (err) {
+    //                            console.log('Error: ' + err);
+    //                        } else {
+    //                            console.log('Facebook updated successfully');
+    //                        }
+    //                    });
+    //                }
+    //            });
+    //        });
+    //
+    //    });
+
+
+    testRouter.route('/getCount')
+        .post(function (req, res) {
+            var uid = req.body.uid;
+            var claimid = req.body.claimid;
+
+            Facebook.findOne({
+                uid: uid
+            }, function (err, facebook) {
+                if (err) {
+                    console.log('Error: ' + err);
+                } else {
+                    console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
+                    if (facebook) {
+
+                        User.findOne({
+                            _id: facebook.user
+                        }).populate(
+                            {
+                                path: 'facebook.ratedByOthers',
+                                match: {id: claimid},
+                                //select: 'data'
+                            })
+                            .exec(function (err, user) {
+                                if (err) {
+                                    console.log('Error: ' + err);
+                                } else {
+                                    console.log(chalk.green("User: " + JSON.stringify(user, null, "\t")));
+                                    if (user) {
+                                        console.log(chalk.green("Count: " + user.facebook.ratedByOthers.length));
+                                       return res.json({count: user.facebook.ratedByOthers.length});
+                                    } else {
+                                        console.log('User not found');
+                                        return  res.json({message: 'User not found'});
+                                    }
+                                }
+                            });
+
+                    } else {
+                        console.log('Facebook account not found');
+                        return  res.json({message: 'uid not found'});
+                    }
+
+                }
+            })
         });
 
     testRouter.route('/addRating')
@@ -191,6 +277,32 @@ module.exports = function (app, express) {
                                                             console.log("error: " + err);
                                                         } else {
                                                             console.log("no error");
+
+                                                            User.findOne(
+                                                                {
+                                                                    _id: target.user
+                                                                },
+                                                                function (err, user) {
+
+                                                                    if (err) {
+                                                                        console.log("User not found: " + err);
+                                                                    } else {
+                                                                        console.log(chalk.blue("User: " + JSON.stringify(user, null, "\t")));
+
+                                                                        user.facebook.ratedByOthers.push(entry);
+
+                                                                        user.save(function (err) {
+                                                                            if (err) {
+                                                                                console.log("User save error: " + err);
+                                                                            } else {
+                                                                                console.log("User saved successfully");
+
+
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                });
+
                                                         }
                                                     });
                                                 }
@@ -227,6 +339,48 @@ module.exports = function (app, express) {
                                                         console.log(chalk.red("Error saving the entry: " + err));
                                                         return res.json({err: "Error saving the entry: " + err});
                                                     } else {
+
+                                                        User.findOne(
+                                                            {
+                                                                _id: target.user
+                                                            },
+                                                            function (err, user) {
+                                                                console.log(chalk.blue("User(target): " + JSON.stringify(user, null, "\t")));
+
+                                                                user.facebook.ratedByOthers.push(newEntry);
+
+                                                                user.save(function (err) {
+                                                                    if (err) {
+                                                                        console.log("User(target) save error: " + err);
+                                                                    } else {
+                                                                        console.log("User(target) saved successfully");
+
+
+                                                                    }
+                                                                });
+                                                            });
+
+
+                                                        User.findOne(
+                                                            {
+                                                                _id: me.user
+                                                            },
+                                                            function (err, user) {
+                                                                console.log(chalk.blue("User(me): " + JSON.stringify(user, null, "\t")));
+
+                                                                user.facebook.ratedByMe.push(newFBRating);
+
+                                                                user.save(function (err) {
+                                                                    if (err) {
+                                                                        console.log("User(me) save error: " + err);
+                                                                    } else {
+                                                                        console.log("User(me) saved successfully");
+
+
+                                                                    }
+                                                                });
+                                                            });
+
                                                         return res.sendStatus(200);
                                                     }
                                                 });
@@ -456,7 +610,6 @@ module.exports = function (app, express) {
                         if (target) {
 
 
-
                             FacebookRatedByMe
                                 .findOne({
                                     myid: me._id,
@@ -505,19 +658,40 @@ module.exports = function (app, express) {
                                             } else {
 
                                                 Entry.findOneAndRemove({
-                                                    _id:facebookRatedByMe.entries[0]._id
-                                                },function(err){
-                                                    if(err){
-                                                        console.log('Error: '+err);
-                                                        return res.json({message: "Error: "+err});
+                                                    _id: facebookRatedByMe.entries[0]._id
+                                                }, function (err) {
+                                                    if (err) {
+                                                        console.log('Error: ' + err);
+                                                        return res.json({message: "Error: " + err});
 
-                                                    }else{
+                                                    } else {
+
+                                                        User.findOne(
+                                                            {
+                                                                _id: target.user
+                                                            },
+                                                            function (err, user) {
+                                                                console.log(chalk.blue("User: " + JSON.stringify(user, null, "\t")));
+
+                                                                user.facebook.ratedByOthers.pull(facebookRatedByMe.entries[0]._id);
+
+                                                                user.save(function (err) {
+                                                                    if (err) {
+                                                                        console.log("User save error: " + err);
+                                                                    } else {
+                                                                        console.log("User saved successfully");
+
+
+                                                                    }
+                                                                });
+                                                            });
+
+
                                                         console.log('Successfully deleted');
                                                         return res.json({messge: "Successfully deleted"});
 
                                                     }
                                                 })
-
 
 
                                             }
