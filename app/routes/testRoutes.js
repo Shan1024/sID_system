@@ -129,51 +129,146 @@ module.exports = function (app, express) {
 
                             console.log(chalk.blue("Target found: " + JSON.stringify(target, null, "\t")));
 
-                            FacebookRatedByMe.findOne({
-                                myid: me._id,
-                                targetid: target._id
-                            }, function (err, facebookRatedByMe) {
+                            FacebookRatedByMe
+                                .findOne({
+                                    myid: me._id,
+                                    targetid: target._id
+                                })
 
-                                if (facebookRatedByMe) {
-                                    console.log(chalk.green("Previous ratings found"));
-                                    //return res.json({message:"Previous ratings found"});
+                                //.populate('entries', null, { entries: {$elemMatch: {id: claimid}}})
 
-                                } else {
-                                    console.log(chalk.red("Previous ratings not found"));
-                                    //return res.json({message:"Previous ratings not found"});
+                                .populate(
+                                    {
+                                        path: 'entries',
+                                        match: {id: claimid},
+                                        //select: 'data'
+                                    }
+                                )
 
-                                    var entry = new Entry({
-                                        id: claimid,
-                                        data: claim,
-                                        rating: rating
-                                    });
+                                //.populate('entries','id')
 
-                                    entry.save(function (err) {
+                                .exec(function (err, facebookRatedByMe) {
 
-                                        if (err) {
-                                            console.log(chalk.red("Error saving the entry"));
-                                            return res.json({err: "Error saving the entry"});
+                                    if (facebookRatedByMe) {
+                                        console.log(chalk.green("Previous ratings found"));
+                                        console.log(chalk.blue("Previous rating: " + JSON.stringify(facebookRatedByMe, null, "\t")));
+
+                                        //facebookRatedByMe.findOne({
+                                        //
+                                        //}, function (err, entry) {
+                                        //
+                                        //    if (err) {
+                                        //        console.log(chalk.red("Error"));
+                                        //    } else {
+                                        //        console.log(chalk.blue("Target found: " + JSON.stringify(facebookRatedByMe, null, "\t")));
+                                        //    }
+                                        //})
+
+
+                                        //return res.json({message:"Previous ratings found"});
+
+                                        //User.findById(id)
+                                        //    .populate('userDetails.facebook')
+                                        //    .populate('userDetails.linkedin')
+                                        //    //.populate('facebook.ratedByMe')
+                                        //    .exec(function (error, user) {
+                                        //        console.log(JSON.stringify(user, null, "\t"));
+                                        //        done(error, user);
+                                        //
+                                        //        //res.render('partials/profile', {user: user});
+                                        //    });
+
+
+                                        //User.findOne({
+                                        //    _id: me.user,
+                                        //    'facebook.ratedByMe': {$elemMatch: {targetid: target._id}}
+                                        //}, function (err, user) {
+                                        //
+                                        //});
+
+
+                                        if (facebookRatedByMe.entries[0]) {
+                                            console.log('Found');
+
+                                            Entry.findOneAndUpdate({
+                                                    _id: facebookRatedByMe.entries[0]._id
+                                                }, {
+                                                    rating: rating
+                                                },
+                                                {
+                                                    safe: true,
+                                                    upsert: true,
+                                                    new: true
+                                                },
+                                                function (err, entry) {
+                                                    console.log(chalk.yellow("New rating: " + JSON.stringify(entry, null, "\t")));
+                                                });
                                         } else {
 
-                                            var newFBRating = new FacebookRatedByMe({
-                                                myid: me._id,
-                                                targetid: target._id,
-                                                entries: [entry._id]
+                                            console.log('Not found');
+
+                                            var entry = new Entry({
+                                                id: claimid,
+                                                data: claim,
+                                                rating: rating
                                             });
 
-                                            newFBRating.save(function (err) {
-                                                if (err) {
-                                                    console.log(chalk.red("Error saving the entry: " + err));
-                                                    return res.json({err: "Error saving the entry: " + err});
-                                                } else {
-                                                    return res.sendStatus(200);
+                                            entry.save(function(err){
+
+                                                if(err){
+                                                    console.log("Error: " + err);
+                                                }else{
+                                                    facebookRatedByMe.entries.push(entry);
+
+                                                    facebookRatedByMe.save(function (err) {
+                                                        if (err) {
+                                                            console.log("error: " + err);
+                                                        } else {
+                                                            console.log("no error");
+                                                        }
+                                                    })
                                                 }
                                             });
-
+                                            return res.sendStatus(200)
                                         }
-                                    });
-                                }
-                            });
+                                        return res.sendStatus(200);
+
+                                    } else {
+                                        console.log(chalk.red("Previous ratings not found"));
+                                        //return res.json({message:"Previous ratings not found"});
+
+                                        var entry = new Entry({
+                                            id: claimid,
+                                            data: claim,
+                                            rating: rating
+                                        });
+
+                                        entry.save(function (err) {
+
+                                            if (err) {
+                                                console.log(chalk.red("Error saving the entry"));
+                                                return res.json({err: "Error saving the entry"});
+                                            } else {
+
+                                                var newFBRating = new FacebookRatedByMe({
+                                                    myid: me._id,
+                                                    targetid: target._id,
+                                                    entries: [entry._id]
+                                                });
+
+                                                newFBRating.save(function (err) {
+                                                    if (err) {
+                                                        console.log(chalk.red("Error saving the entry: " + err));
+                                                        return res.json({err: "Error saving the entry: " + err});
+                                                    } else {
+                                                        return res.sendStatus(200);
+                                                    }
+                                                });
+
+                                            }
+                                        });
+                                    }
+                                });
 
                             //User.findOne({
                             //    _id: me.user,
