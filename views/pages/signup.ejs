@@ -3,7 +3,7 @@
 <head>
     <% include ../partials/head %>
 </head>
-<body>
+<body style="padding-right:0px; padding-left:0px">
 <% include ../partials/navbar_other %>
 
 <div class="container">
@@ -74,8 +74,8 @@
                 <div class="form-group">
                     <div class="row" align="center">
 
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                        <button type="button" ng-click="myForm.reset()" class="btn btn-danger">Reset</button>
+                        <button type="submit" class="btn btn-primary col-xs-10 col-xs-offset-1" style="margin-bottom: 10px">Submit</button>
+                        <button type="button" ng-click="myForm.reset()" class="btn btn-danger col-xs-10 col-xs-offset-1">Reset</button>
                     </div>
                 </div>
             </form>
