@@ -5,7 +5,11 @@ var Facebook = require('./facebook');
 
 //FacebookRatedByMe schema
 var facebookRatedByMeScheme = mongoose.Schema({
-    id: {
+    myid: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Facebook'
+    },
+    targetid: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Facebook'
     },
