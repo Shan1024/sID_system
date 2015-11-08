@@ -37,7 +37,7 @@ var userSchema = mongoose.Schema({
         }],
         ratedByOthers: [{
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Facebook'
+            ref: 'Entry'
         }]
     },
     linkedin: {}
