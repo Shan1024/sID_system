@@ -169,7 +169,7 @@ module.exports = function (app, express) {
                     }
 
                 }
-            })
+            });
         });
 
     testRouter.route('/getTypeCount')
@@ -216,7 +216,7 @@ module.exports = function (app, express) {
                     }
 
                 }
-            })
+            });
         });
 
     testRouter.route('/addRating')
@@ -738,7 +738,7 @@ module.exports = function (app, express) {
                                                         return res.json({messge: "Successfully deleted"});
 
                                                     }
-                                                })
+                                                });
 
 
                                             }
