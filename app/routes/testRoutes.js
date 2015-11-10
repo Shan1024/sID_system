@@ -146,7 +146,7 @@ module.exports = function (app, express) {
                             {
                                 path: 'facebook.ratedByOthers',
                                 match: {id: claimid},
-                                //select: 'data'
+                                select: '_id'
                             })
                             .exec(function (err, user) {
                                 if (err) {
@@ -155,21 +155,68 @@ module.exports = function (app, express) {
                                     console.log(chalk.green("User: " + JSON.stringify(user, null, "\t")));
                                     if (user) {
                                         console.log(chalk.green("Count: " + user.facebook.ratedByOthers.length));
-                                       return res.json({count: user.facebook.ratedByOthers.length});
+                                        return res.json({count: user.facebook.ratedByOthers.length});
                                     } else {
                                         console.log('User not found');
-                                        return  res.json({message: 'User not found'});
+                                        return res.json({message: 'User not found'});
                                     }
                                 }
                             });
 
                     } else {
                         console.log('Facebook account not found');
-                        return  res.json({message: 'uid not found'});
+                        return res.json({message: 'uid not found'});
                     }
 
                 }
-            })
+            });
+        });
+
+    testRouter.route('/getTypeCount')
+        .post(function (req, res) {
+            var uid = req.body.uid;
+            var claimid = req.body.claimid;
+            var type = req.body.type;
+
+            Facebook.findOne({
+                uid: uid
+            }, function (err, facebook) {
+                if (err) {
+                    console.log('Error: ' + err);
+                } else {
+                    console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
+                    if (facebook) {
+
+                        User.findOne({
+                            _id: facebook.user
+                        }).populate(
+                            {
+                                path: 'facebook.ratedByOthers',
+                                match: {id: claimid,rating: type},
+                                select: '_id'
+                            })
+                            .exec(function (err, user) {
+                                if (err) {
+                                    console.log('Error: ' + err);
+                                } else {
+                                    console.log(chalk.green("User: " + JSON.stringify(user, null, "\t")));
+                                    if (user) {
+                                        console.log(chalk.green("Count: " + user.facebook.ratedByOthers.length));
+                                        return res.json({count: user.facebook.ratedByOthers.length});
+                                    } else {
+                                        console.log('User not found');
+                                        return res.json({message: 'User not found'});
+                                    }
+                                }
+                            });
+
+                    } else {
+                        console.log('Facebook account not found');
+                        return res.json({message: 'uid not found'});
+                    }
+
+                }
+            });
         });
 
     testRouter.route('/addRating')
@@ -691,7 +738,7 @@ module.exports = function (app, express) {
                                                         return res.json({messge: "Successfully deleted"});
 
                                                     }
-                                                })
+                                                });
 
 
                                             }
