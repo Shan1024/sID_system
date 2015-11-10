@@ -16,6 +16,7 @@ module.exports = function (app, express) {
             res.json({message: "Welcome to test api"});
         });
 
+    //creates a new fb user and a user
     testRouter.route('/createFBUser')
         .post(function (req, res) {
 
@@ -57,6 +58,7 @@ module.exports = function (app, express) {
             });
         });
 
+    //creates ONLY a local user
     testRouter.route('/createLocalUser')
         .post(function (req, res) {
 
@@ -126,7 +128,382 @@ module.exports = function (app, express) {
     //    });
 
 
-    testRouter.route('/getCount')
+    //This will return my all rated claims' IDs
+    testRouter.route('/myAllRatedClaims')
+        .post(function (req, res) {
+            var uid = req.body.uid;
+
+            Facebook.findOne({
+                uid: uid
+            }, function (err, facebook) {
+
+                if (err) {
+                    console.log('Error: ' + err);
+                } else {
+                    console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
+
+                    Entry.aggregate([
+                            {$match: {targetid: facebook._id}},
+                            {$group: {_id: '$id', data: {$addToSet: '$data'}}}
+                        ],
+                        // { $project: { _id: 0, maxBalance: 1 }},
+                        function (err, values) {
+                            console.log('values: ' + JSON.stringify(values, null, "\t"));
+                            var data = [];
+                            for (var i = 0; i < values.length; i++) {
+                                data.push({claimid: values[i]._id, data: values[i].data[0]});
+                            }
+                            res.json(data);
+                        });
+                }
+            });
+        });
+
+    //this will return yes, notSure, no count for a given claimid
+    testRouter.route('/ratedByOthersCounts')
+        .post(function (req, res) {
+
+            var uid = req.body.uid;
+            var claimid = req.body.claimid;
+
+            Facebook.findOne({
+                uid: uid
+            }, function (err, facebook) {
+                if (err) {
+                    console.log('Error: ' + err);
+                } else {
+                    console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
+                    getTypeCount(facebook.user, claimid, 1, function (err, yes) {
+                        //console.log('yes: ' + yes);
+                        //yesCount = yes;
+                        getTypeCount(facebook.user, claimid, 0, function (err, notSure) {
+                            //console.log('notSure: ' + notSure);
+                            //notSureCount = notSure;
+                            getTypeCount(facebook.user, claimid, -1, function (err, no) {
+                                //noCount = no;
+                                console.log('Counts: ' + {claimid: claimid, yes: yes, notSure: notSure, no: no});
+                                res.json({claimid: claimid, yes: yes, notSure: notSure, no: no});
+                            });
+                        });
+                    });
+                }
+            });
+        });
+
+
+    testRouter.route('/ratedByMe')
+        .post(function (req, res) {
+            var uid = req.body.uid;
+
+            Facebook.findOne({
+                uid: uid
+            }, function (err, facebook) {
+
+                if (err) {
+                    console.log('Error: ' + err);
+                } else {
+                    console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
+
+
+                    FacebookRatedByMe.findOne({
+                        myid: uid
+                    }, function (err, facebookRatedByMe) {
+                        if (err) {
+                            console.log('Error: ' + err);
+                        } else {
+                            console.log(chalk.green("FacebookRatedByMe: " + JSON.stringify(facebookRatedByMe, null, "\t")));
+                        }
+                    });
+
+
+                }
+
+            });
+
+        });
+
+
+    testRouter.route('/ratedByOthers')
+        .post(function (req, res) {
+            var uid = req.body.uid;
+
+            Facebook.findOne({
+                uid: uid
+            }, function (err, facebook) {
+
+                if (err) {
+                    console.log('Error: ' + err);
+                } else {
+                    console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
+
+
+                    //User.findOne({
+                    //    _id: facebook.user
+                    //}).populate({
+                    //        path: 'facebook.ratedByOthers',
+                    //        select: '-_id'
+                    //    })
+                    //    .exec(function (err, user) {
+                    //        if (err) {
+                    //            console.log('Error: ' + err);
+                    //        } else {
+                    //            console.log(chalk.green("User: " + JSON.stringify(user, null, "\t")));
+                    //            user.aggregate(
+                    //                {$group: {_id: '$id'}}
+                    //
+                    //                , function (err, res) {
+                    //                    if (err) return handleError(err);
+                    //                    console.log(chalk.green("res: " + JSON.stringify(res, null, "\t")));
+                    //                });
+                    //        }
+                    //    });
+
+                    //Entry.aggregate()
+                    //    .group(
+                    //        {_id: null, myid: facebook._id}
+                    //
+                    //        //, { $project: { _id: 0, maxBalance: 1 }}
+                    //    )
+                    //    .exec(function (err, res) {
+                    //        if (err) {
+                    //            console.log('error: ' + err);
+                    //        } else {
+                    //            console.log(res); // [ { maxBalance: 98000 } ]
+                    //        }
+                    //    });
+
+
+                    //Entry.aggregate([
+                    //        {$match: {targetid: facebook._id}},
+                    //
+                    //        {$group: {_id: '$id'}}
+                    //    ]
+                    //    //, { $project: { _id: 0, maxBalance: 1 }}
+                    //    , function (err, values) {
+                    //        console.log(chalk.green("values: " + JSON.stringify(values, null, "\t")));
+                    //    });
+
+
+                    Entry.aggregate([
+                            {$match: {targetid: facebook._id}},
+
+                            {$group: {_id: '$id'}}
+                        ],
+                        // { $project: { _id: 0, maxBalance: 1 }},
+                        function (err, values) {
+                            if (err) {
+                                console.log('error: ' + err);
+                            } else {
+                                console.log(values); // [ { maxBalance: 98000 } ]
+
+                                var counts = [];
+
+                                var yesCount, notSureCount, noCount;
+
+                                //for (var i = 0; i < values.length; i++) {
+
+                                //var claimid=values[i]._id;
+                                var claimid = values[1];
+                                getTypeCount(facebook.user, claimid, 1, function (err, yes) {
+                                    console.log('yes: ' + yes);
+                                    yesCount = yes;
+                                    getTypeCount(facebook.user, claimid, 0, function (err, notSure) {
+                                        console.log('notSure: ' + notSure);
+                                        notSureCount = notSure;
+                                        getTypeCount(facebook.user, claimid, -1, function (err, no) {
+                                            noCount = no;
+                                            console.log('no: ' + no);
+                                            //counts.push({claimid: claimid, yes: yes, notSure: notSure, no: no});
+
+
+                                            //res.json(counts);
+
+                                            res.json({claimid: claimid._id, yes: yes, notSure: notSure, no: no});
+
+                                        });
+                                    });
+                                });
+
+
+                                //}
+
+                            }
+                        });
+
+
+                    //var o = {};
+                    //o.map = function () {
+                    //    emit(this.id, this.rating)
+                    //}
+                    //o.reduce = function (k, vals) {
+                    //
+                    //    return vals.length;
+                    //}
+                    //o.verbose = true;
+                    //
+                    //
+                    ////Entry.mapReduce(o, function (err, results) {
+                    ////    console.log(results)
+                    ////});
+                    //
+                    //Entry.mapReduce(o, function (err, model, stats) {
+                    //    //console.log('map reduce took %d ms', stats.processtime)
+                    //    //model.find().where('value').gt(10).exec(function (err, docs) {
+                    //    //    console.log(docs);
+                    //    //});
+                    //});
+
+
+                }
+
+            });
+
+        });
+
+
+    //testRouter.route('/claimRatedByOthers')
+    //    .post(function (req, res) {
+    //        var uid = req.body.uid;
+    //        var claimid=req.body.claimid;
+    //
+    //        Facebook.findOne({
+    //            uid: uid
+    //        }, function (err, facebook) {
+    //
+    //            if (err) {
+    //                console.log('Error: ' + err);
+    //            } else {
+    //                console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
+    //
+    //
+    //                //User.findOne({
+    //                //    _id: facebook.user
+    //                //}).populate({
+    //                //        path: 'facebook.ratedByOthers',
+    //                //        select: '-_id'
+    //                //    })
+    //                //    .exec(function (err, user) {
+    //                //        if (err) {
+    //                //            console.log('Error: ' + err);
+    //                //        } else {
+    //                //            console.log(chalk.green("User: " + JSON.stringify(user, null, "\t")));
+    //                //            user.aggregate(
+    //                //                {$group: {_id: '$id'}}
+    //                //
+    //                //                , function (err, res) {
+    //                //                    if (err) return handleError(err);
+    //                //                    console.log(chalk.green("res: " + JSON.stringify(res, null, "\t")));
+    //                //                });
+    //                //        }
+    //                //    });
+    //
+    //                //Entry.aggregate()
+    //                //    .group(
+    //                //        {_id: null, myid: facebook._id}
+    //                //
+    //                //        //, { $project: { _id: 0, maxBalance: 1 }}
+    //                //    )
+    //                //    .exec(function (err, res) {
+    //                //        if (err) {
+    //                //            console.log('error: ' + err);
+    //                //        } else {
+    //                //            console.log(res); // [ { maxBalance: 98000 } ]
+    //                //        }
+    //                //    });
+    //
+    //
+    //                //Entry.aggregate([
+    //                //        {$match: {targetid: facebook._id}},
+    //                //
+    //                //        {$group: {_id: '$id'}}
+    //                //    ]
+    //                //    //, { $project: { _id: 0, maxBalance: 1 }}
+    //                //    , function (err, values) {
+    //                //        console.log(chalk.green("values: " + JSON.stringify(values, null, "\t")));
+    //                //    });
+    //
+    //
+    //                Entry.aggregate([
+    //                        {$match: {targetid: facebook._id}},
+    //                        {$match: {claimid:claimid}}
+    //                        //{$group: {_id: '$id'}}
+    //                    ]
+    //                    //, { $project: { _id: 0, maxBalance: 1 }}
+    //                    , function (err, values) {
+    //                        if (err) {
+    //                            console.log('error: ' + err);
+    //                        } else {
+    //                            console.log(values); // [ { maxBalance: 98000 } ]
+    //
+    //                            var counts = [];
+    //
+    //                            var yesCount, notSureCount, noCount;
+    //
+    //                            //for (var i = 0; i < values.length; i++) {
+    //
+    //                            //var claimid=values[i]._id;
+    //
+    //
+    //                            var claimid = values[1];
+    //                            getTypeCount(facebook.user, claimid, 1, function (err, yes) {
+    //                                console.log('yes: ' + yes);
+    //                                yesCount = yes;
+    //                                getTypeCount(facebook.user, claimid, 0, function (err, notSure) {
+    //                                    console.log('notSure: ' + notSure);
+    //                                    notSureCount = notSure;
+    //                                    getTypeCount(facebook.user, claimid, -1, function (err, no) {
+    //                                        noCount = no;
+    //                                        console.log('no: ' + no);
+    //                                        //counts.push({claimid: claimid, yes: yes, notSure: notSure, no: no});
+    //
+    //
+    //                                        //res.json(counts);
+    //
+    //                                        res.json({claimid: claimid._id, yes: yes, notSure: notSure, no: no});
+    //
+    //                                    });
+    //                                });
+    //                            });
+    //
+    //
+    //                            //}
+    //
+    //                        }
+    //                    });
+    //
+    //
+    //                //var o = {};
+    //                //o.map = function () {
+    //                //    emit(this.id, this.rating)
+    //                //}
+    //                //o.reduce = function (k, vals) {
+    //                //
+    //                //    return vals.length;
+    //                //}
+    //                //o.verbose = true;
+    //                //
+    //                //
+    //                ////Entry.mapReduce(o, function (err, results) {
+    //                ////    console.log(results)
+    //                ////});
+    //                //
+    //                //Entry.mapReduce(o, function (err, model, stats) {
+    //                //    //console.log('map reduce took %d ms', stats.processtime)
+    //                //    //model.find().where('value').gt(10).exec(function (err, docs) {
+    //                //    //    console.log(docs);
+    //                //    //});
+    //                //});
+    //
+    //
+    //            }
+    //
+    //        });
+    //
+    //    });
+
+
+    //returns total rate count for a claim by a user
+    testRouter.route('/getTotalRateCount')
         .post(function (req, res) {
             var uid = req.body.uid;
             var claimid = req.body.claimid;
@@ -172,6 +549,8 @@ module.exports = function (app, express) {
             });
         });
 
+
+    //returns a specific type(yes, not sure, no) count for a claim by a user
     testRouter.route('/getTypeCount')
         .post(function (req, res) {
             var uid = req.body.uid;
@@ -192,7 +571,7 @@ module.exports = function (app, express) {
                         }).populate(
                             {
                                 path: 'facebook.ratedByOthers',
-                                match: {id: claimid,rating: type},
+                                match: {id: claimid, rating: type},
                                 select: '_id'
                             })
                             .exec(function (err, user) {
@@ -218,6 +597,54 @@ module.exports = function (app, express) {
                 }
             });
         });
+
+    var getTypeCount = function (userid, claimid, type, callback) {
+        //Facebook.findOne({
+        //    uid: uid
+        //}, function (err, facebook) {
+        //if (err) {
+        //    console.log('Error: ' + err);
+        //    callback(err, null);
+        //} else {
+        //    console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
+        //if (facebook) {
+
+
+        console.log('Searching; claimid: ' + claimid + ' , type: ' + type);
+
+        User.findOne({
+            _id: userid
+        }).populate(
+            {
+                path: 'facebook.ratedByOthers',
+                match: {id: claimid, rating: type},
+                select: '_id'
+            })
+            .exec(function (err, user) {
+                if (err) {
+                    console.log('Error: ' + err);
+                    callback(err, null);
+                } else {
+                    console.log(chalk.green("User: " + JSON.stringify(user, null, "\t")));
+                    if (user) {
+                        console.log(chalk.green("Count: " + user.facebook.ratedByOthers.length));
+                        callback(null, user.facebook.ratedByOthers.length);
+                    } else {
+                        console.log('User not found');
+
+                        callback('User not found', null);
+                    }
+                }
+            });
+
+        //} else {
+        //    console.log('Facebook account not found');
+        //    callback('uid not found', null);
+        //}
+
+        //}
+        //});
+    };
 
     testRouter.route('/addRating')
         .post(function (req, res) {
@@ -308,6 +735,8 @@ module.exports = function (app, express) {
 
                                             var entry = new Entry({
                                                 id: claimid,
+                                                myid: me._id,
+                                                targetid: target._id,
                                                 data: claim,
                                                 rating: rating
                                             });
@@ -364,6 +793,8 @@ module.exports = function (app, express) {
 
                                         var newEntry = new Entry({
                                             id: claimid,
+                                            myid: me._id,
+                                            targetid: target._id,
                                             data: claim,
                                             rating: rating
                                         });

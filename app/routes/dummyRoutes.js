@@ -74,7 +74,7 @@ module.exports = function (app, express) {
         var reply = claimId+ " "+targetId+ " "+myId;
 
         res.status(200).json({
-            reply: rate
+            rate: reply
         });
     });
 

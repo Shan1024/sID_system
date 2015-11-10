@@ -28,15 +28,25 @@
                     <!-- </div> -->
                 </div>
             </div>
-            <!-- /.row -->
-        </div>
-        <!-- /.container-fluid -->
-        <% include ../partials/footer %>
-    </div>
-    <!-- /#page-wrapper -->
-</div>
-<!-- /#wrapper -->
-<script src="/scripts/setheights.js"></script>
 
+            <div class="container">
+                <% if (user.userDetails.facebook ) { %>
+                <div class="ratings" data-id="<%= user.userDetails.facebook.uid %>">
+                </div>
+                <% } else { %>
+                <div class="ratings">
+                </div>
+                <% } %>
+
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+            <% include ../partials/footer %>
+        </div>
+        <!-- /#page-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+    <script src="/scripts/setheights.js"></script>
+    <script src="/scripts/myratings.js"></script>
 </body>
 </html>
