@@ -61,5 +61,21 @@ module.exports = function (app, express) {
         });
     });
 
+	/*DUMMY FUNCTION TO recieve a claim rating*/
+    app.post('/rateClaim', function (req, res) {
+        console.log("add new rating to a claim");
+        console.log(req.body.claimId + " " + req.body.targetId +" " + req.body.myId);
+        var claimId = req.body.claimId;
+		var targetId = req.body.targetId;
+		var myId = req.body.myId;
+		
+		/*do something*/
+		
+        var reply = claimId+ " "+targetId+ " "+myId;
+
+        res.status(200).json({
+            rate: reply
+        });
+    });
 
 };
