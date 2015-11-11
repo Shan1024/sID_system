@@ -46,11 +46,7 @@
     </style>
 </head>
 <body>
-<% include ../partials/navbar %>
-
-<div class="row" style="margin-left: 5px;">
-  <a href="/home" class="btn btn-primary"><span class="fa"></span> Home</a>
-</div>
+<% include ../partials/navbar-overallrating %>
 
 <div class="container" ng-app="usersummaryapp" ng-controller="SummaryCtrl">
   <nvd3 options="options" data=<%-JSON.stringify(summary)%>></nvd3>
