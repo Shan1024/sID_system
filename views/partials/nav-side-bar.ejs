@@ -43,11 +43,23 @@
     <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
     <div class="collapse navbar-collapse navbar-ex1-collapse">
         <ul class="nav navbar-nav side-nav">
-            <li>
+            <!-- <li>
                 <a href="/myratings"><i class="fa fa-fw fa-file"></i> My Ratings</a>
             </li>
             <li>
                 <a href="/rateafriend"><i class="fa fa-fw fa-file"></i> Rate a Friend</a>
+            </li> -->
+
+            <li>
+              <a href="javascript:;" data-toggle="collapse" data-target="#ratingMenu"><i class="fa fa-fw fa-arrows-v"></i> Ratings <i class="fa fa-fw fa-caret-down"></i></a>
+              <ul id="ratingMenu" class="collapse">
+                  <li>
+                      <a href="/myratings"><i class="fa fa-fw fa-file"></i> My Ratings</a>
+                  </li>
+                  <li>
+                      <a href="/rateafriend"><i class="fa fa-fw fa-file"></i> Rate a Friend</a>
+                  </li>
+              </ul>
             </li>
             <li>
                 <a href="/history"><i class="fa fa-fw fa-file"></i> History</a>
