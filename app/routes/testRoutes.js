@@ -1191,7 +1191,62 @@ module.exports = function (app, express) {
 
 
         });
-
+		
+	testRouter.route('/claimScore')
+        .post(function (req, res) {
+            var uid = req.body.uid;
+            Facebook.findOne({
+                uid: uid
+            }, function (err, facebook) {
+                if (err) {
+                    console.log('Error: ' + err);
+                } else {
+                    console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
+                    Entry.aggregate([
+						{$match: {targetid: facebook._id}},
+						{$group: {_id: '$id'}}
+					],
+					function (err, values) {
+						if (err) {
+							console.log('error: ' + err);
+						} else {
+							console.log(values); // [ { maxBalance: 98000 } ]
+							var counts = [];
+							var yesCount, notSureCount, noCount;
+							var claimid = values[1];
+							getTypeCount(facebook.user, claimid, 1, function (err, yes) {
+								console.log('yes: ' + yes);
+								yesCount = yes;
+								getTypeCount(facebook.user, claimid, 0, function (err, notSure) {
+									console.log('notSure: ' + notSure);
+									notSureCount = notSure;
+									getTypeCount(facebook.user, claimid, -1, function (err, no) {
+										noCount = no;
+										console.log('no: ' + no);
+										
+										var totalCount = yes+no+notSure;
+										var ratingVal;
+										if(totalCount>5){
+											var score = (yes*7) + (notSure*2) + (no*(-7));
+											if(score>20){
+												ratingVal = 'T';
+											}else if(score<0){
+												ratingVal = 'R';
+											}else{
+												ratingVal = 'C';
+											}
+										}else{
+											ratingVal = 'N';
+										}
+										res.json({rating: ratingVal});
+									});
+								});
+							});
+						}
+					});
+                }
+            });
+        });
     testRouter.route('/addRating_temp1')
         .post(function (req, res) {
 
@@ -1363,3 +1418,6 @@ module.exports = function (app, express) {
     //});
 
 };
+
+
+
