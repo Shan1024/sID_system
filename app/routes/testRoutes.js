@@ -216,8 +216,9 @@ module.exports = function (app, express) {
 								
 								var totalCount = yes+no+notSure;
 								var ratingVal;
-								if(totalCount>5){
-									var score = (yes*7) + (notSure*2) + (no*(-7));
+								var score;
+								if(totalCount>1){
+									score = (yes*7) + (notSure*2) + (no*(-7));
 									if(score>20){
 										ratingVal = 'T';
 									}else if(score<0){
@@ -228,7 +229,7 @@ module.exports = function (app, express) {
 								}else{
 									ratingVal = 'N';
 								}
-								res.json({claimid: claimid , rating: ratingVal});
+								res.json({claimid: claimid , rating: ratingVal, count : totalCount, score:score});
                             });
                         });
                     });
