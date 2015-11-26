@@ -229,7 +229,7 @@ module.exports = function (app, express) {
 								}else{
 									ratingVal = 'N';
 								}
-								res.json({claimid: claimid , rating: ratingVal, count : totalCount, score:score});
+								res.json({claimid: claimid , rating: ratingVal, count : totalCount, score:score, yes:yes, no:no, notSure:notSure});
                             });
                         });
                     });
