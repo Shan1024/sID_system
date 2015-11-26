@@ -159,6 +159,50 @@ module.exports = function (app, express) {
             });
         });
 
+    //This will return my all rated claims' IDs
+    testRouter.route('/myClaimRating')
+        .post(function (req, res) {
+            var uid = req.body.uid;
+            var claimid = req.body.claimid;
+            Facebook.findOne({
+                uid: uid
+            }, function (err, facebook) {
+
+                if (err) {
+                    console.log('Error: ' + err);
+                } else {
+                    console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
+
+                    Entry.aggregate([
+                            {$match: {targetid: facebook._id}},
+                            {$group: {_id: '$id', data: {$addToSet: '$data'}}}
+                        ],
+                        // { $project: { _id: 0, maxBalance: 1 }},
+                        function (err, values) {
+                            console.log('values: ' + JSON.stringify(values, null, "\t"));
+                            var data = [];
+                            for (var i = 0; i < values.length; i++) {
+
+                                var temp = Math.floor((Math.random() * 3) + 1);
+                                var rating;
+                                if (temp == 1) {
+                                    rating = -1;
+                                } else if (temp == 2) {
+                                    rating = 0;
+                                } else if (temp == 3) {
+                                    rating = 1;
+                                }
+
+                                if (claimid == values[i]._id) {
+                                    data.push({claimid: values[i]._id, data: values[i].data[0], overallRating: rating});
+                                }
+                            }
+                            res.json(data);
+                        });
+                }
+            });
+        });
+
     //this will return yes, notSure, no count for a given claimid
     testRouter.route('/ratedByOthersCounts')
         .post(function (req, res) {
@@ -183,52 +227,6 @@ module.exports = function (app, express) {
                                 //noCount = no;
                                 console.log('Counts: ' + {claimid: claimid, yes: yes, notSure: notSure, no: no});
                                 res.json({claimid: claimid, yes: yes, notSure: notSure, no: no});
-                            });
-                        });
-                    });
-                }
-            });
-        });
-		
-	//this will return rating of a claim
-    testRouter.route('/claimScore')
-        .post(function (req, res) {
-
-            var uid = req.body.uid;
-            var claimid = req.body.claimid;
-
-            Facebook.findOne({
-                uid: uid
-            }, function (err, facebook) {
-                if (err) {
-                    console.log('Error: ' + err);
-                } else {
-                    console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
-                    getTypeCount(facebook.user, claimid, 1, function (err, yes) {
-                        //console.log('yes: ' + yes);
-                        //yesCount = yes;
-                        getTypeCount(facebook.user, claimid, 0, function (err, notSure) {
-                            //console.log('notSure: ' + notSure);
-                            //notSureCount = notSure;
-                            getTypeCount(facebook.user, claimid, -1, function (err, no) {
-                                //noCount = no;
-                                console.log('Counts: ' + {claimid: claimid, yes: yes, notSure: notSure, no: no});
-								
-								var totalCount = yes+no+notSure;
-								var ratingVal;
-								if(totalCount>5){
-									var score = (yes*7) + (notSure*2) + (no*(-7));
-									if(score>20){
-										ratingVal = 'T';
-									}else if(score<0){
-										ratingVal = 'R';
-									}else{
-										ratingVal = 'C';
-									}
-								}else{
-									ratingVal = 'N';
-								}
-								res.json({claimid: claimid , rating: ratingVal});
                             });
                         });
                     });
