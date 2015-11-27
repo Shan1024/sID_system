@@ -182,7 +182,25 @@ module.exports = function (app, express) {
                             getTypeCount(facebook.user, claimid, -1, function (err, no) {
                                 //noCount = no;
                                 console.log('Counts: ' + {claimid: claimid, yes: yes, notSure: notSure, no: no});
-                                res.json({claimid: claimid, yes: yes, notSure: notSure, no: no});
+								
+								var totalCount = yes+no+notSure;
+								var ratingVal;
+								var score;
+								if(totalCount>1){
+									score = (yes*7) + (notSure*2) + (no*(-7));
+									if(score>20){
+										ratingVal = 'T';
+									}else if(score<0){
+										ratingVal = 'R';
+									}else{
+										ratingVal = 'C';
+									}
+								}else{
+									ratingVal = 'N';
+								}
+								
+								
+                                res.json({claimid: claimid,score:score,rating:ratingVal, yes: yes, notSure: notSure, no: no});
                             });
                         });
                     });
