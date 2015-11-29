@@ -222,9 +222,9 @@ module.exports = function (app, express) {
                     console.log('Error: ' + err);
                 } else {
                     console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
-                    getTypeCount(facebook.user, 1, function (err, yes) {
-                        getTypeCount(facebook.user, 0, function (err, notSure) {
-                            getTypeCount(facebook.user, -1, function (err, no) {
+                    getAllTypeCount(facebook.user, 1, function (err, yes) {
+                        getAllTypeCount(facebook.user, 0, function (err, notSure) {
+                            getAllTypeCount(facebook.user, -1, function (err, no) {
                                 res.json({yes: yes, notSure: notSure, no: no});
                             });	
                         });		
