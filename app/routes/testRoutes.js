@@ -208,6 +208,31 @@ module.exports = function (app, express) {
             });
         });
 		
+	
+
+		/*added by dodan*/
+	testRouter.route('/allCounts')
+        .post(function (req, res) {
+            var uid = req.body.uid;
+            var claimid = req.body.claimid;
+            Facebook.findOne({
+                uid: uid
+            }, function (err, facebook) {
+                if (err) {
+                    console.log('Error: ' + err);
+                } else {
+                    console.log(chalk.green("Facebook: " + JSON.stringify(facebook, null, "\t")));
+                    getTypeCount(facebook.user, 1, function (err, yes) {
+                        getTypeCount(facebook.user, 0, function (err, notSure) {
+                            getTypeCount(facebook.user, -1, function (err, no) {
+                                res.json({yes: yes, notSure: notSure, no: no});
+                            });	
+                        });		
+                    });
+                }
+            });
+        });
+	
 	//this will return rating of a claim
     testRouter.route('/claimScore')
         .post(function (req, res) {
@@ -711,6 +736,34 @@ module.exports = function (app, express) {
         //});
     };
 
+	/*Added by Dodan*/
+	var getAllTypeCount = function (userid, type, callback) {
+        console.log('Searching; claimid: ' + ' , type: ' + type);
+        User.findOne({
+            _id: userid
+        }).populate(
+            {
+                path: 'facebook.ratedByOthers',
+                match: {rating: type},
+                select: '_id'
+            })
+            .exec(function (err, user) {
+                if (err) {
+                    console.log('Error: ' + err);
+                    callback(err, null);
+                } else {
+                    console.log(chalk.green("User: " + JSON.stringify(user, null, "\t")));
+                    if (user) {
+                        console.log(chalk.green("Count: " + user.facebook.ratedByOthers.length));
+                        callback(null, user.facebook.ratedByOthers.length);
+                    } else {
+                        console.log('User not found');
+                        callback('User not found', null);
+                    }
+                }
+            });
+    };
+	
     testRouter.route('/addRating')
         .post(function (req, res) {
 
