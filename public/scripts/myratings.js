@@ -7,10 +7,10 @@ $(function () {
     //$ratings.append('Hello');
     console.log("uid: " + uid);
 
-    var template = "<div class=\"row\">" +
-        "<div class=\"well\">" +
-        "Data: " + data + " , Yes: " + yes + " , Not Sure: " + notSure + " , No: " + no +
-        "</div></div>";
+    //var template = "<div class=\"row\">" +
+    //    "<div class=\"well\">" +
+    //    "Data: " + data + " , Yes: " + yes + " , Not Sure: " + notSure + " , No: " + no +
+    //    "</div></div>";
     //'<div class=\"row\"><div class=\"well\"> ClaimID: ' + value.claimid + ' , Data: ' + value.data + ' , Yes: ' + response.yes + ' , Not Sure: ' + response.notSure + ' , No: ' + response.no + '</div></div></div>'
     if (uid) {
         $.ajax({
@@ -37,7 +37,8 @@ $(function () {
                     }
                 }).done(function (response) {
                     console.log(JSON.stringify(response, null, "\t"));
-                    $ratings.append(Mustache.render(template,response));
+                    //$ratings.append(Mustache.render(template,response));
+                    $ratings.append('<div class=\"row\"><div class=\"well\"> ClaimID: ' + value.claimid + ' , Data: ' + value.data + ' , Yes: ' + response.yes + ' , Not Sure: ' + response.notSure + ' , No: ' + response.no + '</div></div></div>');
                 });
 
             });
