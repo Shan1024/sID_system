@@ -1,12 +1,12 @@
 var chalk = require('chalk');
+var mongoose = require('mongoose');
+var defaultValues = require("../../config/defaultValues");
 
 var Entry = require("../models/entry");
 var Claim = require('../models/claim');
 var FacebookRatedByMe = require('../models/facebookRatedByMe');
 var Facebook = require("../models/facebook");
 var User = require("../models/user");
-
-var mongoose = require('mongoose');
 
 module.exports = function (app, express) {
 
@@ -180,7 +180,7 @@ module.exports = function (app, express) {
         });
 
 
-    var addRating = function (req, res, me, target) {
+    var addRating = function (req, res, me, target, myUser) {
 
         var myid = req.body.myid;
         var targetid = req.body.targetid;
@@ -215,19 +215,84 @@ module.exports = function (app, express) {
                     if (facebookRatedByMe.entries[0]) {
                         console.log('Found');
 
-                        Entry.findOneAndUpdate({
-                                _id: facebookRatedByMe.entries[0]._id
-                            }, {
-                                rating: rating
-                            },
-                            {
-                                safe: true,
-                                upsert: true,
-                                new: true
-                            },
-                            function (err, entry) {
-                                console.log(chalk.yellow("New rating: " + JSON.stringify(entry, null, "\t")));
+                        //Entry.findOneAndUpdate({
+                        //        _id: facebookRatedByMe.entries[0]._id
+                        //    }, {
+                        //        rating: rating
+                        //    },
+                        //    {
+                        //        safe: true,
+                        //        upsert: true,
+                        //        new: true
+                        //    },
+                        //    function (err, entry) {
+                        //        console.log(chalk.yellow("New rating: " + JSON.stringify(entry, null, "\t")));
+                        //    });
+
+
+                        Entry.findOne({
+                            _id: facebookRatedByMe.entries[0]._id
+                        }, function (err, entry) {
+
+                            Claim.findOne({
+                                claimid: claimid,
+                                myid: targetid
+                            }, function (err, claim) {
+
+                                if (err) {
+                                    console.log(chalk.red('Error occurred 4587'));
+                                } else {
+
+                                    if (claim) {
+
+                                        //remove the current rating and score from the claim
+                                        if (entry.rating == defaultValues.votes.yes) {
+                                            claim.yes = claim.yes - 1;
+                                            claim.score = claim.score - defaultValues.multipliers.yes * entry.weight;
+                                        } else if (entry.rating == defaultValues.votes.no) {
+                                            claim.no = claim.no - 1;
+                                            claim.score = claim.score - defaultValues.multipliers.no * entry.weight;
+                                        } else {
+                                            claim.notSure = claim.notSure - 1;
+                                            claim.score = claim.score - defaultValues.multipliers.notSure * entry.weight;
+                                        }
+
+                                        //add the new rating and score to the claim
+                                        if (rating == defaultValues.votes.yes) {
+                                            claim.yes = claim.yes + 1;
+                                            claim.score = claim.score + defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                        } else if (rating == defaultValues.votes.no) {
+                                            claim.no = claim.no + 1;
+                                            claim.score = claim.score + defaultValues.multipliers.no * myUser.userDetails.weight;
+                                        } else {
+                                            claim.notSure = claim.notSure + 1;
+                                            claim.score = claim.score + defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                        }
+
+                                        entry.rating = rating;
+                                        entry.weight = myUser.userDetails.weight;
+
+                                        entry.save(function (err) {
+                                            if (err) {
+                                                console.log(chalk.red('Error occured while saving the entry 4564'));
+                                            }
+                                        });
+
+                                        claim.save(function (err) {
+                                            if (err) {
+                                                console.log(chalk.red('Error occured while saving the claim 4648'));
+                                            }
+                                        });
+
+                                    } else {
+                                        console.log(chalk.red('No claim found 1456'));
+                                    }
+
+                                }
+
                             });
+
+                        });
 
                     } else {
 
@@ -294,7 +359,8 @@ module.exports = function (app, express) {
                         myid: me._id,
                         targetid: target._id,
                         data: claim,
-                        rating: rating
+                        rating: rating,
+                        weight: myUser.userDetails.weight
                     });
 
                     newEntry.save(function (err) {
@@ -334,31 +400,55 @@ module.exports = function (app, express) {
                                                     console.log(chalk.red("Error occurred 154"));
                                                 } else {
 
-                                                    var newClaim = new Claim({
-                                                        claimid: claimid,
-                                                        myid: targetid,
-                                                        score: 0,
-                                                        yes: 0,
-                                                        no: 0,
-                                                        notSure: 0
-                                                    });
+                                                    if (claim) {
 
-                                                    if (rating == 1) {
-                                                        newClaim.yes = 1;
-                                                    } else if (rating == -1) {
-                                                        newClaim.no = 1;
-                                                    } else {
-                                                        newClaim.notSure = 1;
-                                                    }
-
-                                                    user.facebook.claims.push(newClaim);
-
-                                                    newClaim.save(function (err) {
-                                                        if (err) {
-                                                            console.log(chalk.red('Error occurred 1487'));
+                                                        if (rating == defaultValues.votes.yes) {
+                                                            claim.yes = claim.yes + 1;
+                                                            claim.score = claim.score + defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                                        } else if (rating == defaultValues.votes.no) {
+                                                            claim.no = claim.no + 1;
+                                                            claim.score = claim.score + defaultValues.multipliers.no * myUser.userDetails.weight;
+                                                        } else {
+                                                            claim.notSure = claim.notSure + 1;
+                                                            claim.score = claim.score + defaultValues.multipliers.notSure * myUser.userDetails.weight;
                                                         }
-                                                    });
 
+                                                        claim.setOverallRating();
+
+                                                        claim.save(function (err) {
+                                                            if (err) {
+                                                                console.log(chalk.red('Error occurred 1487'));
+                                                            }
+                                                        });
+
+                                                    } else {
+
+                                                        var newClaim = new Claim({
+                                                            claimid: claimid,
+                                                            myid: targetid
+                                                        });
+
+                                                        if (rating == defaultValues.votes.yes) {
+                                                            newClaim.yes = 1;
+                                                            newClaim.score = defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                                        } else if (rating == defaultValues.votes.no) {
+                                                            newClaim.no = 1;
+                                                            newClaim.score = defaultValues.multipliers.no * myUser.userDetails.weight;
+                                                        } else {
+                                                            newClaim.notSure = 1;
+                                                            newClaim.score = defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                                        }
+
+                                                        newClaim.setOverallRating();
+
+                                                        user.facebook.claims.push(newClaim);
+
+                                                        newClaim.save(function (err) {
+                                                            if (err) {
+                                                                console.log(chalk.red('Error occurred 1487'));
+                                                            }
+                                                        });
+                                                    }
                                                 }
 
                                                 user.save(function (err) {
@@ -368,7 +458,6 @@ module.exports = function (app, express) {
                                                         console.log("User(target) saved successfully");
                                                     }
                                                 });
-
                                             });
                                         });
 
@@ -443,7 +532,12 @@ module.exports = function (app, express) {
 
                             console.log(chalk.blue("Target found: " + JSON.stringify(target, null, "\t")));
 
-                            addRating(req, res, me, target);
+                            User.findOne({
+                                _id: me.user
+                            }, function (err, myUser) {
+                                addRating(req, res, me, target, myUser);
+                            });
+
 
                         } else {
 
@@ -460,17 +554,20 @@ module.exports = function (app, express) {
                                     return res.json({message: "Target with uid=" + targetid + " not found and Facebook cannot be created"});
                                 } else {
 
-
                                     newUser.userDetails.facebook = facebook._id;
 
                                     newUser.save(function (err) {
                                         if (err) {
                                             return res.json({message: "Target with uid=" + targetid + " not found and User cannot be created"});
                                         } else {
-                                            addRating(req, res, me, facebook);
+                                            User.findOne({
+                                                _id: me.user
+                                            }, function (err, myUser) {
+                                                addRating(req, res, me, facebook, myUser);
+                                            });
+
                                         }
                                     });
-
 
                                 }
                             });
