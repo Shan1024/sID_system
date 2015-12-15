@@ -69,7 +69,7 @@ body {
 .top-nav>.open>a,
 .top-nav>.open>a:hover,
 .top-nav>.open>a:focus {
-    color: #999;
+    color: #FED136;
     background-color: #000;
 }
 
@@ -151,11 +151,11 @@ ul.alert-dropdown {
     display: block;
     padding: 10px 15px 10px 38px;
     text-decoration: none;
-    color: #999;
+    color: #fff;
 }
 
 .side-nav>li>ul>li>a:hover {
-    color: #fff;
+    color: #FED136;
 }
 
 /* Flot Chart Containers */
@@ -234,6 +234,23 @@ ul.alert-dropdown {
     color: #fff;
 }
 
-.navbar-inverse .navbar-nav>li>a:hover {
+/*.navbar-inverse .navbar-nav>li>a:hover {
     color: #999;
+}*/
+
+.navbar-inverse .navbar-nav>.active>a,
+.navbar-inverse .navbar-nav>.active>a:focus,
+.navbar-inverse .navbar-nav>.active>a:hover {
+    color: #FED136;
+}
+.navbar>.container-fluid .navbar-brand:hover{
+  color: #FED136;
+}
+
+.navbar-inverse .navbar-nav>li>a:hover {
+    color: #FED136;
+}
+
+.navbar-inverse .navbar-nav>li>a:focus {
+    color: #FED136;
 }
