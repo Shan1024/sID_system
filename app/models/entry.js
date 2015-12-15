@@ -16,7 +16,8 @@ var entrySchema = mongoose.Schema({
         default: Date.now
     },
     data: String,
-    rating: Number
+    rating: Number,
+    weight: Number
 });
 
 module.exports = mongoose.model('Entry', entrySchema);
