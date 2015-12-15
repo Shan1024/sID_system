@@ -11,7 +11,7 @@ var entrySchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Facebook'
     },
-    created: {
+    lastUpdated: {
         type: Date,
         default: Date.now
     },

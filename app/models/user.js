@@ -33,7 +33,7 @@ var userSchema = mongoose.Schema({
         },
         weight: {
             type: Number,
-            default: defaultValues.weights.notSure
+            default: defaultValues.weights.averageUser
         }
     },
     facebook: {
