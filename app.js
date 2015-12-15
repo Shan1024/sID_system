@@ -17,8 +17,37 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+//var winston = require('winston');
+//winston.add(winston.transports.File, { filename: 'logs/sID.log' });
+
+//winston.stream({ start: -1 }).on('log', function(log) {
+//    console.log(log);
+//});
+
+//winston.log('info', 'Hello distributed log files!');
+//winston.info('Hello again distributed logs');
+//
+//winston.level = 'debug';
+//winston.log('debug', 'Now my debug messages are written to console!');
+
+
 
 var config = require('./config/config'); // get our config file
+
+var logger = require("./app/utils/logger");
+
+logger.debug("Logger initialized");
+
+//Log levels. Only last info,warn,error is written to the file
+//logger.log('silly', "127.0.0.1 - there's no place like home");
+//logger.log('debug', "127.0.0.1 - there's no place like home");
+//logger.log('verbose', "127.0.0.1 - there's no place like home");
+//logger.log('info', "127.0.0.1 - there's no place like home");
+//logger.log('warn', "127.0.0.1 - there's no place like home");
+//logger.log('error', "127.0.0.1 - there's no place like home");
+//logger.info("127.0.0.1 - there's no place like home");
+//logger.warn("127.0.0.1 - there's no place like home");
+//logger.error("127.0.0.1 - there's no place like home");
 
 // This line is from the Node.js HTTPS documentation.
 var options = {
@@ -37,7 +66,10 @@ app.set('username', config.username);
 app.set('password', config.password);
 
 // set up our express application
-app.use(morgan('dev')); // log every request to the console
+logger.debug("Overriding 'Express' logger");
+//app.use(require('morgan')({ "stream": winston.stream.write }));
+app.use(require('morgan')({ "stream": logger.stream }));
+//app.use(morgan('dev')); // log every request to the console
 app.use(cookieParser()); // read cookies (needed for auth)
 app.use(bodyParser.json()); // get information from html forms
 app.use(bodyParser.urlencoded({extended: true}));
@@ -58,8 +90,8 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 // routes ======================================================================
 require('./app/routes/webRoutes.js')(app, passport); // load our routes and pass in our app and fully configured passport
-//require('./app/routes/baseRoutes.js')(app, express);
-require('./app/routes/testRoutes.js')(app, express);
+require('./app/routes/rateRoutes.js')(app, express);
+//require('./app/routes/testRoutes.js')(app, express);
 require('./app/routes/dummyRoutes.js')(app, express);
 // launch ======================================================================
 //app.listen(port);
