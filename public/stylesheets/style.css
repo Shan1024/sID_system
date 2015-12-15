@@ -4,7 +4,7 @@ body {
 }
 
 a {
-  color: #fff;
+  /*color: #fff;*/
 }
 
 .same-row-height {
@@ -22,6 +22,27 @@ a {
      color: #fff;
 }
 
+.navbar> .navbar-brand:hover{
+  color: #FED136;
+}
+
 .navbar-inverse .navbar-brand:hover {
-     color: #999; 
+     color: #FED136;
+}
+
+.navbar-inverse .navbar-nav>.active>a,
+.navbar-inverse .navbar-nav>.active>a:focus,
+.navbar-inverse .navbar-nav>.active>a:hover {
+    color: #FED136;
+}
+.navbar>.container-fluid .navbar-brand:hover{
+  color: #FED136;
+}
+
+.navbar-inverse .navbar-nav>li>a:hover {
+    color: #FED136;
+}
+
+.navbar-inverse .navbar-nav>li>a {
+    color: #fff;
 }
