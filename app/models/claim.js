@@ -1,10 +1,15 @@
 var mongoose = require('mongoose');
 
+var defaultValues = require("../../config/defaultValues");
+
 //Entry schema
 var claimSchema = mongoose.Schema({
     claimid: String,
     myid: String,
-    score: Number,
+    score: {
+        type: Number,
+        default: 0
+    },
     yes: {
         type: Number,
         default: 0
@@ -17,10 +22,24 @@ var claimSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
-    overall: {
+    overallRating: {
         type: Number,
-        default: 0
+        default: defaultValues.ratings.averageUser
     }
 });
+
+claimSchema.methods.setOverallRating = function () {
+    if (!this.score) {
+        this.overallRating = defaultValues.ratings.averageUser;
+    } else {
+        if (this.score >= defaultValues.bounds.trustedUser) {
+            this.overallRating = defaultValues.ratings.trustedUser;
+        } else if (this.score >= defaultValues.bounds.averageUser) {
+            this.overallRating = defaultValues.ratings.averageUser;
+        } else {
+            this.overallRating = defaultValues.ratings.untrustedUser;
+        }
+    }
+};
 
 module.exports = mongoose.model('Claim', claimSchema);
