@@ -271,12 +271,16 @@ module.exports = function (app, express) {
 
                                         entry.rating = rating;
                                         entry.weight = myUser.userDetails.weight;
+                                        entry.lastUpdated = Date.now();
 
                                         entry.save(function (err) {
                                             if (err) {
                                                 console.log(chalk.red('Error occured while saving the entry 4564'));
                                             }
                                         });
+
+                                        claim.lastUpdated = Date.now();
+                                        claim.setOverallRating();
 
                                         claim.save(function (err) {
                                             if (err) {
@@ -287,13 +291,9 @@ module.exports = function (app, express) {
                                     } else {
                                         console.log(chalk.red('No claim found 1456'));
                                     }
-
                                 }
-
                             });
-
                         });
-
                     } else {
 
                         console.log('Not found');
@@ -413,6 +413,7 @@ module.exports = function (app, express) {
                                                             claim.score = claim.score + defaultValues.multipliers.notSure * myUser.userDetails.weight;
                                                         }
 
+                                                        claim.lastUpdated = Date.now();
                                                         claim.setOverallRating();
 
                                                         claim.save(function (err) {
@@ -579,188 +580,14 @@ module.exports = function (app, express) {
                     return res.json({message: "User with uid=" + myid + " not found"});
                 }
             });
-        })
-        .get(function (req, res) {
+        });
 
-            var myid = req.query.myid;
-            var targetid = req.query.targetid;
-            var claimid = req.query.claimid;
+    rateRouter.route('/getRating')
+        .post(function (req, res) {
 
-            if (!myid) {
-                return res.json({error: "Missing myid paramter"});
-            }
-
-            if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
-            }
-
-            if (!claimid) {
-                return res.json({error: "Missing claim paramter"});
-            }
-
-            Facebook.findOne({
-                uid: myid
-            }, function (err, me) {
-
-                if (err) {
-                    return res.json({err: err});
-                }
-
-                if (me) {
-
-                    Facebook.findOne({
-                        uid: targetid
-                    }, function (err, target) {
-                        if (err) {
-                            return res.json({err: err});
-                        }
-
-                        if (target) {
-
-                            FacebookRatedByMe
-                                .findOne({
-                                    myid: me._id,
-                                    targetid: target._id
-                                })
-
-                                //.populate('entries', null, { entries: {$elemMatch: {id: claimid}}})
-
-                                .populate(
-                                    {
-                                        path: 'entries',
-                                        match: {id: claimid},
-                                    }
-                                )
-                                .exec(function (err, facebookRatedByMe) {
-
-                                    console.log(chalk.blue("Previous rating: " + JSON.stringify(facebookRatedByMe, null, "\t")));
-
-                                    if (facebookRatedByMe.entries[0]) {
-
-                                        return res.json({messge: "Found: " + facebookRatedByMe.entries[0].rating});
-                                    } else {
-                                        return res.json({messge: "Not found"});
-                                    }
-
-                                });
-                        } else {
-                            return res.json({err: "No target with uid=" + myid + " found"});
-                        }
-                    });
-                } else {
-                    return res.json({err: "No user with uid=" + myid + " found"});
-                }
-            });
-        })
-        .put(function (req, res) {
-            var myid = req.body.myid;
-            var targetid = req.body.targetid;
-            var claimid = req.body.claimid;
-            var claim = req.body.claim;
-            var rating = req.body.rating;
-
-            if (!myid) {
-                return res.json({error: "Missing myid paramter"});
-            }
-
-            if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
-            }
-
-            if (!claimid) {
-                return res.json({error: "Missing claimid paramter"});
-            }
-
-            if (!claim) {
-                return res.json({error: "Missing claim paramter"});
-            }
-
-            if (!rating) {
-                return res.json({error: "Missing rating paramter"});
-            }
-
-            Facebook.findOne({
-                uid: myid
-            }, function (err, me) {
-
-                if (err) {
-                    return res.json({err: err});
-                }
-
-                if (me) {
-
-                    Facebook.findOne({
-                        uid: targetid
-                    }, function (err, target) {
-                        if (err) {
-                            return res.json({err: err});
-                        }
-
-                        if (target) {
-
-                            FacebookRatedByMe
-                                .findOne({
-                                    myid: me._id,
-                                    targetid: target._id
-                                })
-                                .populate(
-                                    {
-                                        path: 'entries',
-                                        match: {id: claimid},
-                                    }
-                                )
-                                .exec(function (err, facebookRatedByMe) {
-
-                                    console.log(chalk.blue("Previous rating: " + JSON.stringify(facebookRatedByMe, null, "\t")));
-
-                                    if (facebookRatedByMe.entries[0]) {
-
-                                        Entry.findOneAndUpdate({
-                                                _id: facebookRatedByMe.entries[0]._id,
-                                            }, {
-                                                rating: rating,
-                                                data: claim
-                                            },
-                                            {
-                                                safe: true,
-                                                upsert: true,
-                                                new: true
-                                            },
-                                            function (err, entry) {
-
-                                                if (err) {
-                                                    console.log('error: ' + err);
-                                                    return res.json({message: "Error: " + err});
-                                                } else {
-                                                    console.log(chalk.yellow("New rating: " + JSON.stringify(entry, null, "\t")));
-                                                    return res.json({message: "Found: " + facebookRatedByMe.entries[0].rating + ", updated to: " + rating});
-
-                                                }
-                                            });
-
-                                    } else {
-                                        return res.json({messge: "Not found"});
-                                    }
-
-                                });
-                        } else {
-                            return res.json({err: "No target with uid=" + myid + " found"});
-                        }
-                    });
-                } else {
-                    return res.json({err: "No user with uid=" + myid + " found"});
-                }
-            });
-        })
-        .delete(function (req, res) {
-            var myid = req.body.myid;
             var targetid = req.body.targetid;
             var claimid = req.body.claimid;
 
-            if (!myid) {
-                return res.json({error: "Missing myid paramter"});
-            }
-
             if (!targetid) {
                 return res.json({error: "Missing targetid paramter"});
             }
@@ -769,129 +596,29 @@ module.exports = function (app, express) {
                 return res.json({error: "Missing claim paramter"});
             }
 
-
-            Facebook.findOne({
-                uid: myid
-            }, function (err, me) {
-
+            Claim.findOne({
+                claimid: claimid,
+                myid: targetid
+            }, function (err, claim) {
                 if (err) {
-                    return res.json({err: err});
-                }
-
-                if (me) {
-
-                    Facebook.findOne({
-                        uid: targetid
-                    }, function (err, target) {
-                        if (err) {
-                            return res.json({err: err});
-                        }
-
-                        if (target) {
-
-
-                            FacebookRatedByMe
-                                .findOne({
-                                    myid: me._id,
-                                    targetid: target._id
-                                })
-                                .populate(
-                                    {
-                                        path: 'entries',
-                                        match: {id: claimid},
-                                    }
-                                )
-                                .exec(function (err, facebookRatedByMe) {
-
-                                    console.log(chalk.blue("Previous rating: " + JSON.stringify(facebookRatedByMe, null, "\t")));
-
-                                    if (facebookRatedByMe.entries[0]) {
-
-                                        //Entry.findOneAndUpdate({
-                                        //        _id: facebookRatedByMe.entries[0]._id,
-                                        //    }, {
-                                        //        rating: rating,
-                                        //        data: claim
-                                        //    },
-                                        //    {
-                                        //        safe: true,
-                                        //        upsert: true,
-                                        //        new: true
-                                        //    },
-                                        //    function (err, entry) {
-                                        //
-                                        //        if (err) {
-                                        //            console.log('error: ' + err);
-                                        //            return res.json({message: "Error: " + err});
-                                        //        } else {
-                                        //            console.log(chalk.yellow("New rating: " + JSON.stringify(entry, null, "\t")));
-                                        //            return res.json({message: "Found: " + facebookRatedByMe.entries[0].rating + ", updated to: " + rating});
-                                        //
-                                        //        }
-                                        //    });
-
-                                        facebookRatedByMe.entries.pull(facebookRatedByMe.entries[0]._id);
-
-                                        facebookRatedByMe.save(function (err) {
-                                            if (err) {
-                                                console.log("error: " + err);
-                                            } else {
-
-                                                Entry.findOneAndRemove({
-                                                    _id: facebookRatedByMe.entries[0]._id
-                                                }, function (err) {
-                                                    if (err) {
-                                                        console.log('Error: ' + err);
-                                                        return res.json({message: "Error: " + err});
-
-                                                    } else {
-
-                                                        User.findOne(
-                                                            {
-                                                                _id: target.user
-                                                            },
-                                                            function (err, user) {
-                                                                console.log(chalk.blue("User: " + JSON.stringify(user, null, "\t")));
-
-                                                                user.facebook.ratedByOthers.pull(facebookRatedByMe.entries[0]._id);
-
-                                                                user.save(function (err) {
-                                                                    if (err) {
-                                                                        console.log("User save error: " + err);
-                                                                    } else {
-                                                                        console.log("User saved successfully");
-
-
-                                                                    }
-                                                                });
-                                                            });
-
-
-                                                        console.log('Successfully deleted');
-                                                        return res.json({messge: "Successfully deleted"});
-
-                                                    }
-                                                });
-
-
-                                            }
-                                        });
-
-                                    } else {
-                                        return res.json({messge: "Not found"});
-                                    }
-
-                                });
-                        } else {
-                            return res.json({err: "No target with uid=" + myid + " found"});
-                        }
-                    });
+                    console.log(chalk.red("Error occured 8975"));
+                    res.json({success: false, message: "Error occured"});
                 } else {
-                    return res.json({err: "No user with uid=" + myid + " found"});
+                    if (claim) {
+                        res.json({
+                            success: true,
+                            yes: claim.yes,
+                            no: claim.no,
+                            notSure: claim.notSure,
+                            overallRating: claim.overallRating
+                        });
+                    } else {
+                        console.log(chalk.red("Claim not found"));
+                        res.json({success: false, message: "Claim not found"});
+                    }
                 }
             });
         });
-
 
     app.use('/rate', rateRouter);
 

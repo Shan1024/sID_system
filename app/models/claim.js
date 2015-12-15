@@ -6,9 +6,9 @@ var defaultValues = require("../../config/defaultValues");
 var claimSchema = mongoose.Schema({
     claimid: String,
     myid: String,
-    score: {
-        type: Number,
-        default: 0
+    lastUpdated: {
+        type: Date,
+        default: Date.now
     },
     yes: {
         type: Number,
@@ -19,6 +19,10 @@ var claimSchema = mongoose.Schema({
         default: 0
     },
     notSure: {
+        type: Number,
+        default: 0
+    },
+    score: {
         type: Number,
         default: 0
     },
