@@ -51,9 +51,9 @@ module.exports = function (app, express) {
     //});
 
     /**
-     * @api {get} /rate/ Test the secure api connection
+     * @api {get} /rate/facebook Test the secure api connection
      * @apiName /
-     * @apiGroup Rating Router
+     * @apiGroup Facebook Rating Router
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -64,14 +64,14 @@ module.exports = function (app, express) {
      */
     rateRouter.route('/')
         .get(function (req, res) {
-            res.json({message: "Welcome to sID Rating API !!!"});
+            res.json({message: "Welcome to sID Facebook Rating API !!!"});
         });
 
 
     /**
-     * @api {post} /rate/setID Check the availability of a user in the DB using the email
+     * @api {post} /rate/facebook/setID Check the availability of a user in the DB using the email
      * @apiName /rate/setID
-     * @apiGroup Rating Router
+     * @apiGroup Facebook Rating Router
      *
      * @apiParam {String} email User email used to create the sID account.
      *
@@ -620,6 +620,78 @@ module.exports = function (app, express) {
             });
         });
 
-    app.use('/rate', rateRouter);
+    rateRouter.route('/getAllRatingsCount')
+        .post(function (req, res) {
+
+            var uid = req.body.uid;
+
+            if (!uid) {
+                return res.json({error: "Missing uid paramter"});
+            }
+
+            Claim.find({
+                myid: uid
+            }, function (err, claim) {
+
+                if (err) {
+                    console.log(chalk.red("Error occurred 44680"));
+
+                    res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+
+                } else {
+
+                    if (claim) {
+
+                        console.log("Claims count: " + claim.length);
+
+                        var yes = 0, no = 0, notSure = 0;
+
+                        for (var i = 0; i < claim.length; i++) {
+                            yes += claim[i].yes;
+                            no += claim[i].no;
+                            notSure += claim[i].notSure;
+                        }
+
+                        res.json({
+                            success: true,
+                            id: uid,
+                            claimsCount: claim.length,
+                            yes: yes,
+                            notSure: notSure,
+                            no: no
+                        });
+
+                    } else {
+                        res.json({
+                            success: true,
+                            id: uid,
+                            claimsCount: 0,
+                            yes: 0,
+                            notSure: 0,
+                            no: 0
+                        });
+                    }
+                }
+            });
+        });
+
+    //profileRating- fbid -> rating: t r c n
+
+    rateRouter.route('/getAllRatingsCount')
+        .post(function (req, res) {
+
+
+
+        });
+
+
+
+    //profileRating
+
+
+    app.use('/rate/facebook', rateRouter);
 
 };

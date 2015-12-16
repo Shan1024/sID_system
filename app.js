@@ -89,10 +89,12 @@ app.use(passport.session()); // persistent login sessions
 app.use(flash()); // use connect-flash for flash messages stored in session
 
 // routes ======================================================================
-require('./app/routes/webRoutes.js')(app, passport); // load our routes and pass in our app and fully configured passport
-require('./app/routes/rateRoutes.js')(app, express);
+require('./app/routes/webRoutes')(app, passport); // load our routes and pass in our app and fully configured passport
+require('./app/routes/facebookRateRoutes')(app, express);
+require('./app/routes/linkedinRateRoutes')(app, express);
+require('./app/routes/otherRoutes')(app, express);
 //require('./app/routes/testRoutes.js')(app, express);
-require('./app/routes/dummyRoutes.js')(app, express);
+require('./app/routes/dummyRoutes')(app, express);
 // launch ======================================================================
 //app.listen(port);
 //console.log('The magic happens on port ' + port);
