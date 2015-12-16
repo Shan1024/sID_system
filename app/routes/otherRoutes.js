@@ -14,8 +14,9 @@ module.exports = function (app, express) {
 
     /**
      * @api {get} /other Test the secure api connection
-     * @apiName /
-     * @apiGroup Other Router
+     * @apiName Other
+     * @apiGroup Other
+     * @apiVersion 0.1.0
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -29,18 +30,32 @@ module.exports = function (app, express) {
             res.json({message: "Welcome to sID API !!!"});
         });
 
-    //getLIURL id->url
+    /**
+     * @api {post} /other/getLinkedInURL Get the LinkedIn profile url of a user.
+     * @apiName GetLinkedInURL
+     * @apiGroup Other
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} targetid Facebook User ID of the target user.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       message: "Welcome to sID API !!!"
+     *     }
+     *
+     */
     otherRoutes.route('/getLinkedInURL')
         .post(function (req, res) {
 
-            var uid = req.body.uid;
+            var targetid = req.body.targetid;
 
-            if (!uid) {
-                return res.json({error: "Missing uid paramter"});
+            if (!targetid) {
+                return res.json({error: "Missing targetid paramter"});
             }
 
             Facebook.findOne({
-                uid: uid
+                uid: targetid
             }, function (err, facebook) {
 
                 if (err) {
@@ -61,11 +76,14 @@ module.exports = function (app, express) {
                                 } else {
                                     if (user) {
                                         console.log(chalk.green("USER: " + JSON.stringify(user, null, "\t")));
-                                        if(user.userDetails.linkedin){
-                                            console.log("URL: "+user.userDetails.linkedin.url);
+                                        if (user.userDetails.linkedin) {
+                                            console.log("URL: " + user.userDetails.linkedin.url);
                                             res.json({success: true, url: user.userDetails.linkedin.url});
-                                        }else{
-                                            res.json({success: false, message: "No LinkedIn account is linked to this user"});
+                                        } else {
+                                            res.json({
+                                                success: false,
+                                                message: "No LinkedIn account is linked to this user"
+                                            });
                                         }
                                     } else {
                                         res.json({success: false, message: "No user account found"});
@@ -73,7 +91,7 @@ module.exports = function (app, express) {
                                 }
                             });
                     } else {
-                        res.json({success: false, message: "No facebook account with given uid found"});
+                        res.json({success: false, message: "No facebook account with given targetid found"});
                     }
                 }
             });

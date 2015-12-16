@@ -52,26 +52,28 @@ module.exports = function (app, express) {
 
     /**
      * @api {get} /rate/facebook Test the secure api connection
-     * @apiName /
-     * @apiGroup Facebook Rating Router
+     * @apiName Test
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     {
-     *       message: "Welcome to sID Rating API !!!"
+     *       message: "Welcome to sID API !!!"
      *     }
      *
      */
     rateRouter.route('/')
         .get(function (req, res) {
-            res.json({message: "Welcome to sID Facebook Rating API !!!"});
+            res.json({message: "Welcome to sID API !!!"});
         });
 
 
     /**
      * @api {post} /rate/facebook/setID Check the availability of a user in the DB using the email
-     * @apiName /rate/setID
-     * @apiGroup Facebook Rating Router
+     * @apiName SetID
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
      *
      * @apiParam {String} email User email used to create the sID account.
      *
@@ -79,7 +81,7 @@ module.exports = function (app, express) {
      *     HTTP/1.1 200 OK
      *     {
      *       "success": true,
-     *       "id": FB_APP_ID
+     *       "id": {FB_APP_ID}
      *     }
      *
      */
@@ -112,9 +114,10 @@ module.exports = function (app, express) {
         });
 
     /**
-     * @api {post} /rate/getID Set the uid of a user according to the email
-     * @apiName /rate/getID
-     * @apiGroup Rating Router
+     * @api {post} /rate/facebook/getID Set the uid of a user according to the email
+     * @apiName GetID
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
      *
      * @apiParam {String} email User email used to create the sID account.
      * @apiParam {String} uid uid that needs to be added to the DB
@@ -123,7 +126,7 @@ module.exports = function (app, express) {
      *     HTTP/1.1 200 OK
      *     {
      *       "success": true,
-     *       "id": FB_APP_ID
+     *       "id": {FB_APP_ID}
      *     }
      *
      */
@@ -541,6 +544,19 @@ module.exports = function (app, express) {
         });
     };
 
+    /**
+     * @api {post} /rate/facebook/addRating Adds a new Facebook rating or update an existing one.
+     * @apiName AddRating
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} myid The Facebook User ID of the user who is rating.
+     * @apiParam {String} targetid The Facebook User ID of the user who is getting rated.
+     * @apiParam {String} claimid The Facebook Claim ID.
+     * @apiParam {String} claim The claim details.
+     * @apiParam {String} rating The rating that the current user has given for the claim. The value must be one of 1, 0, -1.
+     *
+     */
     rateRouter.route('/addRating')
         .post(function (req, res) {
 
@@ -633,6 +649,16 @@ module.exports = function (app, express) {
             });
         });
 
+    /**
+     * @api {post} /rate/facebook/getRating Returns the ratings of a claim.
+     * @apiName GetRating
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} targetid The Facebook User ID of the target user.
+     * @apiParam {String} claimid The Facebook Claim ID.
+     *
+     */
     rateRouter.route('/getRating')
         .post(function (req, res) {
 
@@ -700,6 +726,15 @@ module.exports = function (app, express) {
             });
         });
 
+    /**
+     * @api {post} /rate/facebook/getAllRatingsCount Get sum of Yes, No, NotSure counts of all claims made by the target user.
+     * @apiName GetAllRatingsCount
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} targetid The Facebook User ID of the target user.
+     *
+     */
     rateRouter.route('/getAllRatingsCount')
         .post(function (req, res) {
 
@@ -758,8 +793,16 @@ module.exports = function (app, express) {
             });
         });
 
-    //profileRating- fbid -> rating: t r c n
 
+    /**
+     * @api {post} /rate/facebook/getOverallProfileRating Returns the overall profile rating as one of T, R, C, N characters.
+     * @apiName GetOverallProfileRating
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} targetid The Facebook User ID of the target user.
+     *
+     */
     rateRouter.route('/getOverallProfileRating')
         .post(function (req, res) {
 
@@ -807,6 +850,16 @@ module.exports = function (app, express) {
                 }
             });
         });
+
+    /**
+     * @api {post} /rate/facebook/getAllRatedClaims Returns all of the claims of the target user that are rated.
+     * @apiName GetAllRatedClaims
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} targetid The Facebook User ID of the target user.
+     *
+     */
     rateRouter.route('/getAllRatedClaims')
         .post(function (req, res) {
 
@@ -833,6 +886,17 @@ module.exports = function (app, express) {
             });
         });
 
+    /**
+     * @api {post} /rate/facebook/getLastRatedClaims Returns the last updated Claims of the target user.
+     * @apiName GetLastRatedClaims
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} targetid The Facebook User ID of the target user.
+     * @apiParam {Number} limit The number of results needed. If the value is invalid, default value will be used.
+     * @apiParam {Number} order -1 for descending order and 1 for ascending order. Default value is -1.
+     *
+     */
     rateRouter.route('/getLastRatedClaims')
         .post(function (req, res) {
 
@@ -878,6 +942,17 @@ module.exports = function (app, express) {
                     });
         });
 
+    /**
+     * @api {post} /rate/facebook/getLastEntries Returns the last updated Entries of the target user.
+     * @apiName GetLastEntries
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} targetid The Facebook User ID of the target user.
+     * @apiParam {Number} limit The number of results needed. If the value is invalid, default value will be used.
+     * @apiParam {Number} order -1 for descending order and 1 for ascending order. Default value is -1.
+     *
+     */
     rateRouter.route('/getLastEntries')
         .post(function (req, res) {
 
