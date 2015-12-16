@@ -11,12 +11,13 @@ var entrySchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Facebook'
     },
-    created: {
+    lastUpdated: {
         type: Date,
         default: Date.now
     },
     data: String,
-    rating: Number
+    rating: Number,
+    weight: Number
 });
 
 module.exports = mongoose.model('Entry', entrySchema);

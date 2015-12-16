@@ -2,8 +2,10 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 var chalk = require('chalk');
+var defaultValues = require("../../config/defaultValues");
 
 var Entry = require('./entry');
+var Entry = require('./claim');
 var FacebookRatedByMe = require('./facebookRatedByMe');
 var Facebook = require('./facebook');
 var Facebook = require('./linkedin');
@@ -28,6 +30,10 @@ var userSchema = mongoose.Schema({
         created: {
             type: Date,
             default: Date.now
+        },
+        weight: {
+            type: Number,
+            default: defaultValues.weights.averageUser
         }
     },
     facebook: {
@@ -38,6 +44,10 @@ var userSchema = mongoose.Schema({
         ratedByOthers: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Entry'
+        }],
+        claims: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Claim'
         }]
     },
     linkedin: {}
