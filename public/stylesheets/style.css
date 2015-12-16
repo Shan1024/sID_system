@@ -46,3 +46,7 @@ a {
 .navbar-inverse .navbar-nav>li>a {
     color: #fff;
 }
+
+.navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form {
+    background-color: black;
+}

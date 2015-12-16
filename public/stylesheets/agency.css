@@ -750,3 +750,15 @@ body {
 .navbar-inverse .navbar-brand {
     color: #fff;
 }
+
+.navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form {
+    background-color: black;
+}
+
+.navbar-inverse .navbar-brand {
+    background-color: black;
+}
+
+.navbar-inverse .navbar-brand:hover {
+    background-color: black;
+}
