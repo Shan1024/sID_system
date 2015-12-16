@@ -23,7 +23,7 @@ module.exports = function (passport) {
     // passport session setup ==================================================
     // =========================================================================
     // required for persistent login sessions
-    // passport needs ability to serialize and unserialize users out of session
+    // passport needs ability to serialize and deserialize users out of session
 
     // used to serialize the user for the session
     passport.serializeUser(function (user, done) {
@@ -170,12 +170,12 @@ module.exports = function (passport) {
     // FACEBOOK ================================================================
     // =========================================================================
 
+    //This function is used for facebook authentication
     var facebookAuth = function (req, token, refreshToken, profile, done) {
 
-
-        console.log(chalk.blue("TOKEN1: " + JSON.stringify(token, null, "\t")));
+        console.log(chalk.yellow("TOKEN1: " + JSON.stringify(token, null, "\t")));
         //console.log(chalk.blue("TOKEN SECRET: " + JSON.stringify(tokenSecret, null, "\t")));
-        console.log(chalk.blue("PROFILE1: " + JSON.stringify(profile, null, "\t")));
+        console.log(chalk.yellow("PROFILE1: " + JSON.stringify(profile, null, "\t")));
 
         // asynchronous
         process.nextTick(function () {
@@ -186,12 +186,11 @@ module.exports = function (passport) {
                 Facebook.findOne({
                     id: profile.id
                 }, function (err, facebook) {
-                    if (err)
+                    if (err) {
                         return done(err);
-
+                    }
                     if (facebook) {
 
-                        // if there is a user id already but no token (user was linked at one point and then removed)
                         if (!facebook.token) {
                             facebook.token = token;
                             facebook.name = profile.displayName;
@@ -233,35 +232,38 @@ module.exports = function (passport) {
                 });
 
             } else {
-                return done(null, req.user);
+                return done(null);
             }
         });
     };
 
+    //facebook authenticate http strategy
     passport.use('facebook-auth-http', new FacebookStrategy({
-                clientID: configAuth.facebookAuth.clientID,
-                clientSecret: configAuth.facebookAuth.clientSecret,
-                callbackURL: configAuth.facebookAuth.callbackURL_auth_http,
-                passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
+            clientID: configAuth.facebookAuth.clientID,
+            clientSecret: configAuth.facebookAuth.clientSecret,
+            callbackURL: configAuth.facebookAuth.callbackURL_auth_http,
+            passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
 
-            },
-            function (req, token, refreshToken, profile, done) {
-                facebookAuth(req, token, refreshToken, profile, done);
-            })
+        },
+        function (req, token, refreshToken, profile, done) {
+            facebookAuth(req, token, refreshToken, profile, done);
+        })
     );
 
+    //facebook authenticate https strategy
     passport.use('facebook-auth-https', new FacebookStrategy({
-                clientID: configAuth.facebookAuth.clientID,
-                clientSecret: configAuth.facebookAuth.clientSecret,
-                callbackURL: configAuth.facebookAuth.callbackURL_auth_https,
-                passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
+            clientID: configAuth.facebookAuth.clientID,
+            clientSecret: configAuth.facebookAuth.clientSecret,
+            callbackURL: configAuth.facebookAuth.callbackURL_auth_https,
+            passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
 
-            },
-            function (req, token, refreshToken, profile, done) {
-                facebookAuth(req, token, refreshToken, profile, done);
-            })
+        },
+        function (req, token, refreshToken, profile, done) {
+            facebookAuth(req, token, refreshToken, profile, done);
+        })
     );
 
+    //This function is used for facebook connect
     var facebookConnect = function (req, token, refreshToken, profile, done) {
 
         console.log(chalk.blue("TOKEN: " + JSON.stringify(token, null, "\t")));
@@ -345,15 +347,16 @@ module.exports = function (passport) {
                             facebook.save(function (err) {
                                 if (err) {
                                     return done(err);
-                                }
-                                newUser.userDetails.facebook = facebook._id;
+                                } else {
+                                    newUser.userDetails.facebook = facebook._id;
 
-                                newUser.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    return done(null, newUser);
-                                });
+                                    newUser.save(function (err) {
+                                        if (err) {
+                                            return done(err);
+                                        }
+                                        return done(null, newUser);
+                                    });
+                                }
                             });
 
                         });
@@ -366,25 +369,25 @@ module.exports = function (passport) {
     };
 
     passport.use('facebook-connect-http', new FacebookStrategy({
-                clientID: configAuth.facebookAuth.clientID,
-                clientSecret: configAuth.facebookAuth.clientSecret,
-                callbackURL: configAuth.facebookAuth.callbackURL_connect_http,
-                passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
-            },
-            function (req, token, refreshToken, profile, done) {
-                facebookConnect(req, token, refreshToken, profile, done);
-            })
+            clientID: configAuth.facebookAuth.clientID,
+            clientSecret: configAuth.facebookAuth.clientSecret,
+            callbackURL: configAuth.facebookAuth.callbackURL_connect_http,
+            passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
+        },
+        function (req, token, refreshToken, profile, done) {
+            facebookConnect(req, token, refreshToken, profile, done);
+        })
     );
 
     passport.use('facebook-connect-https', new FacebookStrategy({
-                clientID: configAuth.facebookAuth.clientID,
-                clientSecret: configAuth.facebookAuth.clientSecret,
-                callbackURL: configAuth.facebookAuth.callbackURL_connect_https,
-                passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
-            },
-            function (req, token, refreshToken, profile, done) {
-                facebookConnect(req, token, refreshToken, profile, done);
-            })
+            clientID: configAuth.facebookAuth.clientID,
+            clientSecret: configAuth.facebookAuth.clientSecret,
+            callbackURL: configAuth.facebookAuth.callbackURL_connect_https,
+            passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
+        },
+        function (req, token, refreshToken, profile, done) {
+            facebookConnect(req, token, refreshToken, profile, done);
+        })
     );
 
     passport.use('linkedin-connect', new LinkedInStrategy({
@@ -418,7 +421,7 @@ module.exports = function (passport) {
                 if (!req.user) {
 
                     LinkedIn.findOne({
-                        id: profile.id
+                        uid: profile.id
                     }, function (err, linkedin) {
                         if (err) {
                             return done(err);
@@ -477,7 +480,7 @@ module.exports = function (passport) {
                             // if there is no user, create them
                             var newLinkedIn = new LinkedIn();
 
-                            newLinkedIn.id = profile.id;
+                            newLinkedIn.uid = profile.id;
                             newLinkedIn.token = token;
                             newLinkedIn.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
                             newLinkedIn.email = (profile.emails[0].value || '').toLowerCase();
@@ -526,7 +529,7 @@ module.exports = function (passport) {
 
 
                     LinkedIn.findOne({
-                        id: profile.id
+                        uid: profile.id
                     }, function (err, linkedinUser) {
 
                         if (linkedinUser) {
@@ -571,7 +574,7 @@ module.exports = function (passport) {
 
                             var linkedin = new LinkedIn();
 
-                            linkedin.id = profile.id;
+                            linkedin.uid = profile.id;
                             linkedin.token = token;
                             linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
                             linkedin.email = (profile.emails[0].value || '').toLowerCase();
@@ -645,7 +648,7 @@ module.exports = function (passport) {
                 if (!req.user) {
 
                     LinkedIn.findOne({
-                        id: profile.id
+                        uid: profile.id
                     }, function (err, linkedin) {
                         if (err) {
                             return done(err);
@@ -709,7 +712,7 @@ module.exports = function (passport) {
                             // if there is no user, create them
                             var newLinkedIn = new LinkedIn();
 
-                            newLinkedIn.id = profile.id;
+                            newLinkedIn.uid = profile.id;
                             newLinkedIn.token = token;
                             newLinkedIn.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
                             newLinkedIn.email = (profile.emails[0].value || '').toLowerCase();
@@ -759,7 +762,7 @@ module.exports = function (passport) {
 
 
                     LinkedIn.findOne({
-                        id: profile.id
+                        uid: profile.id
                     }, function (err, linkedinUser) {
 
                         if (linkedinUser) {
@@ -804,7 +807,7 @@ module.exports = function (passport) {
 
                             var linkedin = new LinkedIn();
 
-                            linkedin.id = profile.id;
+                            linkedin.uid = profile.id;
                             linkedin.token = token;
                             linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
                             linkedin.email = (profile.emails[0].value || '').toLowerCase();
