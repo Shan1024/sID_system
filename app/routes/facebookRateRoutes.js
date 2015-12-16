@@ -602,7 +602,15 @@ module.exports = function (app, express) {
             }, function (err, claim) {
                 if (err) {
                     console.log(chalk.red("Error occured 8975"));
-                    res.json({success: false, message: "Error occured"});
+                    res.json({
+                        success: false,
+                        message: "Error occured",
+                        yes: 0,
+                        no: 0,
+                        notSure: 0,
+                        overallRating: 0,
+                        claimScore: "N"
+                    });
                 } else {
                     if (claim) {
 
@@ -627,7 +635,15 @@ module.exports = function (app, express) {
 
                     } else {
                         console.log(chalk.red("Claim not found"));
-                        res.json({success: false, message: "Claim not found"});
+                        res.json({
+                            success: false,
+                            message: "Claim not found",
+                            yes: 0,
+                            no: 0,
+                            notSure: 0,
+                            overallRating: 0,
+                            claimScore: "N"
+                        });
                     }
                 }
             });
