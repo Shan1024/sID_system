@@ -7,8 +7,9 @@ var defaultValues = require("../../config/defaultValues");
 var Entry = require('./entry');
 var Entry = require('./claim');
 var FacebookRatedByMe = require('./facebookRatedByMe');
+var LinkedInRatedByMe = require('./linkedinRatedByMe');
 var Facebook = require('./facebook');
-var Facebook = require('./linkedin');
+var LinkedIn = require('./linkedin');
 
 var userSchema = mongoose.Schema({
     userDetails: {
@@ -56,7 +57,20 @@ var userSchema = mongoose.Schema({
             ref: 'Claim'
         }]
     },
-    linkedin: {}
+    linkedin: {
+        ratedByMe: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'LinkedInRatedByMe'
+        }],
+        ratedByOthers: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Entry'
+        }],
+        claims: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Claim'
+        }]
+    }
 });
 
 // // set up a mongoose model and pass it using module.exports
