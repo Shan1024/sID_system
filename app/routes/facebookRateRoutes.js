@@ -289,7 +289,43 @@ module.exports = function (app, express) {
                                         });
 
                                     } else {
+
                                         console.log(chalk.red('No claim found 1456'));
+
+                                        var newClaim = new Claim({
+                                            claimid: claimid,
+                                            myid: targetid
+                                        });
+
+                                        if (rating == defaultValues.votes.yes) {
+                                            newClaim.yes = 1;
+                                            newClaim.score = defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                        } else if (rating == defaultValues.votes.no) {
+                                            newClaim.no = 1;
+                                            newClaim.score = defaultValues.multipliers.no * myUser.userDetails.weight;
+                                        } else {
+                                            newClaim.notSure = 1;
+                                            newClaim.score = defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                        }
+
+                                        newClaim.setOverallRating();
+
+                                        myUser.facebook.claims.push(newClaim);
+
+                                        newClaim.save(function (err) {
+                                            if (err) {
+                                                console.log(chalk.red('Error occurred 1487'));
+                                            }
+                                        });
+
+                                        myUser.save(function (err) {
+                                            if (err) {
+                                                console.log("myUser save error: " + err);
+                                            } else {
+                                                console.log("myUser saved successfully");
+                                            }
+                                        });
+
                                     }
                                 }
                             });
@@ -422,6 +458,14 @@ module.exports = function (app, express) {
                                                             }
                                                         });
 
+                                                        user.save(function (err) {
+                                                            if (err) {
+                                                                console.log("User(target) save error: " + err);
+                                                            } else {
+                                                                console.log("User(target) saved successfully");
+                                                            }
+                                                        });
+
                                                     } else {
 
                                                         var newClaim = new Claim({
@@ -449,16 +493,18 @@ module.exports = function (app, express) {
                                                                 console.log(chalk.red('Error occurred 1487'));
                                                             }
                                                         });
+
+                                                        user.save(function (err) {
+                                                            if (err) {
+                                                                console.log("User(target) save error: " + err);
+                                                            } else {
+                                                                console.log("User(target) saved successfully");
+                                                            }
+                                                        });
                                                     }
                                                 }
 
-                                                user.save(function (err) {
-                                                    if (err) {
-                                                        console.log("User(target) save error: " + err);
-                                                    } else {
-                                                        console.log("User(target) saved successfully");
-                                                    }
-                                                });
+
                                             });
                                         });
 
