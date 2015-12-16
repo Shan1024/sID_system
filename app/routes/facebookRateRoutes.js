@@ -213,36 +213,36 @@ module.exports = function (app, express) {
                         Claim.findOne({
                             claimid: claimid,
                             myid: targetid
-                        }, function (err, claim) {
+                        }, function (err, myClaim) {
 
                             if (err) {
                                 console.log(chalk.red('Error occurred 4587'));
                             } else {
 
-                                if (claim) {
+                                if (myClaim) {
 
-                                    //remove the current rating and score from the claim
+                                    //remove the current rating and score from the myClaim
                                     if (entry.rating == defaultValues.votes.yes) {
-                                        claim.yes = claim.yes - 1;
-                                        claim.score = claim.score - defaultValues.multipliers.yes * entry.weight;
+                                        myClaim.yes = myClaim.yes - 1;
+                                        myClaim.score = myClaim.score - defaultValues.multipliers.yes * entry.weight;
                                     } else if (entry.rating == defaultValues.votes.no) {
-                                        claim.no = claim.no - 1;
-                                        claim.score = claim.score - defaultValues.multipliers.no * entry.weight;
+                                        myClaim.no = myClaim.no - 1;
+                                        myClaim.score = myClaim.score - defaultValues.multipliers.no * entry.weight;
                                     } else {
-                                        claim.notSure = claim.notSure - 1;
-                                        claim.score = claim.score - defaultValues.multipliers.notSure * entry.weight;
+                                        myClaim.notSure = myClaim.notSure - 1;
+                                        myClaim.score = myClaim.score - defaultValues.multipliers.notSure * entry.weight;
                                     }
 
-                                    //add the new rating and score to the claim
+                                    //add the new rating and score to the myClaim
                                     if (rating == defaultValues.votes.yes) {
-                                        claim.yes = claim.yes + 1;
-                                        claim.score = claim.score + defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                        myClaim.yes = myClaim.yes + 1;
+                                        myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.userDetails.weight;
                                     } else if (rating == defaultValues.votes.no) {
-                                        claim.no = claim.no + 1;
-                                        claim.score = claim.score + defaultValues.multipliers.no * myUser.userDetails.weight;
+                                        myClaim.no = myClaim.no + 1;
+                                        myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.userDetails.weight;
                                     } else {
-                                        claim.notSure = claim.notSure + 1;
-                                        claim.score = claim.score + defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                        myClaim.notSure = myClaim.notSure + 1;
+                                        myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.userDetails.weight;
                                     }
 
                                     entry.rating = rating;
@@ -255,21 +255,22 @@ module.exports = function (app, express) {
                                         }
                                     });
 
-                                    claim.lastUpdated = Date.now();
-                                    claim.setOverallRating();
+                                    myClaim.lastUpdated = Date.now();
+                                    myClaim.setOverallRating();
 
-                                    claim.save(function (err) {
+                                    myClaim.save(function (err) {
                                         if (err) {
-                                            console.log(chalk.red('Error occured while saving the claim 4648'));
+                                            console.log(chalk.red('Error occured while saving the myClaim 4648'));
                                         }
                                     });
 
                                 } else {
 
-                                    console.log(chalk.red('No claim found 1456'));
+                                    console.log(chalk.red('No myClaim found 1456'));
 
                                     var newClaim = new Claim({
                                         claimid: claimid,
+                                        claim:claim,
                                         myid: targetid
                                     });
 
@@ -433,29 +434,29 @@ module.exports = function (app, express) {
                                         Claim.findOne({
                                             claimid: claimid,
                                             myid: targetid
-                                        }, function (err, claim) {
+                                        }, function (err, myClaim) {
 
                                             if (err) {
                                                 console.log(chalk.red("Error occurred 154"));
                                             } else {
 
-                                                if (claim) {
+                                                if (myClaim) {
 
                                                     if (rating == defaultValues.votes.yes) {
-                                                        claim.yes = claim.yes + 1;
-                                                        claim.score = claim.score + defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                                        myClaim.yes = myClaim.yes + 1;
+                                                        myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.userDetails.weight;
                                                     } else if (rating == defaultValues.votes.no) {
-                                                        claim.no = claim.no + 1;
-                                                        claim.score = claim.score + defaultValues.multipliers.no * myUser.userDetails.weight;
+                                                        myClaim.no = myClaim.no + 1;
+                                                        myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.userDetails.weight;
                                                     } else {
-                                                        claim.notSure = claim.notSure + 1;
-                                                        claim.score = claim.score + defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                                        myClaim.notSure = myClaim.notSure + 1;
+                                                        myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.userDetails.weight;
                                                     }
 
-                                                    claim.lastUpdated = Date.now();
-                                                    claim.setOverallRating();
+                                                    myClaim.lastUpdated = Date.now();
+                                                    myClaim.setOverallRating();
 
-                                                    claim.save(function (err) {
+                                                    myClaim.save(function (err) {
                                                         if (err) {
                                                             console.log(chalk.red('Error occurred 1487'));
                                                         }
@@ -473,6 +474,7 @@ module.exports = function (app, express) {
 
                                                     var newClaim = new Claim({
                                                         claimid: claimid,
+                                                        claim:claim,
                                                         myid: targetid
                                                     });
 
