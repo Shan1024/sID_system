@@ -4,6 +4,8 @@ var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 
+var rest = require('restler');
+
 // load the auth variables
 var configAuth = require('./auth');
 
@@ -406,8 +408,8 @@ module.exports = function (passport) {
 
             //linkedin.setLinkedInToken(token);
 
-            console.log(chalk.yellow("User found: " + JSON.stringify(profile, null, "\t")));
-            console.log(chalk.yellow("Token found: " + JSON.stringify(token, null, "\t")));
+            console.log(chalk.yellow("User found 564: " + JSON.stringify(profile, null, "\t")));
+            console.log(chalk.yellow("Token found  75876: " + JSON.stringify(token, null, "\t")));
             console.log(chalk.yellow("refreshToken found: " + JSON.stringify(refreshToken, null, "\t")));
             // asynchronous
             process.nextTick(function () {
@@ -447,8 +449,21 @@ module.exports = function (passport) {
                                         }
                                         return done(null, newUser);
                                     });
-
                                 });
+
+                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function(data) {
+                                  linkedin.url = data.siteStandardProfileRequest.url;
+
+                                  linkedin.save(function (err) {
+                                      if (err) {
+                                          return done(err);
+                                      }
+
+                                          return done(null, newUser);
+                                  });
+                                });
+
+
                             } else {
 
                                 User.findById(linkedin.user, function (err, user) {
@@ -483,6 +498,23 @@ module.exports = function (passport) {
                                         return done(err);
                                     }
                                     return done(null, newLinkedInUser);
+                                });
+
+                                console.log(chalk.blue("sending restler request"));
+                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function(data) {
+                                  console.log(chalk.yellow("response: "+data));
+                                  linkedin.url = data.siteStandardProfileRequest.url;
+
+                                  console.log(chalk.yellow("linkedin.url: "+linkedin.url));
+
+                                  linkedin.save(function (err) {
+                                      if (err) {
+                                        console.log(chalk.red("Error occurred: "+err))
+                                          return done(err);
+                                      }
+
+                                          return done(null, newUser);
+                                  });
                                 });
                             });
                         }
@@ -552,6 +584,23 @@ module.exports = function (passport) {
                                 }
                                 newUser.userDetails.linkedin = linkedin._id;
 
+                                console.log(chalk.blue("sending restler request"));
+                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function(data) {
+                                  console.log(chalk.yellow("response: "+data));
+                                  linkedin.url = data.siteStandardProfileRequest.url;
+
+                                  console.log(chalk.yellow("linkedin.url: "+linkedin.url));
+
+                                  linkedin.save(function (err) {
+                                      if (err) {
+                                        console.log(chalk.red("Error occurred: "+err))
+                                          return done(err);
+                                      }
+
+                                          return done(null, newUser);
+                                  });
+                                });
+                                
                                 newUser.save(function (err) {
                                     if (err) {
                                         return done(err);
@@ -587,8 +636,8 @@ module.exports = function (passport) {
             //linkedin.setLinkedInToken(token);
 
             console.log(chalk.yellow("User found: " + JSON.stringify(profile, null, "\t")));
-            console.log(chalk.yellow("Token found: " + JSON.stringify(token, null, "\t")));
-            console.log(chalk.yellow("refreshToken found: " + JSON.stringify(refreshToken, null, "\t")));
+            console.log(chalk.yellow("Token found 3232: " + JSON.stringify(token, null, "\t")));
+            console.log(chalk.yellow("refreshToken found b53453: " + JSON.stringify(refreshToken, null, "\t")));
             // asynchronous
             process.nextTick(function () {
 
@@ -621,6 +670,24 @@ module.exports = function (passport) {
                                     if (err) {
                                         return done(err);
                                     }
+
+                                    console.log(chalk.blue("sending restler request"));
+                                    rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function(data) {
+                                      console.log(chalk.yellow("response: "+data));
+                                      linkedin.url = data.siteStandardProfileRequest.url;
+
+                                      console.log(chalk.yellow("linkedin.url: "+linkedin.url));
+
+                                      linkedin.save(function (err) {
+                                          if (err) {
+                                            console.log(chalk.red("Error occurred: "+err))
+                                              return done(err);
+                                          }
+
+                                              return done(null, newUser);
+                                      });
+                                    });
+
                                     newUser.save(function (err) {
                                         if (err) {
                                             return done(err);
@@ -628,6 +695,7 @@ module.exports = function (passport) {
                                         return done(null, newUser);
                                     });
                                 });
+
                             } else {
 
                                 User.findById(linkedin.user, function (err, user) {
@@ -663,7 +731,25 @@ module.exports = function (passport) {
                                     }
                                     return done(null, newLinkedInUser);
                                 });
+
+                                console.log(chalk.blue("sending restler request"));
+                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function(data) {
+                                  console.log(chalk.yellow("response: "+data));
+                                  linkedin.url = data.siteStandardProfileRequest.url;
+
+                                  console.log(chalk.yellow("linkedin.url: "+linkedin.url));
+
+                                  linkedin.save(function (err) {
+                                      if (err) {
+                                        console.log(chalk.red("Error occurred: "+err))
+                                          return done(err);
+                                      }
+
+                                          return done(null, newUser);
+                                  });
+                                });
                             });
+
                         }
                     });
 
