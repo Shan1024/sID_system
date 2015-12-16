@@ -593,7 +593,7 @@ module.exports = function (app, express) {
             }
 
             if (!claimid) {
-                return res.json({error: "Missing claim paramter"});
+                return res.json({error: "Missing claimid paramter"});
             }
 
             Claim.findOne({
@@ -605,13 +605,26 @@ module.exports = function (app, express) {
                     res.json({success: false, message: "Error occured"});
                 } else {
                     if (claim) {
+
+                        var character;
+
+                        if (claim.overallRating == defaultValues.ratings.trustedUser) {
+                            character = "T";
+                        } else if (claim.overallRating == defaultValues.ratings.untrustedUser) {
+                            character = "R";
+                        } else {
+                            character = "C";
+                        }
+
                         res.json({
                             success: true,
                             yes: claim.yes,
                             no: claim.no,
                             notSure: claim.notSure,
-                            overallRating: claim.overallRating
+                            overallRating: claim.overallRating,
+                            claimScore: character
                         });
+
                     } else {
                         console.log(chalk.red("Claim not found"));
                         res.json({success: false, message: "Claim not found"});
@@ -623,14 +636,14 @@ module.exports = function (app, express) {
     rateRouter.route('/getAllRatingsCount')
         .post(function (req, res) {
 
-            var uid = req.body.uid;
+            var targetid = req.body.targetid;
 
-            if (!uid) {
-                return res.json({error: "Missing uid paramter"});
+            if (!targetid) {
+                return res.json({error: "Missing targetid paramter"});
             }
 
             Claim.find({
-                myid: uid
+                myid: targetid
             }, function (err, claim) {
 
                 if (err) {
@@ -657,7 +670,7 @@ module.exports = function (app, express) {
 
                         res.json({
                             success: true,
-                            id: uid,
+                            id: targetid,
                             claimsCount: claim.length,
                             yes: yes,
                             notSure: notSure,
@@ -667,7 +680,7 @@ module.exports = function (app, express) {
                     } else {
                         res.json({
                             success: true,
-                            id: uid,
+                            id: targetid,
                             claimsCount: 0,
                             yes: 0,
                             notSure: 0,
