@@ -22,5 +22,7 @@ module.exports = {
     bounds: {
         trustedUser: 50,
         averageUser: 0,
-    }
+    },
+    claimsLimit: 2,
+    entriesLimit: 2
 };
