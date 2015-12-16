@@ -680,7 +680,7 @@ module.exports = function (app, express) {
 
     //profileRating- fbid -> rating: t r c n
 
-    rateRouter.route('/getAllRatingsCount')
+    rateRouter.route('/getOverallProfileRating')
         .post(function (req, res) {
 
             var uid = req.body.uid;
@@ -701,41 +701,33 @@ module.exports = function (app, express) {
 
                         User.findOne({
                             _id: facebook.user
-                        }).populate({
-                                path: 'userDetails.linkedin'
-                            })
-                            .exec(function (err, user) {
-                                if (err) {
-                                    console.log("Error occured 46488");
-                                    res.json({success: false, message: "Error occurred"});
+                        }, function (err, user) {
+
+                            console.log(chalk.green("USER: " + JSON.stringify(user, null, "\t")));
+
+                            if (user.userDetails.overallRating) {
+
+                                if (user.userDetails.overallRating == defaultValues.ratings.trustedUser) {
+                                    res.json({success: true, ratingLevel: "T"});
+                                } else if (user.userDetails.overallRating == defaultValues.ratings.untrustedUser) {
+                                    res.json({success: true, ratingLevel: "R"});
                                 } else {
-                                    if (user) {
-                                        console.log(chalk.green("USER: " + JSON.stringify(user, null, "\t")));
-                                        if (user.userDetails.linkedin) {
-                                            console.log("URL: " + user.userDetails.linkedin.url);
-                                            res.json({success: true, url: user.userDetails.linkedin.url});
-                                        } else {
-                                            res.json({
-                                                success: false,
-                                                message: "No LinkedIn account is linked to this user"
-                                            });
-                                        }
-                                    } else {
-                                        res.json({success: false, message: "No user account found"});
-                                    }
+                                    res.json({success: true, ratingLevel: "C"});
                                 }
-                            });
+
+                            } else {
+                                res.json({success: true, ratingLevel: "N"});
+                            }
+
+                        });
+
                     } else {
                         res.json({success: false, message: "No facebook account with given uid found"});
                     }
                 }
             });
-
         });
-
-
     //profileRating
-
 
     app.use('/rate/facebook', rateRouter);
 
