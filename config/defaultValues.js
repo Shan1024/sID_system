@@ -23,6 +23,7 @@ module.exports = {
         trustedUser: 50,
         averageUser: 0,
     },
-    claimsLimit: 2,
-    entriesLimit: 2
+    claimsLimit: 10,
+    entriesLimit: 20,
+    defaultOrder:-1
 };

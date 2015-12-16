@@ -835,16 +835,31 @@ module.exports = function (app, express) {
         .post(function (req, res) {
 
             var targetid = req.body.targetid;
+            var limit = req.body.limit;
+            var order = req.body.order;
 
             if (!targetid) {
                 return res.json({error: "Missing targetid paramter"});
+            }
+            if (!limit) {
+                return res.json({error: "Missing limit paramter"});
+            }
+            if (limit <= 0) {
+                limit = defaultValues.claimsLimit;
+            }
+
+            if (!order) {
+                return res.json({error: "Missing order paramter"});
+            }
+            if (!(order == 1 || order == -1)) {
+                order = defaultValues.defaultOrder;
             }
 
             Claim.find({
                 myid: targetid
             }).sort({
-                lastUpdated: -1
-            }).limit(defaultValues.claimsLimit)
+                lastUpdated: order
+            }).limit(limit)
                 .exec(
                     function (err, claims) {
                         if (err) {
@@ -855,10 +870,70 @@ module.exports = function (app, express) {
                                 console.log(chalk.blue("Claims found: " + JSON.stringify(claims, null, "\t")));
                                 res.json({success: true, data: claims});
                             } else {
-                                res.json({success: true, message: "No user user found."});
+                                res.json({success: true, message: "No claims user found."});
                             }
                         }
                     });
+        });
+
+    rateRouter.route('/getLastEntries')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+            var limit = req.body.limit;
+            var order = req.body.order;
+
+            if (!targetid) {
+                return res.json({error: "Missing targetid paramter"});
+            }
+            if (!limit) {
+                return res.json({error: "Missing limit paramter"});
+            }
+            if (limit <= 0) {
+                limit = defaultValues.entriesLimit;
+            }
+
+            if (!order) {
+                return res.json({error: "Missing order paramter"});
+            }
+            if (!(order == 1 || order == -1)) {
+                order = defaultValues.defaultOrder;
+            }
+
+            Facebook.findOne({uid: targetid}, function (err, facebook) {
+                if (err) {
+                    console.log("Error occured 49841");
+                    res.json({success: false, message: "Error occurred"});
+                } else {
+                    if (facebook) {
+                        console.log(chalk.blue("Facebook found: " + JSON.stringify(facebook, null, "\t")));
+
+                        Entry.find({
+                            targetid: facebook._id
+                        }).select('id lastUpdated data rating')
+                            .sort({lastUpdated: order})
+                            .limit(limit).exec(
+                            function (err, entries) {
+                                if (err) {
+                                    console.log("Error occured 7945");
+                                    res.json({success: false, message: "Error occurred"});
+                                } else {
+                                    if (entries) {
+                                        console.log(chalk.blue("Claims found: " + JSON.stringify(entries, null, "\t")));
+                                        res.json({success: true, data: entries});
+                                    } else {
+                                        res.json({success: true, message: "No entries user found."});
+                                    }
+                                }
+                            });
+
+                    } else {
+                        res.json({success: true, message: "No facebook account found."});
+                    }
+                }
+            });
+
+
         });
 
     app.use('/rate/facebook', rateRouter);
