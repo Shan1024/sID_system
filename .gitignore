@@ -27,3 +27,5 @@ config/**/*
 
 logs/**/*
 !logs/temp.log
+
+/public/apidoc
