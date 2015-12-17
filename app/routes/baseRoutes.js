@@ -197,8 +197,8 @@ module.exports = function (app, express) {
                                             res.json({
                                                 success: true,
                                                 linked: true,
-                                                id: facebook.id,
-                                                uid: facebook.uid,
+                                                fbappid: facebook.id,
+                                                fbid: facebook.uid,
                                                 token: token
                                             });
                                         } else {
