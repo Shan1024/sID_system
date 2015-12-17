@@ -36,7 +36,12 @@ module.exports = function (passport) {
         //User.findById(id, function (err, user) {
         //    done(err, user);
         //});
-        User.findById(id)
+
+        console.log("Deserializing user");
+        
+        User.findOne({
+                _id: id
+            })
             .populate('userDetails.facebook')
             .populate('userDetails.linkedin')
             //.populate('facebook.ratedByMe')
@@ -271,7 +276,7 @@ module.exports = function (passport) {
             passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
         },
         function (req, token, refreshToken, profile, done) {
-            console.log("ID: "+profile.id);
+            console.log("ID: " + profile.id);
             return done(null, {_id: profile.id});
         })
     );
