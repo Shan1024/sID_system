@@ -5,6 +5,7 @@ var fs = require('fs');
 var passport = require('passport');
 
 var User = require('../models/user'); // get our mongoose model
+var Facebook = require('../models/facebook');
 
 module.exports = function (app, express) {
     /*
@@ -136,7 +137,7 @@ module.exports = function (app, express) {
                 // find the user
 
                 if (password) {
-                    console.log(chalk.yellow('Password: ' + password));
+                    console.log(chalk.yellow('Password: ---------'));
 
                     User.findOne({
                         'userDetails.local.username': username
@@ -172,7 +173,9 @@ module.exports = function (app, express) {
                                 // if user is found and password is right
                                 // create a token
 
-                                Facebook.findOne({}, function (err, facebook) {
+                                Facebook.findOne({
+                                    _id:user.userDetails.facebook
+                                }, function (err, facebook) {
                                     if (err) {
                                         res.status(400).json({
                                             success: false,
@@ -180,6 +183,9 @@ module.exports = function (app, express) {
                                         });
                                     } else {
                                         if (facebook) {
+
+                                            console.log(chalk.blue("Facebook: " + JSON.stringify(facebook, null, "\t")));
+
                                             var tempUser = {
                                                 iss: 'sID',
                                                 context: {
