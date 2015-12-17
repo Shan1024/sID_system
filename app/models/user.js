@@ -32,15 +32,8 @@ var userSchema = mongoose.Schema({
             type: Date,
             default: Date.now
         },
-        weight: {
-            type: Number,
-            default: defaultValues.weights.averageUser
-        },
-        score: {
-            type: Number,
-            default: 0
-        },
-        overallRating: Number
+
+
 
     },
     facebook: {
@@ -55,7 +48,16 @@ var userSchema = mongoose.Schema({
         claims: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Claim'
-        }]
+        }],
+        weight: {
+            type: Number,
+            default: defaultValues.weights.averageUser
+        },
+        score: {
+            type: Number,
+            default: 0
+        },
+        overallRating: Number
     },
     linkedin: {
         ratedByMe: [{
@@ -69,9 +71,47 @@ var userSchema = mongoose.Schema({
         claims: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Claim'
-        }]
+        }],
+        weight: {
+            type: Number,
+            default: defaultValues.weights.averageUser
+        },
+        score: {
+            type: Number,
+            default: 0
+        },
+        overallRating: Number
     }
 });
+
+userSchema.methods.setOverallFacebookRating = function () {
+    if (!this.facebook.score) {
+        this.facebook.overallRating = defaultValues.ratings.averageUser;
+    } else {
+        if (this.facebook.score >= defaultValues.bounds.trustedUser) {
+            this.facebook.overallRating = defaultValues.ratings.trustedUser;
+        } else if (this.facebook.score >= defaultValues.bounds.averageUser) {
+            this.facebook.overallRating = defaultValues.ratings.averageUser;
+        } else {
+            this.facebook.overallRating = defaultValues.ratings.untrustedUser;
+        }
+    }
+};
+
+userSchema.methods.setOverallLinkedInRating = function () {
+    if (!this.linkedin.score) {
+        this.linkedin.overallRating = defaultValues.ratings.averageUser;
+    } else {
+        if (this.linkedin.score >= defaultValues.bounds.trustedUser) {
+            this.linkedin.overallRating = defaultValues.ratings.trustedUser;
+        } else if (this.linkedin.score >= defaultValues.bounds.averageUser) {
+            this.linkedin.overallRating = defaultValues.ratings.averageUser;
+        } else {
+            this.linkedin.overallRating = defaultValues.ratings.untrustedUser;
+        }
+    }
+};
+
 
 // // set up a mongoose model and pass it using module.exports
 // module.exports = mongoose.model('User', new Schema());
