@@ -24,7 +24,7 @@ $(function () {
         console.log(response);
 
         for (var i = 0; i < response.data.length; i++) {
-            $contentArea.append('<div class=\"row\"><div class=\"well\">  Claim: ' + response.data[i].data + ' , Time: ' + response.data[i].lastUpdated + '</div></div></div>');
+            $contentArea.append('<div class=\"row\"><div class=\"well\">  Claim: ' + response.data[i].claim + ' , Time: ' + response.data[i].lastUpdated + '</div></div></div>');
         }
     });
 

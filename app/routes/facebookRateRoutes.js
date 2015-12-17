@@ -318,7 +318,7 @@ module.exports = function (app, express) {
                         id: claimid,
                         myid: me._id,
                         targetid: target._id,
-                        data: claim,
+                        claim: claim,
                         rating: rating,
                         weight: myUser.facebook.weight
                     });
@@ -401,7 +401,7 @@ module.exports = function (app, express) {
                     id: claimid,
                     myid: me._id,
                     targetid: target._id,
-                    data: claim,
+                    claim: claim,
                     rating: rating,
                     weight: myUser.facebook.weight
                 });
