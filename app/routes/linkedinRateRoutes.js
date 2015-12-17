@@ -68,7 +68,7 @@ module.exports = function (app, express) {
             res.json({message: "Welcome to sID API !!!"});
         });
 
-    var addRating = function (req, res, me, target, myUser) {
+    var addRating = function (req, res, me, target, myUser, targetUser) {
 
         var myid = req.body.myid;
         var targetid = req.body.targetid;
@@ -113,24 +113,30 @@ module.exports = function (app, express) {
                                     if (entry.rating == defaultValues.votes.yes) {
                                         myClaim.yes = myClaim.yes - 1;
                                         myClaim.score = myClaim.score - defaultValues.multipliers.yes * entry.weight;
+                                        targetUser.linkedin.score = targetUser.linkedin.score - defaultValues.multipliers.yes * entry.weight;
                                     } else if (entry.rating == defaultValues.votes.no) {
                                         myClaim.no = myClaim.no - 1;
                                         myClaim.score = myClaim.score - defaultValues.multipliers.no * entry.weight;
+                                        targetUser.linkedin.score = targetUser.linkedin.score - defaultValues.multipliers.no * entry.weight;
                                     } else {
                                         myClaim.notSure = myClaim.notSure - 1;
                                         myClaim.score = myClaim.score - defaultValues.multipliers.notSure * entry.weight;
+                                        targetUser.linkedin.score = targetUser.linkedin.score - defaultValues.multipliers.no * entry.weight;
                                     }
 
                                     //add the new rating and score to the myClaim
                                     if (rating == defaultValues.votes.yes) {
                                         myClaim.yes = myClaim.yes + 1;
                                         myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                        targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
                                     } else if (rating == defaultValues.votes.no) {
                                         myClaim.no = myClaim.no + 1;
                                         myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.linkedin.weight;
+                                        targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
                                     } else {
                                         myClaim.notSure = myClaim.notSure + 1;
                                         myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                        targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
                                     }
 
                                     entry.rating = rating;
@@ -152,6 +158,15 @@ module.exports = function (app, express) {
                                         }
                                     });
 
+                                    targetUser.setOverallLinkedInRating();
+                                    targetUser.save(function (err) {
+                                        if (err) {
+                                            console.log("targetUser save error: " + err);
+                                        } else {
+                                            console.log("targetUser saved successfully");
+                                        }
+                                    });
+
                                 } else {
 
                                     console.log(chalk.red('No myClaim found 1456'));
@@ -165,17 +180,27 @@ module.exports = function (app, express) {
                                     if (rating == defaultValues.votes.yes) {
                                         newClaim.yes = 1;
                                         newClaim.score = defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                        targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
                                     } else if (rating == defaultValues.votes.no) {
                                         newClaim.no = 1;
                                         newClaim.score = defaultValues.multipliers.no * myUser.linkedin.weight;
+                                        targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
                                     } else {
                                         newClaim.notSure = 1;
                                         newClaim.score = defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                        targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
                                     }
 
                                     newClaim.setOverallRating();
 
-                                    myUser.facebook.claims.push(newClaim);
+                                    myUser.linkedin.claims.push(newClaim);
+                                    myUser.save(function (err) {
+                                        if (err) {
+                                            console.log("myUser save error: " + err);
+                                        } else {
+                                            console.log("myUser saved successfully");
+                                        }
+                                    });
 
                                     newClaim.save(function (err) {
                                         if (err) {
@@ -183,7 +208,8 @@ module.exports = function (app, express) {
                                         }
                                     });
 
-                                    myUser.save(function (err) {
+                                    targetUser.setOverallLinkedInRating();
+                                    targetUser.save(function (err) {
                                         if (err) {
                                             console.log("myUser save error: " + err);
                                         } else {
@@ -242,12 +268,15 @@ module.exports = function (app, express) {
                                                 if (rating == defaultValues.votes.yes) {
                                                     newClaim.yes = 1;
                                                     newClaim.score = defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                                    user.linkedin.score = user.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
                                                 } else if (rating == defaultValues.votes.no) {
                                                     newClaim.no = 1;
                                                     newClaim.score = defaultValues.multipliers.no * myUser.linkedin.weight;
+                                                    user.linkedin.score = user.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
                                                 } else {
                                                     newClaim.notSure = 1;
                                                     newClaim.score = defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                                    user.linkedin.score = user.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
                                                 }
 
                                                 newClaim.setOverallRating();
@@ -260,6 +289,8 @@ module.exports = function (app, express) {
                                                     }
                                                 });
 
+                                                user.linkedin.claims.push(newClaim);
+                                                user.setOverallLinkedInRating();
                                                 user.save(function (err) {
                                                     if (err) {
                                                         console.log("User save error: " + err);
@@ -333,12 +364,15 @@ module.exports = function (app, express) {
                                                     if (rating == defaultValues.votes.yes) {
                                                         myClaim.yes = myClaim.yes + 1;
                                                         myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                                        user.linkedin.score = user.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
                                                     } else if (rating == defaultValues.votes.no) {
                                                         myClaim.no = myClaim.no + 1;
                                                         myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.linkedin.weight;
+                                                        user.linkedin.score = user.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
                                                     } else {
                                                         myClaim.notSure = myClaim.notSure + 1;
                                                         myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                                        user.linkedin.score = user.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
                                                     }
 
                                                     myClaim.lastUpdated = Date.now();
@@ -350,6 +384,7 @@ module.exports = function (app, express) {
                                                         }
                                                     });
 
+                                                    user.setOverallLinkedInRating();
                                                     user.save(function (err) {
                                                         if (err) {
                                                             console.log("User(target) save error: " + err);
@@ -369,17 +404,20 @@ module.exports = function (app, express) {
                                                     if (rating == defaultValues.votes.yes) {
                                                         newClaim.yes = 1;
                                                         newClaim.score = defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                                        user.linkedin.score = user.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
                                                     } else if (rating == defaultValues.votes.no) {
                                                         newClaim.no = 1;
                                                         newClaim.score = defaultValues.multipliers.no * myUser.linkedin.weight;
+                                                        user.linkedin.score = user.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
                                                     } else {
                                                         newClaim.notSure = 1;
                                                         newClaim.score = defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                                        user.linkedin.score = user.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
                                                     }
 
                                                     newClaim.setOverallRating();
 
-                                                    user.linkedin.claims.push(newClaim);
+
 
                                                     newClaim.save(function (err) {
                                                         if (err) {
@@ -387,6 +425,8 @@ module.exports = function (app, express) {
                                                         }
                                                     });
 
+                                                    user.linkedin.claims.push(newClaim);
+                                                    user.setOverallLinkedInRating();
                                                     user.save(function (err) {
                                                         if (err) {
                                                             console.log("User(target) save error: " + err);
