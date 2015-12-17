@@ -124,17 +124,17 @@ module.exports = function (app, express) {
                                     //add the new rating and score to the myClaim
                                     if (rating == defaultValues.votes.yes) {
                                         myClaim.yes = myClaim.yes + 1;
-                                        myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                        myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
                                     } else if (rating == defaultValues.votes.no) {
                                         myClaim.no = myClaim.no + 1;
-                                        myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.userDetails.weight;
+                                        myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.linkedin.weight;
                                     } else {
                                         myClaim.notSure = myClaim.notSure + 1;
-                                        myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                        myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
                                     }
 
                                     entry.rating = rating;
-                                    entry.weight = myUser.userDetails.weight;
+                                    entry.weight = myUser.linkedin.weight;
                                     entry.lastUpdated = Date.now();
 
                                     entry.save(function (err) {
@@ -164,13 +164,13 @@ module.exports = function (app, express) {
 
                                     if (rating == defaultValues.votes.yes) {
                                         newClaim.yes = 1;
-                                        newClaim.score = defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                        newClaim.score = defaultValues.multipliers.yes * myUser.linkedin.weight;
                                     } else if (rating == defaultValues.votes.no) {
                                         newClaim.no = 1;
-                                        newClaim.score = defaultValues.multipliers.no * myUser.userDetails.weight;
+                                        newClaim.score = defaultValues.multipliers.no * myUser.linkedin.weight;
                                     } else {
                                         newClaim.notSure = 1;
-                                        newClaim.score = defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                        newClaim.score = defaultValues.multipliers.notSure * myUser.linkedin.weight;
                                     }
 
                                     newClaim.setOverallRating();
@@ -205,7 +205,7 @@ module.exports = function (app, express) {
                         targetid: target._id,
                         data: claim,
                         rating: rating,
-                        weight: myUser.userDetails.weight
+                        weight: myUser.linkedin.weight
                     });
 
                     entry.save(function (err) {
@@ -241,13 +241,13 @@ module.exports = function (app, express) {
 
                                                 if (rating == defaultValues.votes.yes) {
                                                     newClaim.yes = 1;
-                                                    newClaim.score = defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                                    newClaim.score = defaultValues.multipliers.yes * myUser.linkedin.weight;
                                                 } else if (rating == defaultValues.votes.no) {
                                                     newClaim.no = 1;
-                                                    newClaim.score = defaultValues.multipliers.no * myUser.userDetails.weight;
+                                                    newClaim.score = defaultValues.multipliers.no * myUser.linkedin.weight;
                                                 } else {
                                                     newClaim.notSure = 1;
-                                                    newClaim.score = defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                                    newClaim.score = defaultValues.multipliers.notSure * myUser.linkedin.weight;
                                                 }
 
                                                 newClaim.setOverallRating();
@@ -288,7 +288,7 @@ module.exports = function (app, express) {
                     targetid: target._id,
                     data: claim,
                     rating: rating,
-                    weight: myUser.userDetails.weight
+                    weight: myUser.linkedin.weight
                 });
 
                 newEntry.save(function (err) {
@@ -332,13 +332,13 @@ module.exports = function (app, express) {
 
                                                     if (rating == defaultValues.votes.yes) {
                                                         myClaim.yes = myClaim.yes + 1;
-                                                        myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                                        myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
                                                     } else if (rating == defaultValues.votes.no) {
                                                         myClaim.no = myClaim.no + 1;
-                                                        myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.userDetails.weight;
+                                                        myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.linkedin.weight;
                                                     } else {
                                                         myClaim.notSure = myClaim.notSure + 1;
-                                                        myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                                        myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
                                                     }
 
                                                     myClaim.lastUpdated = Date.now();
@@ -368,13 +368,13 @@ module.exports = function (app, express) {
 
                                                     if (rating == defaultValues.votes.yes) {
                                                         newClaim.yes = 1;
-                                                        newClaim.score = defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                                        newClaim.score = defaultValues.multipliers.yes * myUser.linkedin.weight;
                                                     } else if (rating == defaultValues.votes.no) {
                                                         newClaim.no = 1;
-                                                        newClaim.score = defaultValues.multipliers.no * myUser.userDetails.weight;
+                                                        newClaim.score = defaultValues.multipliers.no * myUser.linkedin.weight;
                                                     } else {
                                                         newClaim.notSure = 1;
-                                                        newClaim.score = defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                                        newClaim.score = defaultValues.multipliers.notSure * myUser.linkedin.weight;
                                                     }
 
                                                     newClaim.setOverallRating();
@@ -626,7 +626,18 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                if (req.user.userDetails.linkedin) {
+                    targetid = req.user.userDetails.linkedin.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
 
             Claim.find({
@@ -693,7 +704,18 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                if (req.user.userDetails.linkedin) {
+                    targetid = req.user.userDetails.linkedin.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
 
             LinkedIn.findOne({
@@ -750,7 +772,18 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                if (req.user.userDetails.linkedin) {
+                    targetid = req.user.userDetails.linkedin.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
 
             Claim.find({
@@ -789,7 +822,18 @@ module.exports = function (app, express) {
             var order = req.body.order;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                if (req.user.userDetails.linkedin) {
+                    targetid = req.user.userDetails.linkedin.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
             if (!limit) {
                 return res.json({error: "Missing limit paramter"});
@@ -845,7 +889,18 @@ module.exports = function (app, express) {
             var order = req.body.order;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                if (req.user.userDetails.linkedin) {
+                    targetid = req.user.userDetails.linkedin.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
             if (!limit) {
                 return res.json({error: "Missing limit paramter"});
@@ -912,7 +967,18 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                if (req.user.userDetails.linkedin) {
+                    targetid = req.user.userDetails.linkedin.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
 
             LinkedIn.findOne({
