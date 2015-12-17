@@ -800,7 +800,7 @@ module.exports = function (app, express) {
      * @apiGroup Facebook
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The Facebook User ID of the target user.
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      *
      */
     rateRouter.route('/getOverallProfileRating')
@@ -809,7 +809,8 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                //return res.json({error: "Missing targetid paramter"});
+                targetid=req.user.userDetails.facebook.uid
             }
 
             Facebook.findOne({
