@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/stylesheets/sb-admin.css">
 
 </head>
-<body>
+<body style="padding: 0px">
 <% include ../partials/nav-side-bar %>
 
 <div id="wrapper">
@@ -20,11 +20,26 @@
               <% include ../partials/message %>
           </div>
       </div>
-      <div class="page-header text-center">
-          <h1><span class="fa fa-facebook"></span> Facebook - Overall Rating </h1>
+      <div class="row">
+        <div class="panel panel-default col-md-offset-2 col-md-4" style="margin-right: 5px">
+          <div class="panel-heading">
+              <h3><span class="fa fa-facebook"></span> Facebook - Overall Rating </h3>
+          </div>
+          <div class="panel-body">
+              <div id="donut-facebook" style="height: 250px;"></div>
+          </div>
+        </div>
+        <div class="panel panel-default col-md-4" style="margin-left: 5px">
+          <div class="panel-heading">
+              <h3><span class="fa fa-linkedin"></span> LinkedIn - Overall Rating </h3>
+          </div>
+          <div class="panel-body">
+              <div id="donut-linkedin" style="height: 250px;"></div>
+          </div>
+        </div>
       </div>
       <div class="row">
-        <div id="donut-example" style="height: 250px;"></div>
+
       </div>
     </div>
     <% include ../partials/footer %>
@@ -34,11 +49,115 @@
 <script type="text/javascript">
   var json = (function () {
           var json = null;
+          var tempdata=null;
           var settings = {
           "async": false,
           "global": false,
           "crossDomain": true,
           "url": "/rate/facebook/getAllRatingsCount",
+          "method": "POST",
+          "headers": {
+            "cache-control": "no-cache",
+            "postman-token": "fb992280-1838-c18e-05ad-f396b003b64d",
+            "content-type": "application/x-www-form-urlencoded"
+          }
+        }
+
+        $.ajax(settings).done(function (response) {
+          json =  [{label: "Yes", value: response.yes},
+                  {label: "No", value: response.no},
+                  {label: "Not Sure", value: response.notSure}];
+
+          tempdata = response;
+        });
+          // alert(settings);
+          if(tempdata){
+            if(tempdata.yes == 0 && tempdata.no == 0 && tempdata.notSure == 0){
+
+                var $content = $('#donut-facebook');
+
+                $content.append("<div class='text-center'>No rating data available for your Facebook profile.</div>");
+
+            }else{
+              Morris.Donut({
+                element: 'donut-facebook',
+                data: json,
+                colors: [
+                  '#33cc33',
+                  '#ff0000',
+                  '#ffff00'
+                ]
+              });
+            }
+          }
+          return json;
+
+      })
+      ();
+
+
+</script>
+
+<script type="text/javascript">
+  var json = (function () {
+          var json = null;
+          var tempdata=null;
+          var settings = {
+          "async": false,
+          "global": false,
+          "crossDomain": true,
+          "url": "/rate/linkedin/getAllRatingsCount",
+          "method": "POST",
+          "headers": {
+            "cache-control": "no-cache",
+            "postman-token": "fb992280-1838-c18e-05ad-f396b003b64d",
+            "content-type": "application/x-www-form-urlencoded"
+          }
+        }
+
+        $.ajax(settings).done(function (response) {
+          json =  [{label: "Yes", value: response.yes},
+                  {label: "No", value: response.no},
+                  {label: "Not Sure", value: response.notSure}];
+
+          tempdata = response;
+        });
+          // alert(settings);
+          if(tempdata){
+            if(tempdata.yes == 0 && tempdata.no == 0 && tempdata.notSure == 0){
+
+                var $content = $('#donut-linkedin');
+
+                $content.append("<div class='text-center'>No rating data available for your LinkedIn profile.</div>");
+
+            }else{
+              Morris.Donut({
+                element: 'donut-linkedin',
+                data: json,
+                colors: [
+                  '#33cc33',
+                  '#ff0000',
+                  '#ffff00'
+                ]
+              });
+            }
+          }
+          return json;
+
+      })
+      ();
+
+
+</script>
+
+<!-- <script type="text/javascript">
+  var json = (function () {
+          var json = null;
+          var settings = {
+          "async": false,
+          "global": false,
+          "crossDomain": true,
+          "url": "/rate/linkedin/getAllRatingsCount",
           "method": "POST",
           "headers": {
             "cache-control": "no-cache",
@@ -59,9 +178,9 @@
       })
       ();
   Morris.Donut({
-    element: 'donut-example',
+    element: 'donut-linkedin',
     data: json
   });
-</script>
+</script> -->
 </body>
 </html>
