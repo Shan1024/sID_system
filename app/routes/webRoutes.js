@@ -244,6 +244,15 @@ module.exports = function (app, passport) {
         })
     );
 
+    app.get('/auth/plugin/facebook', passport.authenticate('facebook-auth-plugin-https'));
+
+    app.get('/auth/plugin/facebookHTTPS/callback',
+        passport.authenticate('facebook-auth-plugin-https', {
+            successRedirect: 'https://www.facebook.com',
+            failureRedirect: 'https://www.facebook.com'
+        })
+    );
+
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++
     //+++++++++++++++++++ LinkedIn Auth +++++++++++++++++++++
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++

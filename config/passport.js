@@ -263,6 +263,18 @@ module.exports = function (passport) {
         })
     );
 
+    //facebook authenticate https strategy
+    passport.use('facebook-auth-plugin-https', new FacebookStrategy({
+            clientID: configAuth.facebookAuth.clientID,
+            clientSecret: configAuth.facebookAuth.clientSecret,
+            callbackURL: configAuth.facebookAuth.callbackURL_auth_plugin_https,
+            passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
+        },
+        function (req, token, refreshToken, profile, done) {
+            return done(null, profile);
+        })
+    );
+
     //This function is used for facebook connect
     var facebookConnect = function (req, token, refreshToken, profile, done) {
 
