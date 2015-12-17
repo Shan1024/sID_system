@@ -655,8 +655,8 @@ module.exports = function (app, express) {
      * @apiGroup Facebook
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The Facebook User ID of the target user.
      * @apiParam {String} claimid The Facebook Claim ID.
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      *
      */
     rateRouter.route('/getRating')
@@ -666,7 +666,8 @@ module.exports = function (app, express) {
             var claimid = req.body.claimid;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                //return res.json({error: "Missing targetid paramter"});
+                targetid=req.user.userDetails.facebook.uid
             }
 
             if (!claimid) {
@@ -732,7 +733,7 @@ module.exports = function (app, express) {
      * @apiGroup Facebook
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The Facebook User ID of the target user.
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      *
      */
     rateRouter.route('/getAllRatingsCount')
@@ -741,7 +742,8 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                //return res.json({error: "Missing targetid paramter"});
+                targetid = req.user.userDetails.facebook.uid
             }
 
             Claim.find({
@@ -810,7 +812,7 @@ module.exports = function (app, express) {
 
             if (!targetid) {
                 //return res.json({error: "Missing targetid paramter"});
-                targetid=req.user.userDetails.facebook.uid
+                targetid = req.user.userDetails.facebook.uid
             }
 
             Facebook.findOne({
@@ -858,7 +860,7 @@ module.exports = function (app, express) {
      * @apiGroup Facebook
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The Facebook User ID of the target user.
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      *
      */
     rateRouter.route('/getAllRatedClaims')
@@ -867,7 +869,8 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                //return res.json({error: "Missing targetid paramter"});
+                targetid = req.user.userDetails.facebook.uid
             }
 
             Claim.find({
@@ -893,7 +896,7 @@ module.exports = function (app, express) {
      * @apiGroup Facebook
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The Facebook User ID of the target user.
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      * @apiParam {Number} limit The number of results needed. If the value is invalid, default value will be used.
      * @apiParam {Number} order -1 for descending order and 1 for ascending order. Default value is -1.
      *
@@ -906,7 +909,8 @@ module.exports = function (app, express) {
             var order = req.body.order;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                //return res.json({error: "Missing targetid paramter"});
+                targetid = req.user.userDetails.facebook.uid
             }
             if (!limit) {
                 return res.json({error: "Missing limit paramter"});
@@ -949,7 +953,7 @@ module.exports = function (app, express) {
      * @apiGroup Facebook
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The Facebook User ID of the target user.
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      * @apiParam {Number} limit The number of results needed. If the value is invalid, default value will be used.
      * @apiParam {Number} order -1 for descending order and 1 for ascending order. Default value is -1.
      *
@@ -962,7 +966,8 @@ module.exports = function (app, express) {
             var order = req.body.order;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                //return res.json({error: "Missing targetid paramter"});
+                targetid = req.user.userDetails.facebook.uid
             }
             if (!limit) {
                 return res.json({error: "Missing limit paramter"});
@@ -1017,7 +1022,7 @@ module.exports = function (app, express) {
      * @apiGroup Facebook
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The Facebook User ID of the target user.
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      *
      */
     rateRouter.route('/getAllRatingsByUser')
@@ -1026,7 +1031,8 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                return res.json({error: "Missing targetid paramter"});
+                //return res.json({error: "Missing targetid paramter"});
+                targetid = req.user.userDetails.facebook.uid
             }
 
             Facebook.findOne({
