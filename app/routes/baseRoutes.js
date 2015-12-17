@@ -172,26 +172,46 @@ module.exports = function (app, express) {
                                 // if user is found and password is right
                                 // create a token
 
-                                var tempUser = {
-                                    iss: 'sID',
-                                    context: {
-                                        username: user.userDetails.local.username
+                                Facebook.findOne({}, function (err, facebook) {
+                                    if (err) {
+                                        res.status(400).json({
+                                            success: false,
+                                            message: 'Error occurred.'
+                                        });
+                                    } else {
+                                        if (facebook) {
+                                            var tempUser = {
+                                                iss: 'sID',
+                                                context: {
+                                                    username: user.userDetails.local.username,
+                                                    id: facebook.id,
+                                                    uid: facebook.uid
+                                                }
+                                            };
+
+                                            var token = jwt.sign(tempUser, apiSecret, {
+                                                expiresInMinutes: 1440 // expires in 24 hours
+                                            });
+
+                                            // return the information including token as JSON
+                                            res.json({
+                                                success: true,
+                                                linked: true,
+                                                id: facebook.id,
+                                                uid: facebook.uid,
+                                                token: token
+                                            });
+                                        } else {
+                                            res.status(400).json({
+                                                success: false,
+                                                linked: false,
+                                                message: 'No facebook account linked.'
+                                            });
+                                        }
                                     }
-                                };
-
-                                var token = jwt.sign(tempUser, apiSecret, {
-                                    expiresInMinutes: 1440 // expires in 24 hours
-                                });
-
-                                // return the information including token as JSON
-                                res.json({
-                                    success: true,
-                                    token: token
                                 });
                             }
-
                         }
-
                     });
                 } else {
                     console.log(chalk.red('Authentication failed. Password required.'));
