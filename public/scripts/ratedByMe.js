@@ -8,7 +8,7 @@ $(function () {
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "/rate/facebook/getAllRatedClaims",
+        "url": "/rate/facebook/getAllRatingsByUser",
         "method": "POST",
         "headers": {
             "cache-control": "no-cache",
@@ -24,7 +24,7 @@ $(function () {
         console.log(response);
 
         for (var i = 0; i < response.data.length; i++) {
-            $contentArea.append('<div class=\"row\"><div class=\"well\">  Claim: ' + response.data[i].claim + ' , Yes: ' + response.data[i].yes + ' , Not Sure: ' + response.data[i].notSure + ' , No: ' + response.data[i].no + '</div></div></div>');
+            $contentArea.append('<div class=\"row\"><div class=\"well\">  Claim: ' + response.data[i].data + ' , Time: ' + response.data[i].lastUpdated + '</div></div></div>');
         }
     });
 

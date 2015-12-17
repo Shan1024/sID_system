@@ -36,13 +36,23 @@ module.exports = function (passport) {
         //User.findById(id, function (err, user) {
         //    done(err, user);
         //});
-        User.findById(id)
+
+        console.log("Deserializing user");
+
+        User.findOne({
+                _id: id
+            })
             .populate('userDetails.facebook')
             .populate('userDetails.linkedin')
             //.populate('facebook.ratedByMe')
             .exec(function (error, user) {
                 console.log(JSON.stringify(user, null, "\t"));
-                done(error, user);
+                if(user){
+                    done(error, user);
+                }else{
+                    done(error);
+                }
+
 
                 //res.render('partials/profile', {user: user});
             });
@@ -263,6 +273,22 @@ module.exports = function (passport) {
         })
     );
 
+    //facebook authenticate https strategy
+    passport.use('facebook-auth-plugin-https', new FacebookStrategy({
+            clientID: configAuth.facebookAuth.clientID,
+            clientSecret: configAuth.facebookAuth.clientSecret,
+            callbackURL: configAuth.facebookAuth.callbackURL_auth_plugin_https,
+            passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
+        },
+        function (req, token, refreshToken, profile, done) {
+
+
+            console.log("ID: " + profile.id);
+            //return done(null, {_id: profile.id});
+            facebookAuth(req, token, refreshToken, profile, done);
+        })
+    );
+
     //This function is used for facebook connect
     var facebookConnect = function (req, token, refreshToken, profile, done) {
 
@@ -454,16 +480,16 @@ module.exports = function (passport) {
                                     });
                                 });
 
-                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function(data) {
-                                  linkedin.url = data.siteStandardProfileRequest.url;
+                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function (data) {
+                                    linkedin.url = data.siteStandardProfileRequest.url;
 
-                                  linkedin.save(function (err) {
-                                      if (err) {
-                                          return done(err);
-                                      }
+                                    linkedin.save(function (err) {
+                                        if (err) {
+                                            return done(err);
+                                        }
 
-                                          return done(null, newUser);
-                                  });
+                                        return done(null, newUser);
+                                    });
                                 });
 
 
@@ -504,20 +530,20 @@ module.exports = function (passport) {
                                 });
 
                                 console.log(chalk.blue("sending restler request"));
-                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function(data) {
-                                  console.log(chalk.yellow("response: "+data));
-                                  linkedin.url = data.siteStandardProfileRequest.url;
+                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function (data) {
+                                    console.log(chalk.yellow("response: " + data));
+                                    linkedin.url = data.siteStandardProfileRequest.url;
 
-                                  console.log(chalk.yellow("linkedin.url: "+linkedin.url));
+                                    console.log(chalk.yellow("linkedin.url: " + linkedin.url));
 
-                                  linkedin.save(function (err) {
-                                      if (err) {
-                                        console.log(chalk.red("Error occurred: "+err))
-                                          return done(err);
-                                      }
+                                    linkedin.save(function (err) {
+                                        if (err) {
+                                            console.log(chalk.red("Error occurred: " + err))
+                                            return done(err);
+                                        }
 
-                                          return done(null, newUser);
-                                  });
+                                        return done(null, newUser);
+                                    });
                                 });
                             });
                         }
@@ -588,22 +614,22 @@ module.exports = function (passport) {
                                 newUser.userDetails.linkedin = linkedin._id;
 
                                 console.log(chalk.blue("sending restler request"));
-                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function(data) {
-                                  console.log(chalk.yellow("response: "+data));
-                                  linkedin.url = data.siteStandardProfileRequest.url;
+                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function (data) {
+                                    console.log(chalk.yellow("response: " + data));
+                                    linkedin.url = data.siteStandardProfileRequest.url;
 
-                                  console.log(chalk.yellow("linkedin.url: "+linkedin.url));
+                                    console.log(chalk.yellow("linkedin.url: " + linkedin.url));
 
-                                  linkedin.save(function (err) {
-                                      if (err) {
-                                        console.log(chalk.red("Error occurred: "+err))
-                                          return done(err);
-                                      }
+                                    linkedin.save(function (err) {
+                                        if (err) {
+                                            console.log(chalk.red("Error occurred: " + err))
+                                            return done(err);
+                                        }
 
-                                          return done(null, newUser);
-                                  });
+                                        return done(null, newUser);
+                                    });
                                 });
-                                
+
                                 newUser.save(function (err) {
                                     if (err) {
                                         return done(err);
@@ -675,20 +701,20 @@ module.exports = function (passport) {
                                     }
 
                                     console.log(chalk.blue("sending restler request"));
-                                    rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function(data) {
-                                      console.log(chalk.yellow("response: "+data));
-                                      linkedin.url = data.siteStandardProfileRequest.url;
+                                    rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function (data) {
+                                        console.log(chalk.yellow("response: " + data));
+                                        linkedin.url = data.siteStandardProfileRequest.url;
 
-                                      console.log(chalk.yellow("linkedin.url: "+linkedin.url));
+                                        console.log(chalk.yellow("linkedin.url: " + linkedin.url));
 
-                                      linkedin.save(function (err) {
-                                          if (err) {
-                                            console.log(chalk.red("Error occurred: "+err))
-                                              return done(err);
-                                          }
+                                        linkedin.save(function (err) {
+                                            if (err) {
+                                                console.log(chalk.red("Error occurred: " + err))
+                                                return done(err);
+                                            }
 
-                                              return done(null, newUser);
-                                      });
+                                            return done(null, newUser);
+                                        });
                                     });
 
                                     newUser.save(function (err) {
@@ -736,20 +762,20 @@ module.exports = function (passport) {
                                 });
 
                                 console.log(chalk.blue("sending restler request"));
-                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function(data) {
-                                  console.log(chalk.yellow("response: "+data));
-                                  linkedin.url = data.siteStandardProfileRequest.url;
+                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function (data) {
+                                    console.log(chalk.yellow("response: " + data));
+                                    linkedin.url = data.siteStandardProfileRequest.url;
 
-                                  console.log(chalk.yellow("linkedin.url: "+linkedin.url));
+                                    console.log(chalk.yellow("linkedin.url: " + linkedin.url));
 
-                                  linkedin.save(function (err) {
-                                      if (err) {
-                                        console.log(chalk.red("Error occurred: "+err))
-                                          return done(err);
-                                      }
+                                    linkedin.save(function (err) {
+                                        if (err) {
+                                            console.log(chalk.red("Error occurred: " + err))
+                                            return done(err);
+                                        }
 
-                                          return done(null, newUser);
-                                  });
+                                        return done(null, newUser);
+                                    });
                                 });
                             });
 
