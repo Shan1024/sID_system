@@ -491,9 +491,11 @@ module.exports = function (app, passport) {
     app.get('/myratings', isLoggedIn, function (req, res) {
         res.render('myratings.ejs', {user: req.user});
     });
-    app.get('/myratings', isLoggedIn, function (req, res) {
-        res.render('myratings.ejs', {user: req.user});
+
+    app.get('/ratedByMe', isLoggedIn, function (req, res) {
+        res.render('ratedByMe.ejs', {user: req.user});
     });
+
     app.get('/history', isLoggedIn, function (req, res) {
         res.render('history.ejs', {user: req.user});
     });

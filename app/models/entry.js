@@ -15,7 +15,7 @@ var entrySchema = mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    data: String,
+    claim: String,
     rating: Number,
     weight: Number
 });
