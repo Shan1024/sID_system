@@ -8,15 +8,14 @@ $(function () {
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "http://localhost:8080/rate/facebook/getAllRatedClaims",
+        "url": "http://localhost:8080/rate/facebook/getAllRatingsByUser",
         "method": "POST",
         "headers": {
             "cache-control": "no-cache",
             "content-type": "application/x-www-form-urlencoded"
         },
         "data": {
-            "targetid": "100000211592969",
-            "limit": "2",
+            "limit": "10",
             "order": "-1"
         }
     }
@@ -25,7 +24,7 @@ $(function () {
         console.log(response);
 
         for (var i = 0; i < response.data.length; i++) {
-            $contentArea.append('<div class=\"row\"><div class=\"well\">  Claim: ' + response.data[i].claim + ' , Yes: ' + response.data[i].yes + ' , Not Sure: ' + response.data[i].notSure + ' , No: ' + response.data[i].no + '</div></div></div>');
+            $contentArea.append('<div class=\"row\"><div class=\"well\">  Claim: ' + response.data[i].data + ' , Time: ' + response.data[i].lastUpdated + '</div></div></div>');
         }
     });
 

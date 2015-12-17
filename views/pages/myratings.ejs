@@ -29,18 +29,10 @@
                 </div>
             </div>
 
-            <div class="container myratingcontainerrow">
-                <% if (user.userDetails.facebook ) { %>
-                <div class="ratings" data-id="<%= user.userDetails.facebook.uid %>">
-                </div>
-                <% } else { %>
-                <div class="ratings">
-                </div>
-                <% } %>
+            <div class="contentArea">
 
-                <!-- /.row -->
             </div>
-            <!-- /.container-fluid -->
+
             <% include ../partials/footer %>
         </div>
         <!-- /#page-wrapper -->
