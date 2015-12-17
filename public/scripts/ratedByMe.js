@@ -23,11 +23,34 @@ $(function () {
     $.ajax(settings).done(function (response) {
         console.log(response);
 
+        console.log("response.data.length: " + response.data.length);
+
         for (var i = 0; i < response.data.length; i++) {
-            $contentArea.append('<div class=\"row\"><div class=\"well\">  Claim: ' + response.data[i].claim + ' , Time: ' + response.data[i].lastUpdated + '</div></div></div>');
+
+            console.log("response.data[i].entries.length: " + response.data[i].entries.length);
+
+            console.log("Entry[0]: " + JSON.stringify(response.data[i].entries[0], null, "\t"));
+
+
+
+            for (var j = 0; j < response.data[i].entries.length; j++) {
+
+                console.log(response.data[i].entries[j].claim);
+
+                var type;
+
+                if(response.data[i].entries[j].rating==1){
+                    type ="alert alert-success";
+                }else   if(response.data[i].entries[j].rating==-1){
+                    type ="alert alert-danger";
+                }else{
+                    type ="alert alert-warning";
+                }
+
+                $contentArea.append('<div class=\"row\"><div class=\"'+type+'\" > User: '+'<a href="https://www.facebook.com/'+response.data[i].entries[j].targetid.uid+'">'+response.data[i].entries[j].targetid.name+'</a>'+' Claim: ' + response.data[i].entries[j].claim +' , Rating: ' + response.data[i].entries[j].rating + ' , Time: ' + response.data[i].entries[j].lastUpdated + '</div></div></div>');
+            }
         }
     });
-
 
     //var $ratings = $('.ratings');
     //var uid = $ratings.attr('data-id');
