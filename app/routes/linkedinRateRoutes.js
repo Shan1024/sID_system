@@ -158,7 +158,7 @@ module.exports = function (app, express) {
 
                                     var newClaim = new Claim({
                                         claimid: claimid,
-                                        claim:claim,
+                                        claim: claim,
                                         myid: targetid
                                     });
 
@@ -362,7 +362,7 @@ module.exports = function (app, express) {
 
                                                     var newClaim = new Claim({
                                                         claimid: claimid,
-                                                        claim:claim,
+                                                        claim: claim,
                                                         myid: targetid
                                                     });
 
@@ -895,6 +895,59 @@ module.exports = function (app, express) {
             });
 
 
+        });
+
+    /**
+     * @api {post} /rate/linkedin/getAllRatingsByMe Returns the all ratings done by a target user.
+     * @apiName GetAllRatingsByMe
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} targetid The Facebook User ID of the target user.
+     *
+     */
+    rateRouter.route('/getAllRatingsByUser')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+
+            if (!targetid) {
+                return res.json({error: "Missing targetid paramter"});
+            }
+
+            LinkedIn.findOne({
+                uid: targetid
+            }, function (err, linkedin) {
+                if (err) {
+                    console.log("Error occurred");
+                    res.json({success: false, message: "Error occurred"});
+                } else {
+                    if (linkedin) {
+                        LinkedInRatedByMe.findOne({
+                            myid: linkedin._id
+                        }).populate({
+                            path: 'entries'
+                        }).select('entries')
+                            .exec(function (err, liRatedByMe) {
+                                if (err) {
+                                    console.log("Error occurred");
+                                    res.json({success: false, message: "Error occurred"});
+                                } else {
+                                    if (liRatedByMe) {
+                                        console.log(chalk.blue("liRatedByMe found: " + JSON.stringify(liRatedByMe, null, "\t")));
+                                        res.json({success: true, data: liRatedByMe.entries});
+                                    } else {
+                                        console.log("liRatedByMe not found");
+                                        res.json({success: false, message: "liRatedByMe not found"});
+                                    }
+                                }
+                            });
+                    } else {
+                        console.log("Target not found");
+                        res.json({success: false, message: "Target not found"});
+                    }
+                }
+            });
         });
 
     app.use('/rate/linkedin', rateRouter);

@@ -273,7 +273,7 @@ module.exports = function (app, express) {
 
                                     var newClaim = new Claim({
                                         claimid: claimid,
-                                        claim:claim,
+                                        claim: claim,
                                         myid: targetid
                                     });
 
@@ -477,7 +477,7 @@ module.exports = function (app, express) {
 
                                                     var newClaim = new Claim({
                                                         claimid: claimid,
-                                                        claim:claim,
+                                                        claim: claim,
                                                         myid: targetid
                                                     });
 
@@ -943,8 +943,8 @@ module.exports = function (app, express) {
         });
 
     /**
-     * @api {post} /rate/facebook/getLastEntries Returns the last updated Entries of the target user.
-     * @apiName GetLastEntries
+     * @api {post} /rate/facebook/getLastRatedEntries Returns the last updated Entries of the target user.
+     * @apiName GetLastRatedEntries
      * @apiGroup Facebook
      * @apiVersion 0.1.0
      *
@@ -953,7 +953,7 @@ module.exports = function (app, express) {
      * @apiParam {Number} order -1 for descending order and 1 for ascending order. Default value is -1.
      *
      */
-    rateRouter.route('/getLastEntries')
+    rateRouter.route('/getLastRatedEntries')
         .post(function (req, res) {
 
             var targetid = req.body.targetid;
@@ -1003,14 +1003,64 @@ module.exports = function (app, express) {
                                     }
                                 }
                             });
-
                     } else {
                         res.json({success: true, message: "No facebook account found."});
                     }
                 }
             });
+        });
 
+    /**
+     * @api {post} /rate/facebook/getAllRatingsByMe Returns the all ratings done by a target user.
+     * @apiName GetAllRatingsByMe
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} targetid The Facebook User ID of the target user.
+     *
+     */
+    rateRouter.route('/getAllRatingsByUser')
+        .post(function (req, res) {
 
+            var targetid = req.body.targetid;
+
+            if (!targetid) {
+                return res.json({error: "Missing targetid paramter"});
+            }
+
+            Facebook.findOne({
+                uid: targetid
+            }, function (err, facebook) {
+                if (err) {
+                    console.log("Error occurred");
+                    res.json({success: false, message: "Error occurred"});
+                } else {
+                    if (facebook) {
+                        FacebookRatedByMe.findOne({
+                            myid: facebook._id
+                        }).populate({
+                            path: 'entries'
+                        }).select('entries')
+                            .exec(function (err, fbRatedByMe) {
+                                if (err) {
+                                    console.log("Error occurred");
+                                    res.json({success: false, message: "Error occurred"});
+                                } else {
+                                    if (fbRatedByMe) {
+                                        console.log(chalk.blue("fbRatedByMe found: " + JSON.stringify(fbRatedByMe, null, "\t")));
+                                        res.json({success: true, data: fbRatedByMe.entries});
+                                    } else {
+                                        console.log("fbRatedByMe not found");
+                                        res.json({success: false, message: "fbRatedByMe not found"});
+                                    }
+                                }
+                            });
+                    } else {
+                        console.log("Target not found");
+                        res.json({success: false, message: "Target not found"});
+                    }
+                }
+            });
         });
 
     app.use('/rate/facebook', rateRouter);
