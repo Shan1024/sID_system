@@ -5,6 +5,7 @@ var defaultValues = require("../../config/defaultValues");
 //Entry schema
 var claimSchema = mongoose.Schema({
     claimid: String,
+    claim: String,
     myid: String,
     lastUpdated: {
         type: Date,

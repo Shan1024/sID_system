@@ -19,9 +19,13 @@ results
 npm-debug.log
 node_modules
 .idea/
-/logs
 
 config/**/*
 !config/facebook.js
 !config/passport.js
 !config/defaultValues.js
+
+logs/**/*
+!logs/temp.log
+
+/public/apidoc
