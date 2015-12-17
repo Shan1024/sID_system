@@ -239,17 +239,17 @@ module.exports = function (app, express) {
                                     //add the new rating and score to the myClaim
                                     if (rating == defaultValues.votes.yes) {
                                         myClaim.yes = myClaim.yes + 1;
-                                        myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                        myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.facebook.weight;
                                     } else if (rating == defaultValues.votes.no) {
                                         myClaim.no = myClaim.no + 1;
-                                        myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.userDetails.weight;
+                                        myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.facebook.weight;
                                     } else {
                                         myClaim.notSure = myClaim.notSure + 1;
-                                        myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                        myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
                                     }
 
                                     entry.rating = rating;
-                                    entry.weight = myUser.userDetails.weight;
+                                    entry.weight = myUser.facebook.weight;
                                     entry.lastUpdated = Date.now();
 
                                     entry.save(function (err) {
@@ -279,13 +279,13 @@ module.exports = function (app, express) {
 
                                     if (rating == defaultValues.votes.yes) {
                                         newClaim.yes = 1;
-                                        newClaim.score = defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                        newClaim.score = defaultValues.multipliers.yes * myUser.facebook.weight;
                                     } else if (rating == defaultValues.votes.no) {
                                         newClaim.no = 1;
-                                        newClaim.score = defaultValues.multipliers.no * myUser.userDetails.weight;
+                                        newClaim.score = defaultValues.multipliers.no * myUser.facebook.weight;
                                     } else {
                                         newClaim.notSure = 1;
-                                        newClaim.score = defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                        newClaim.score = defaultValues.multipliers.notSure * myUser.facebook.weight;
                                     }
 
                                     newClaim.setOverallRating();
@@ -320,7 +320,7 @@ module.exports = function (app, express) {
                         targetid: target._id,
                         data: claim,
                         rating: rating,
-                        weight: myUser.userDetails.weight
+                        weight: myUser.facebook.weight
                     });
 
                     entry.save(function (err) {
@@ -356,13 +356,13 @@ module.exports = function (app, express) {
 
                                                 if (rating == defaultValues.votes.yes) {
                                                     newClaim.yes = 1;
-                                                    newClaim.score = defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                                    newClaim.score = defaultValues.multipliers.yes * myUser.facebook.weight;
                                                 } else if (rating == defaultValues.votes.no) {
                                                     newClaim.no = 1;
-                                                    newClaim.score = defaultValues.multipliers.no * myUser.userDetails.weight;
+                                                    newClaim.score = defaultValues.multipliers.no * myUser.facebook.weight;
                                                 } else {
                                                     newClaim.notSure = 1;
-                                                    newClaim.score = defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                                    newClaim.score = defaultValues.multipliers.notSure * myUser.facebook.weight;
                                                 }
 
                                                 newClaim.setOverallRating();
@@ -403,7 +403,7 @@ module.exports = function (app, express) {
                     targetid: target._id,
                     data: claim,
                     rating: rating,
-                    weight: myUser.userDetails.weight
+                    weight: myUser.facebook.weight
                 });
 
                 newEntry.save(function (err) {
@@ -447,13 +447,13 @@ module.exports = function (app, express) {
 
                                                     if (rating == defaultValues.votes.yes) {
                                                         myClaim.yes = myClaim.yes + 1;
-                                                        myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                                        myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.facebook.weight;
                                                     } else if (rating == defaultValues.votes.no) {
                                                         myClaim.no = myClaim.no + 1;
-                                                        myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.userDetails.weight;
+                                                        myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.facebook.weight;
                                                     } else {
                                                         myClaim.notSure = myClaim.notSure + 1;
-                                                        myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                                        myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
                                                     }
 
                                                     myClaim.lastUpdated = Date.now();
@@ -483,13 +483,13 @@ module.exports = function (app, express) {
 
                                                     if (rating == defaultValues.votes.yes) {
                                                         newClaim.yes = 1;
-                                                        newClaim.score = defaultValues.multipliers.yes * myUser.userDetails.weight;
+                                                        newClaim.score = defaultValues.multipliers.yes * myUser.facebook.weight;
                                                     } else if (rating == defaultValues.votes.no) {
                                                         newClaim.no = 1;
-                                                        newClaim.score = defaultValues.multipliers.no * myUser.userDetails.weight;
+                                                        newClaim.score = defaultValues.multipliers.no * myUser.facebook.weight;
                                                     } else {
                                                         newClaim.notSure = 1;
-                                                        newClaim.score = defaultValues.multipliers.notSure * myUser.userDetails.weight;
+                                                        newClaim.score = defaultValues.multipliers.notSure * myUser.facebook.weight;
                                                     }
 
                                                     newClaim.setOverallRating();
@@ -658,6 +658,17 @@ module.exports = function (app, express) {
      * @apiParam {String} claimid The Facebook Claim ID.
      * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "yes": 0,
+     *         "no": 0,
+     *         "notSure": 1,
+     *         "overallRating": 0,
+     *         "claimScore": "C"
+     *    }
+     *
      */
     rateRouter.route('/getRating')
         .post(function (req, res) {
@@ -666,8 +677,18 @@ module.exports = function (app, express) {
             var claimid = req.body.claimid;
 
             if (!targetid) {
-                //return res.json({error: "Missing targetid paramter"});
-                targetid=req.user.userDetails.facebook.uid
+                if (req.user.userDetails.facebook) {
+                    targetid = req.user.userDetails.facebook.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
 
             if (!claimid) {
@@ -735,6 +756,17 @@ module.exports = function (app, express) {
      *
      * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "id": {ID},
+     *         "claimsCount": 3,
+     *         "yes": 2,
+     *         "notSure": 2,
+     *         "no": 0
+     *     }
+     *
      */
     rateRouter.route('/getAllRatingsCount')
         .post(function (req, res) {
@@ -742,8 +774,18 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                //return res.json({error: "Missing targetid paramter"});
-                targetid = req.user.userDetails.facebook.uid
+                if (req.user.userDetails.facebook) {
+                    targetid = req.user.userDetails.facebook.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
 
             Claim.find({
@@ -804,6 +846,12 @@ module.exports = function (app, express) {
      *
      * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "ratingLevel": "N"
+     *     }
      */
     rateRouter.route('/getOverallProfileRating')
         .post(function (req, res) {
@@ -811,8 +859,18 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                //return res.json({error: "Missing targetid paramter"});
-                targetid = req.user.userDetails.facebook.uid
+                if (req.user.userDetails.facebook) {
+                    targetid = req.user.userDetails.facebook.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
 
             Facebook.findOne({
@@ -831,11 +889,11 @@ module.exports = function (app, express) {
 
                             console.log(chalk.green("USER: " + JSON.stringify(user, null, "\t")));
 
-                            if (user.userDetails.overallRating) {
+                            if (user.facebook.overallRating) {
 
-                                if (user.userDetails.overallRating == defaultValues.ratings.trustedUser) {
+                                if (user.facebook.overallRating == defaultValues.ratings.trustedUser) {
                                     res.json({success: true, ratingLevel: "T"});
-                                } else if (user.userDetails.overallRating == defaultValues.ratings.untrustedUser) {
+                                } else if (user.facebook.overallRating == defaultValues.ratings.untrustedUser) {
                                     res.json({success: true, ratingLevel: "R"});
                                 } else {
                                     res.json({success: true, ratingLevel: "C"});
@@ -862,6 +920,26 @@ module.exports = function (app, express) {
      *
      * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "data": [
+     *           {
+     *             "_id": "5671b384be3b91a821ae16c4",
+     *             "claimid": {CLAIM_ID},
+     *             "claim": {CLAIM},
+     *             "myid": {ID},
+     *             "__v": 0,
+     *             "overallRating": 0,
+     *             "score": 2,
+     *             "notSure": 1,
+     *             "no": 0,
+     *             "yes": 0,
+     *             "lastUpdated": "2015-12-16T20:18:45.734Z"
+     *          },
+     *        ]
+     *     }
      */
     rateRouter.route('/getAllRatedClaims')
         .post(function (req, res) {
@@ -869,8 +947,18 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                //return res.json({error: "Missing targetid paramter"});
-                targetid = req.user.userDetails.facebook.uid
+                if (req.user.userDetails.facebook) {
+                    targetid = req.user.userDetails.facebook.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
 
             Claim.find({
@@ -900,6 +988,27 @@ module.exports = function (app, express) {
      * @apiParam {Number} limit The number of results needed. If the value is invalid, default value will be used.
      * @apiParam {Number} order -1 for descending order and 1 for ascending order. Default value is -1.
      *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "data": [
+     *           {
+     *             "_id": "5671b59e6993ff982e1cd811",
+     *             "claimid": {CLAIM_ID},
+     *             "claim": {CLAIM},
+     *             "myid": {ID},
+     *             "__v": 0,
+     *             "overallRating": 0,
+     *             "score": 10,
+     *             "notSure": 1,
+     *             "no": 0,
+     *             "yes": 1,
+     *             "lastUpdated": "2015-12-16T21:04:54.439Z"
+     *           },
+     *         ]
+     *     }
+     *
      */
     rateRouter.route('/getLastRatedClaims')
         .post(function (req, res) {
@@ -909,8 +1018,18 @@ module.exports = function (app, express) {
             var order = req.body.order;
 
             if (!targetid) {
-                //return res.json({error: "Missing targetid paramter"});
-                targetid = req.user.userDetails.facebook.uid
+                if (req.user.userDetails.facebook) {
+                    targetid = req.user.userDetails.facebook.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
             if (!limit) {
                 return res.json({error: "Missing limit paramter"});
@@ -957,6 +1076,21 @@ module.exports = function (app, express) {
      * @apiParam {Number} limit The number of results needed. If the value is invalid, default value will be used.
      * @apiParam {Number} order -1 for descending order and 1 for ascending order. Default value is -1.
      *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "data": [
+     *           {
+     *             "_id": "5671b59e6993ff982e1cd811",
+     *             "id": {CLAIM_ID},
+     *             "data": {CLAIM},
+     *             "rating": 1,
+     *             "lastUpdated": "2015-12-16T21:04:54.439Z"
+     *           },
+     *         ]
+     *     }
+     *
      */
     rateRouter.route('/getLastRatedEntries')
         .post(function (req, res) {
@@ -966,8 +1100,18 @@ module.exports = function (app, express) {
             var order = req.body.order;
 
             if (!targetid) {
-                //return res.json({error: "Missing targetid paramter"});
-                targetid = req.user.userDetails.facebook.uid
+                if (req.user.userDetails.facebook) {
+                    targetid = req.user.userDetails.facebook.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
             if (!limit) {
                 return res.json({error: "Missing limit paramter"});
@@ -1024,6 +1168,25 @@ module.exports = function (app, express) {
      *
      * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "data": [
+     *           {
+     *             "_id": "5671b59e6993ff982e1cd811",
+     *             "id": {CLAIM_ID},
+     *             "myid": "5671a265ebe27c396108ea77",
+     *             "targetid": "5671a1dcebe27c396108ea74",
+     *             "data": {CLAIM},
+     *             "rating": 1,
+     *             "weight": 2,
+     *             "__v": 0,
+     *             "lastUpdated": "2015-12-16T21:04:54.439Z"
+     *           },
+     *         ]
+     *     }
+     *
      */
     rateRouter.route('/getAllRatingsByUser')
         .post(function (req, res) {
@@ -1031,8 +1194,18 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                //return res.json({error: "Missing targetid paramter"});
-                targetid = req.user.userDetails.facebook.uid
+                if (req.user.userDetails.facebook) {
+                    targetid = req.user.userDetails.facebook.uid;
+                } else {
+                    return res.json({
+                        success: true,
+                        id: targetid,
+                        claimsCount: 0,
+                        yes: 0,
+                        notSure: 0,
+                        no: 0
+                    });
+                }
             }
 
             Facebook.findOne({
