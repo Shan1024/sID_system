@@ -8,7 +8,7 @@ $(function () {
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "http://localhost:8080/rate/facebook/getAllRatedClaims",
+        "url": "/rate/facebook/getAllRatedClaims",
         "method": "POST",
         "headers": {
             "cache-control": "no-cache",
