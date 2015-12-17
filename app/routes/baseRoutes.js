@@ -126,114 +126,118 @@ module.exports = function (app, express) {
      *     }
      *
      */
-    baseRouter.route('/authenticate')
-        .post(function (req, res) {
-
-            var username = req.body.username;
-            var password = req.body.password;
-
-            if (username) {
-                console.log(chalk.yellow('Username: ' + username));
-                // find the user
-
-                if (password) {
-                    console.log(chalk.yellow('Password: ---------'));
-
-                    User.findOne({
-                        'userDetails.local.username': username
-                    }, function (err, user) {
-
-                        if (err) throw err;
-
-                        if (!user) {
-                            res.json({
-                                success: false,
-                                message: 'Authentication failed. User not found.'
-                            });
-                        } else if (user) {
-
-                            console.log(chalk.blue('User: ' + user));
-
-                            var hash = user.generateHash(password);
-                            console.log(chalk.green('Hash: ' + hash));
-
-                            // check if password matches
-                            if (!user.validPassword(password)) {
-                                res.json({
-                                    success: false,
-                                    message: 'Authentication failed. Wrong password.'
-                                });
-                            } else {
-
-                                console.log(chalk.green('Password correct'));
-
-                                var apiSecret = app.get('apiSecret');
-
-                                console.log(chalk.yellow('apiSecret' + apiSecret));
-                                // if user is found and password is right
-                                // create a token
-
-                                Facebook.findOne({
-                                    _id:user.userDetails.facebook
-                                }, function (err, facebook) {
-                                    if (err) {
-                                        res.status(400).json({
-                                            success: false,
-                                            message: 'Error occurred.'
-                                        });
-                                    } else {
-                                        if (facebook) {
-
-                                            console.log(chalk.blue("Facebook: " + JSON.stringify(facebook, null, "\t")));
-
-                                            var tempUser = {
-                                                iss: 'sID',
-                                                context: {
-                                                    username: user.userDetails.local.username,
-                                                    id: facebook.id,
-                                                    uid: facebook.uid
-                                                }
-                                            };
-
-                                            var token = jwt.sign(tempUser, apiSecret, {
-                                                expiresInMinutes: 1440 // expires in 24 hours
-                                            });
-
-                                            // return the information including token as JSON
-                                            res.json({
-                                                success: true,
-                                                linked: true,
-                                                fbappid: facebook.id,
-                                                fbid: facebook.uid,
-                                                token: token
-                                            });
-                                        } else {
-                                            res.status(400).json({
-                                                success: false,
-                                                linked: false,
-                                                message: 'No facebook account linked.'
-                                            });
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    });
-                } else {
-                    console.log(chalk.red('Authentication failed. Password required.'));
-                    res.status(400).json({
-                        success: false,
-                        message: 'Authentication failed. Password required.'
-                    });
-                }
-
-            } else {
-                res.status(400).json({
-                    success: false,
-                    message: 'Authentication failed. Username required.'
-                });
-            }
-        });
+    //baseRouter.route('/authenticate')
+    //    .post(function (req, res) {
+    //
+    //        var username = req.body.username;
+    //        var password = req.body.password;
+    //
+    //        if (username) {
+    //            console.log(chalk.yellow('Username: ' + username));
+    //            // find the user
+    //
+    //            if (password) {
+    //                console.log(chalk.yellow('Password: ---------'));
+    //
+    //                User.findOne({
+    //                    'userDetails.local.username': username
+    //                }, function (err, user) {
+    //
+    //                    if (err) throw err;
+    //
+    //                    if (!user) {
+    //                        res.json({
+    //                            success: false,
+    //                            message: 'Authentication failed. User not found.'
+    //                        });
+    //                    } else if (user) {
+    //
+    //                        console.log(chalk.blue('User: ' + user));
+    //
+    //                        var hash = user.generateHash(password);
+    //                        console.log(chalk.green('Hash: ' + hash));
+    //
+    //                        // check if password matches
+    //                        if (!user.validPassword(password)) {
+    //                            res.json({
+    //                                success: false,
+    //                                message: 'Authentication failed. Wrong password.'
+    //                            });
+    //                        } else {
+    //
+    //                            console.log(chalk.green('Password correct'));
+    //
+    //                            var apiSecret = app.get('apiSecret');
+    //
+    //                            console.log(chalk.yellow('apiSecret: ' + apiSecret));
+    //                            // if user is found and password is right
+    //                            // create a token
+    //
+    //                            console.log("Searching facebook profile....")
+    //                            Facebook.findOne({
+    //                                _id:user.userDetails.facebook
+    //                            }, function (err, facebook) {
+    //                                if (err) {
+    //
+    //                                    console.log("Error occurred");
+    //                                    return res.status(400).json({
+    //                                        success: false,
+    //                                        message: 'Error occurred.'
+    //                                    });
+    //
+    //                                } else {
+    //                                    if (facebook) {
+    //
+    //                                        console.log(chalk.blue("Facebook: " + JSON.stringify(facebook, null, "\t")));
+    //
+    //                                        var tempUser = {
+    //                                            iss: 'sID',
+    //                                            context: {
+    //                                                username: user.userDetails.local.username,
+    //                                                id: facebook.id,
+    //                                                uid: facebook.uid
+    //                                            }
+    //                                        };
+    //
+    //                                        var token = jwt.sign(tempUser, apiSecret, {
+    //                                            expiresInMinutes: 1440 // expires in 24 hours
+    //                                        });
+    //
+    //                                        // return the information including token as JSON
+    //                                        return  res.json({
+    //                                            success: true,
+    //                                            linked: true,
+    //                                            fbappid: facebook.id,
+    //                                            fbid: facebook.uid,
+    //                                            token: token
+    //                                        });
+    //                                    } else {
+    //                                        return  res.status(400).json({
+    //                                            success: false,
+    //                                            linked: false,
+    //                                            message: 'No facebook account linked.'
+    //                                        });
+    //                                    }
+    //                                }
+    //                            });
+    //                        }
+    //                    }
+    //                });
+    //            } else {
+    //                console.log(chalk.red('Authentication failed. Password required.'));
+    //                res.status(400).json({
+    //                    success: false,
+    //                    message: 'Authentication failed. Password required.'
+    //                });
+    //            }
+    //
+    //        } else {
+    //            res.status(400).json({
+    //                success: false,
+    //                message: 'Authentication failed. Username required.'
+    //            });
+    //        }
+    //    });
 
     // REGISTER OUR ROUTES -------------------------------
     // routers that do not need a token are here
