@@ -661,13 +661,10 @@ module.exports = function (app, express) {
                                                     addRating(req, res, me, facebook, myUser, targetUser);
                                                 });
                                             });
-
                                         }
                                     });
-
                                 }
                             });
-
                         }
                     });
                 } else {

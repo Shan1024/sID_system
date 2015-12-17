@@ -342,7 +342,7 @@ module.exports = function (app, express) {
                             } else {
 
 
-                                user.linkedin.ratedByOthers.push(newEntry);
+                                targetUser.linkedin.ratedByOthers.push(newEntry);
 
                                 Claim.findOne({
                                     claimid: claimid,
@@ -510,9 +510,12 @@ module.exports = function (app, express) {
                             User.findOne({
                                 _id: me.user
                             }, function (err, myUser) {
-                                addRating(req, res, me, target, myUser);
+                                User.findOne({
+                                    _id: target.user
+                                }, function (err, targetUser) {
+                                    addRating(req, res, me, target, myUser, targetUser);
+                                });
                             });
-
 
                         } else {
 
@@ -538,15 +541,16 @@ module.exports = function (app, express) {
                                             User.findOne({
                                                 _id: me.user
                                             }, function (err, myUser) {
-                                                addRating(req, res, me, linkedin, myUser);
+                                                User.findOne({
+                                                    _id: target.user
+                                                }, function (err, targetUser) {
+                                                    addRating(req, res, me, linkedin, myUser, targetUser);
+                                                });
                                             });
-
                                         }
                                     });
-
                                 }
                             });
-
                         }
                     });
                 } else {
