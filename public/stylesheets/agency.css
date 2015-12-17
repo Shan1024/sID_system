@@ -741,10 +741,12 @@ body {
 
 .navbar-inverse .navbar-nav>li>a:hover {
     color: #FED136;
+    background-color: black;
 }
 
 .navbar-inverse .navbar-nav>li>a {
     color: #fff;
+    background-color: black;
 }
 
 .navbar-inverse .navbar-brand {

@@ -417,7 +417,16 @@ module.exports = function (app, passport) {
 
 
     app.get('/home', isLoggedIn, function (req, res) {
-        res.render('home.ejs', {user: req.user});
+      res.render('home.ejs', {user: req.user});
+    });
+
+    app.get('/morrisroute', function(req, res){
+      // res.json([
+      //   {label: "Download Sales", value: 100},
+      //   {label: "In-Store Sales", value: 30},
+      //   {label: "Mail-Order Sales", value: 20}
+      // ]);
+      res.redirect('http://192.168.8.100:8080/getAllRatingsCount');
     });
 
     app.get('/myratings', isLoggedIn, function (req, res) {
