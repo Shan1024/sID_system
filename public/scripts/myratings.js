@@ -5,6 +5,12 @@ $(function () {
 
     var $contentArea = $('.contentArea');
 
+    var template = "<div class=\"myChart well row\">" +
+        "<div class=\"col-xs-6 text\"></div>" +
+        "<div class=\"col-xs-6\"><canvas class=\"canvas\" width=\"100\" height=\"100\"></canvas></div>" +
+        "</div>";
+
+
     var settings = {
         "async": true,
         "crossDomain": true,
@@ -23,9 +29,55 @@ $(function () {
     $.ajax(settings).done(function (response) {
         console.log(response);
 
-        for (var i = 0; i < response.data.length; i++) {
-            $contentArea.append('<div class=\"row\"><div class=\"well\">  Claim: ' + response.data[i].claim + ' , Yes: ' + response.data[i].yes + ' , Not Sure: ' + response.data[i].notSure + ' , No: ' + response.data[i].no + '</div></div></div>');
+        //for (var i = 0; i < response.data.length; i++) {
+        //    $contentArea.append('<div class=\"row\"><div class=\"well\">  Claim: ' + response.data[i].claim + ' , Yes: ' + response.data[i].yes + ' , Not Sure: ' + response.data[i].notSure + ' , No: ' + response.data[i].no + '</div></div></div>');
+        //}
+
+        if (response) {
+
+
+            for (var i = 0; i < response.data.length; i++) {
+                $contentArea.append(template);
+            }
+
+            var charts = document.getElementsByClassName("myChart");
+            console.log("Length: " + charts.length);
+
+            for (i = 0; i < charts.length; i++) {
+
+                var temp = charts[i].getElementsByClassName("text")[0];
+                console.log(temp);
+                temp.innerHTML = temp.innerHTML + response.data[i].claim;
+                var canvas = charts[i].getElementsByClassName("canvas")[0];
+
+                console.log(canvas);
+
+                var ctx = canvas.getContext("2d");
+
+
+                var myNewChart = new Chart(ctx).Pie([
+                    {
+                        value: response.data[i].yes,
+                        color: "#33cc33",
+                        highlight: "#85e085",
+                        label: "Yes"
+                    },
+                    {
+                        value: response.data[i].notSure,
+                        color: "#ffff00",
+                        highlight: "#ffff66",
+                        label: "No Sure"
+                    },
+                    {
+                        value: response.data[i].no,
+                        color: "#ff0000",
+                        highlight: "#ff6666",
+                        label: "No"
+                    }
+                ]);
+            }
         }
+
     });
 
 

@@ -41,88 +41,138 @@ module.exports = function (app, passport) {
 
     });
 
-    app.post('/authenticate', function (req, res) {
+    /**
+     * @api {post} /authenticate Authenticate an user
+     * @apiName /authenticate
+     * @apiGroup BaseRouter
+     *
+     * @apiParam {String} username Users email address.
+     * @apiParam {String} password Users password.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       success: true,
+     *       linked: true,
+     *       fbappid: facebook.id,
+     *       fbid: facebook.uid,
+     *       token: {TOKEN}
+     *     }
+     *
+     */
+    app.post('/authenticate',function (req, res) {
 
-        var username = req.body.username;
-        var password = req.body.password;
+            var username = req.body.username;
+            var password = req.body.password;
 
-        if (username) {
-            console.log(chalk.yellow('Username: ' + username));
-            // find the user
+            if (username) {
+                console.log(chalk.yellow('Username: ' + username));
+                // find the user
 
-            if (password) {
-                console.log(chalk.yellow('Password: ' + password));
+                if (password) {
+                    console.log(chalk.yellow('Password: ---------'));
 
-                User.findOne({
-                    'userDetails.local.email': username
-                }, function (err, user) {
+                    User.findOne({
+                        'userDetails.local.email': username
+                    }, function (err, user) {
 
-                    if (err) throw err;
+                        if (err) throw err;
 
-                    if (!user) {
-                        res.json({
-                            success: false,
-                            message: 'Authentication failed. User not found.'
-                        });
-                    } else if (user) {
-
-                        console.log(chalk.blue('User: ' + user));
-
-                        var hash = user.generateHash(password);
-                        console.log(chalk.green('Hash: ' + hash));
-
-                        // check if password matches
-                        if (!user.validPassword(password)) {
+                        if (!user) {
                             res.json({
                                 success: false,
-                                message: 'Authentication failed. Wrong password.'
+                                message: 'Authentication failed. User not found.'
                             });
-                        } else {
+                        } else if (user) {
 
-                            console.log(chalk.green('Password correct'));
+                            console.log(chalk.blue('User: ' + user));
 
-                            var apiSecret = app.get('apiSecret');
+                            var hash = user.generateHash(password);
+                            console.log(chalk.green('Hash: ' + hash));
 
-                            console.log(chalk.yellow('apiSecret' + apiSecret));
-                            // if user is found and password is right
-                            // create a token
+                            // check if password matches
+                            if (!user.validPassword(password)) {
+                                res.json({
+                                    success: false,
+                                    message: 'Authentication failed. Wrong password.'
+                                });
+                            } else {
 
-                            var tempUser = {
-                                iss: 'sID',
-                                context: {
-                                    username: user.userDetails.local.username
-                                }
-                            };
+                                console.log(chalk.green('Password correct'));
 
-                            var token = jwt.sign(tempUser, apiSecret, {
-                                expiresInMinutes: 1440 // expires in 24 hours
-                            });
+                                var apiSecret = app.get('apiSecret');
 
-                            // return the information including token as JSON
-                            res.json({
-                                success: true,
-                                token: token
-                            });
+                                console.log(chalk.yellow('apiSecret: ' + apiSecret));
+                                // if user is found and password is right
+                                // create a token
+
+                                console.log("Searching facebook profile....")
+                                Facebook.findOne({
+                                    _id:user.userDetails.facebook
+                                }, function (err, facebook) {
+                                    if (err) {
+
+                                        console.log("Error occurred");
+                                        return res.status(400).json({
+                                            success: false,
+                                            message: 'Error occurred.'
+                                        });
+
+                                    } else {
+                                        if (facebook) {
+
+                                            console.log(chalk.blue("Facebook: " + JSON.stringify(facebook, null, "\t")));
+
+                                            var tempUser = {
+                                                iss: 'sID',
+                                                context: {
+                                                    username: user.userDetails.local.username,
+                                                    id: facebook.id,
+                                                    uid: facebook.uid
+                                                }
+                                            };
+
+                                            var token = jwt.sign(tempUser, apiSecret, {
+                                                expiresInMinutes: 1440 // expires in 24 hours
+                                            });
+
+                                            // return the information including token as JSON
+                                            return  res.json({
+                                                success: true,
+                                                linked: true,
+                                                fbappid: facebook.id,
+                                                fbid: facebook.uid,
+                                                token: token
+                                            });
+                                        } else {
+                                            return  res.status(400).json({
+                                                success: false,
+                                                linked: false,
+                                                message: 'No facebook account linked.'
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+
                         }
 
-                    }
+                    });
+                } else {
+                    console.log(chalk.red('Authentication failed. Password required.'));
+                    res.status(400).json({
+                        success: false,
+                        message: 'Authentication failed. Password required.'
+                    });
+                }
 
-                });
             } else {
-                console.log(chalk.red('Authentication failed. Password required.'));
                 res.status(400).json({
                     success: false,
-                    message: 'Authentication failed. Password required.'
+                    message: 'Authentication failed. Username required.'
                 });
             }
-
-        } else {
-            res.status(400).json({
-                success: false,
-                message: 'Authentication failed. Username required.'
-            });
-        }
-    });
+        });
 
     app.get('/verify', function (req, res) {
         console.log("/verify called");
@@ -426,16 +476,16 @@ module.exports = function (app, passport) {
 
 
     app.get('/home', isLoggedIn, function (req, res) {
-        res.render('home.ejs', {user: req.user});
+      res.render('home.ejs', {user: req.user});
     });
 
-    app.get('/morrisroute', function (req, res) {
-        // res.json([
-        //   {label: "Download Sales", value: 100},
-        //   {label: "In-Store Sales", value: 30},
-        //   {label: "Mail-Order Sales", value: 20}
-        // ]);
-        res.redirect('http://192.168.8.100:8080/getAllRatingsCount');
+    app.get('/morrisroute', function(req, res){
+      // res.json([
+      //   {label: "Download Sales", value: 100},
+      //   {label: "In-Store Sales", value: 30},
+      //   {label: "Mail-Order Sales", value: 20}
+      // ]);
+      res.redirect('http://192.168.8.100:8080/getAllRatingsCount');
     });
 
     app.get('/myratings', isLoggedIn, function (req, res) {
@@ -480,7 +530,7 @@ module.exports = function (app, passport) {
 
     app.get('/usersummary', function (req, res) {
         console.log('sender: ');
-        rest.post(req.protocol + '://' + req.get('host') + '/claimRating', {
+        rest.post(req.protocol + '://' + req.get('host')+'/claimRating', {
             data: {sender: 'Pubudu', target: 'Dodangoda', cClass: 'cClassTest', claimId: 334},
         }).on('complete', function (data, response) {
             //if (response.statusCode == 201) { // you can get at the raw response like this...
