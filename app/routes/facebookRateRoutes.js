@@ -378,6 +378,7 @@ module.exports = function (app, express) {
 
                                                 var newClaim = new Claim({
                                                     claimid: claimid,
+                                                    claim: claim,
                                                     myid: targetid
                                                 });
 
@@ -460,6 +461,7 @@ module.exports = function (app, express) {
 
                                 Claim.findOne({
                                     claimid: claimid,
+                                    claim: claim,
                                     myid: targetid
                                 }, function (err, myClaim) {
 
@@ -874,8 +876,8 @@ module.exports = function (app, express) {
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     {
-     *         "success": true,
-     *         "ratingLevel": "N"
+     *         success: true,
+     *         ratingLevel: "N"
      *     }
      */
     rateRouter.route('/getOverallProfileRating')
@@ -884,16 +886,21 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                if (req.user.userDetails.facebook) {
-                    targetid = req.user.userDetails.facebook.uid;
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message:"No facebook account is linked",
+                            ratingLevel: "N"
+                        });
+                    }
                 } else {
                     return res.json({
-                        success: true,
-                        id: targetid,
-                        claimsCount: 0,
-                        yes: 0,
-                        notSure: 0,
-                        no: 0
+                        success: false,
+                        message: "No targetid provided or found in the session",
+                        ratingLevel: "N"
                     });
                 }
             }
@@ -904,7 +911,11 @@ module.exports = function (app, express) {
 
                 if (err) {
                     console.log("Error occured 46488");
-                    res.json({success: false, message: "Error occurred"});
+                    return res.json({
+                        success: false,
+                        message: "Error occurred",
+                        ratingLevel: "N"
+                    });
                 } else {
                     if (facebook) {
 
@@ -912,26 +923,37 @@ module.exports = function (app, express) {
                             _id: facebook.user
                         }, function (err, user) {
 
-                            console.log(chalk.green("USER: " + JSON.stringify(user, null, "\t")));
-
-                            if (user.facebook.overallRating) {
-
-                                if (user.facebook.overallRating == defaultValues.ratings.trustedUser) {
-                                    res.json({success: true, ratingLevel: "T"});
-                                } else if (user.facebook.overallRating == defaultValues.ratings.untrustedUser) {
-                                    res.json({success: true, ratingLevel: "R"});
-                                } else {
-                                    res.json({success: true, ratingLevel: "C"});
-                                }
-
+                            if (err) {
+                                return res.json({
+                                    success: false,
+                                    message: "Error occurred",
+                                    ratingLevel: "N"
+                                });
                             } else {
-                                res.json({success: true, ratingLevel: "N"});
-                            }
+                                console.log(chalk.green("USER: " + JSON.stringify(user, null, "\t")));
 
+                                if (user.facebook.overallRating) {
+
+                                    if (user.facebook.overallRating == defaultValues.ratings.trustedUser) {
+                                        res.json({success: true, ratingLevel: "T"});
+                                    } else if (user.facebook.overallRating == defaultValues.ratings.untrustedUser) {
+                                        res.json({success: true, ratingLevel: "R"});
+                                    } else {
+                                        res.json({success: true, ratingLevel: "C"});
+                                    }
+
+                                } else {
+                                    res.json({success: true, ratingLevel: "N"});
+                                }
+                            }
                         });
 
                     } else {
-                        res.json({success: false, message: "No facebook account with given targetid found"});
+                        return res.json({
+                            success: false,
+                            message: "No facebook account with given targetid found",
+                            ratingLevel: "N"
+                        });
                     }
                 }
             });

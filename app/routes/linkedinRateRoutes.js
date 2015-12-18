@@ -100,6 +100,7 @@ module.exports = function (app, express) {
 
                         Claim.findOne({
                             claimid: claimid,
+                            claim: claim,
                             myid: targetid
                         }, function (err, myClaim) {
 
@@ -262,6 +263,7 @@ module.exports = function (app, express) {
 
                                                 var newClaim = new Claim({
                                                     claimid: claimid,
+                                                    claim: claim,
                                                     myid: targetid
                                                 });
 
@@ -341,11 +343,11 @@ module.exports = function (app, express) {
                                 return res.json({err: "Error saving the entry: " + err});
                             } else {
 
-
                                 targetUser.linkedin.ratedByOthers.push(newEntry);
 
                                 Claim.findOne({
                                     claimid: claimid,
+                                    claim: claim,
                                     myid: targetid
                                 }, function (err, myClaim) {
 
