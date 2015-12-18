@@ -89,10 +89,10 @@ userSchema.methods.setOverallFacebookRating = function () {
     } else {
         if (this.facebook.score >= defaultValues.bounds.trustedUser) {
             this.facebook.overallRating = defaultValues.ratings.trustedUser;
-        } else if (this.facebook.score >= defaultValues.bounds.averageUser) {
-            this.facebook.overallRating = defaultValues.ratings.averageUser;
-        } else {
+        } else if (this.facebook.score <= defaultValues.bounds.untrustedUser) {
             this.facebook.overallRating = defaultValues.ratings.untrustedUser;
+        } else {
+            this.facebook.overallRating = defaultValues.ratings.averageUser;
         }
     }
 };
