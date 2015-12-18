@@ -355,7 +355,7 @@ module.exports = function (app, express) {
                                     if (err) {
 
                                         console.log("Error 741123");
-
+                                    } else {
                                         if (fbRatedByMe) {
 
                                             fbRatedByMe.entries.push(entry);

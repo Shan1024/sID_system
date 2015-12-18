@@ -119,16 +119,24 @@ module.exports = function (app, passport) {
                                         });
 
                                     } else {
-
-                                        var tempUser = {
-                                            iss: 'sID',
-                                            context: {
-                                                username: user.userDetails.local.username,
-                                                id: facebook.id,
-                                                uid: facebook.uid
-                                            }
-                                        };
-
+                                        var tempUser;
+                                        if(facebook) {
+                                             tempUser = {
+                                                iss: 'sID',
+                                                context: {
+                                                    username: user.userDetails.local.username,
+                                                    id: facebook.id,
+                                                    uid: facebook.uid
+                                                }
+                                            };
+                                        }else{
+                                            tempUser = {
+                                                iss: 'sID',
+                                                context: {
+                                                    username: user.userDetails.local.username,
+                                                }
+                                            };
+                                        }
                                         var token = jwt.sign(tempUser, apiSecret, {
                                             expiresInMinutes: 1440 // expires in 24 hours
                                         });
