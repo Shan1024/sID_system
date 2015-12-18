@@ -14,7 +14,7 @@ $(function () {
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "/rate/facebook/getAllRatedClaims",
+        "url": "/rate/linkedin/getAllRatedClaims",
         "method": "POST",
         "headers": {
             "cache-control": "no-cache",
