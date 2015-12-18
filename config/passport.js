@@ -47,9 +47,9 @@ module.exports = function (passport) {
             //.populate('facebook.ratedByMe')
             .exec(function (error, user) {
                 console.log(JSON.stringify(user, null, "\t"));
-                if(user){
+                if (user) {
                     done(error, user);
-                }else{
+                } else {
                     done(error);
                 }
 
@@ -204,8 +204,9 @@ module.exports = function (passport) {
                         if (!facebook.token) {
                             facebook.token = token;
                             facebook.name = profile.displayName;
-                            facebook.email = (profile.emails[0].value || '').toLowerCase();
-
+                            if (profile.emails) {
+                                facebook.email = (profile.emails[0].value || '').toLowerCase();
+                            }
                             //console.log("USER: "+user);
 
                             var newUser = new User({
@@ -355,8 +356,9 @@ module.exports = function (passport) {
                         facebook.id = profile.id;
                         facebook.token = token;
                         facebook.name = profile.displayName;
-                        facebook.email = (profile.emails[0].value || '').toLowerCase();
-
+                        if (profile.emails) {
+                            facebook.email = (profile.emails[0].value || '').toLowerCase();
+                        }
                         facebook.user = newUser._id;
 
                         console.log("++++++++++++++++++++++++++++++++++++++")
