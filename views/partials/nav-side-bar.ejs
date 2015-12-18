@@ -11,34 +11,34 @@
     </div>
     <!-- Top Menu Items -->
     <div class="collapse navbar-collapse navbar-ex1-collapse">
-    <ul class="nav navbar-right top-nav">
-        <% if (user) { %>
-        <!-- <ul class="nav navbar-nav navbar-right"> -->
-        <li><a href="/home"><span class="glyphicon glyphicon-home"></span> Home </a></li>
+        <ul class="nav navbar-right top-nav">
+            <% if (user) { %>
+            <!-- <ul class="nav navbar-nav navbar-right"> -->
+            <li><a href="/home"><span class="glyphicon glyphicon-home"></span> Home </a></li>
 
-        <% if(user.userDetails.facebook && user.userDetails.facebook.token && user.userDetails.facebook.uid){ %>
-        <li><a href="/profile"><span><img
-                            src="https://graph.facebook.com/v2.3/<%= user.userDetails.facebook.uid %>/picture"
-                            height="25" width="25"></span> <%= user.userDetails.local.firstname %></a>
-        </li>
-        <% } else { %>
+            <% if(user.userDetails.facebook && user.userDetails.facebook.token && user.userDetails.facebook.uid){ %>
+            <li><a href="/profile"><span><img
+                                src="https://graph.facebook.com/v2.3/<%= user.userDetails.facebook.uid %>/picture"
+                                height="25" width="25"></span> <%= user.userDetails.local.firstname %></a>
+            </li>
+            <% } else { %>
 
-        <li><a href="/profile"><span
-                        class="glyphicon glyphicon-user"></span> <%= user.userDetails.local.firstname %></a>
-        </li>
-        <% } %>
+            <li><a href="/profile"><span
+                            class="glyphicon glyphicon-user"></span> <%= user.userDetails.local.firstname %></a>
+            </li>
+            <% } %>
 
-        <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li>
-        <!-- </ul> -->
-        <!--<a href="/unlink/local" class="btn btn-default">Unlink</a>-->
-        <% } else { %>
-        <!--<a href="/connect/local" class="btn btn-default">Connect Local</a>-->
-        <!-- <ul class="nav navbar-nav navbar-right"> -->
-        <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Sign Up </a></li>
-        <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Sign In </a></li>
-        <!-- </ul> -->
-        <% } %>
-    </ul>
+            <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li>
+            <!-- </ul> -->
+            <!--<a href="/unlink/local" class="btn btn-default">Unlink</a>-->
+            <% } else { %>
+            <!--<a href="/connect/local" class="btn btn-default">Connect Local</a>-->
+            <!-- <ul class="nav navbar-nav navbar-right"> -->
+            <li><a href="/signup"><span class="glyphicon glyphicon-user"></span> Sign Up </a></li>
+            <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Sign In </a></li>
+            <!-- </ul> -->
+            <% } %>
+        </ul>
     </div>
     <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
     <div class="collapse navbar-collapse navbar-ex1-collapse">
@@ -50,23 +50,49 @@
                 <a href="/rateafriend"><i class="fa fa-fw fa-file"></i> Rate a Friend</a>
             </li> -->
 
+            <% if(user.userDetails.facebook && user.userDetails.facebook.token){ %>
             <li>
-              <a href="javascript:;" data-toggle="collapse" data-target="#ratingMenu"><i class="fa fa-fw fa-arrows-v"></i> Ratings <i class="fa fa-fw fa-caret-down"></i></a>
-              <ul id="ratingMenu" class="collapse">
-                  <li>
-                      <a href="/facebookmyratings"><i class="fa fa-fw fa-file"></i> My Ratings</a>
-                  </li>
-                  <li>
-                      <a href="/facebookratedByMe"><i class="fa fa-fw fa-file"></i> Rated By Me</a>
-                  </li>
-                  <li>
-                      <a href="/rateafriend"><i class="fa fa-fw fa-file"></i> Rate a Friend</a>
-                  </li>
-              </ul>
+                <a href="javascript:;" data-toggle="collapse" data-target="#facebookRatingMenu"><i
+                            class="fa fa-fw fa-arrows-v"></i> Facebook Ratings <i
+                            class="fa fa-fw fa-caret-down"></i></a>
+                <ul id="facebookRatingMenu" class="collapse">
+                    <li>
+                        <a href="/facebookmyratings"><i class="fa fa-fw fa-file"></i> Facebook My Ratings</a>
+                    </li>
+                    <li>
+                        <a href="/facebookratedByMe"><i class="fa fa-fw fa-file"></i> Facebook Rated By Me</a>
+                    </li>
+                    <li>
+                        <a href="/rateafriend"><i class="fa fa-fw fa-file"></i> Rate a Friend</a>
+                    </li>
+                </ul>
             </li>
+            <% } else { %>
             <li>
-                <a href="/history"><i class="fa fa-fw fa-file"></i> History</a>
+                <a href="/profile"><i class="fa fa-fw fa-file"></i> Connect Facebook</a>
             </li>
+            <% } %>
+
+            <% if(user.userDetails.linkedin && user.userDetails.linkedin.token){ %>
+            <li>
+                <a href="javascript:;" data-toggle="collapse" data-target="#linkedinRatingMenu"><i
+                            class="fa fa-fw fa-arrows-v"></i> LinkedIn Ratings <i
+                            class="fa fa-fw fa-caret-down"></i></a>
+                <ul id="linkedinRatingMenu" class="collapse">
+                    <li>
+                        <a href="/linkedinmyratings"><i class="fa fa-fw fa-file"></i> LinkedIn My Ratings</a>
+                    </li>
+                    <li>
+                        <a href="/linkedinratedByMe"><i class="fa fa-fw fa-file"></i> LinkedIn Rated By Me</a>
+                    </li>
+                </ul>
+            </li>
+            <% } else { %>
+            <li>
+                <a href="/profile"><i class="fa fa-fw fa-file"></i> Connect LinkedIn</a>
+            </li>
+            <% } %>
+
         </ul>
     </div>
     <!-- /.navbar-collapse -->
