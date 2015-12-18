@@ -34,7 +34,6 @@ var userSchema = mongoose.Schema({
         },
 
 
-
     },
     facebook: {
         ratedByMe: [{
@@ -104,10 +103,10 @@ userSchema.methods.setOverallLinkedInRating = function () {
     } else {
         if (this.linkedin.score >= defaultValues.bounds.trustedUser) {
             this.linkedin.overallRating = defaultValues.ratings.trustedUser;
-        } else if (this.linkedin.score >= defaultValues.bounds.averageUser) {
-            this.linkedin.overallRating = defaultValues.ratings.averageUser;
-        } else {
+        } else if (this.linkedin.score <= defaultValues.bounds.untrustedUser) {
             this.linkedin.overallRating = defaultValues.ratings.untrustedUser;
+        } else {
+            this.linkedin.overallRating = defaultValues.ratings.averageUser;
         }
     }
 };

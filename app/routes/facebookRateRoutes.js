@@ -704,16 +704,29 @@ module.exports = function (app, express) {
             var claimid = req.body.claimid;
 
             if (!targetid) {
-                if (req.user.userDetails.facebook) {
-                    targetid = req.user.userDetails.facebook.uid;
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Claim not found",
+                            yes: 0,
+                            no: 0,
+                            notSure: 0,
+                            overallRating: 0,
+                            claimScore: "N"
+                        });
+                    }
                 } else {
                     return res.json({
-                        success: true,
-                        id: targetid,
-                        claimsCount: 0,
+                        success: false,
+                        message: "Claim not found",
                         yes: 0,
+                        no: 0,
                         notSure: 0,
-                        no: 0
+                        overallRating: 0,
+                        claimScore: "N"
                     });
                 }
             }
@@ -761,7 +774,7 @@ module.exports = function (app, express) {
 
                     } else {
                         console.log(chalk.red("Claim not found"));
-                        res.json({
+                        return res.json({
                             success: false,
                             message: "Claim not found",
                             yes: 0,
@@ -801,11 +814,24 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                if (req.user.userDetails.facebook) {
-                    targetid = req.user.userDetails.facebook.uid;
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No facebook account is linked",
+                            id: targetid,
+                            claimsCount: 0,
+                            yes: 0,
+                            notSure: 0,
+                            no: 0
+                        });
+                    }
                 } else {
                     return res.json({
-                        success: true,
+                        success: false,
+                        message: "No user found in the session",
                         id: targetid,
                         claimsCount: 0,
                         yes: 0,
@@ -892,7 +918,7 @@ module.exports = function (app, express) {
                     } else {
                         return res.json({
                             success: false,
-                            message:"No facebook account is linked",
+                            message: "No facebook account is linked",
                             ratingLevel: "N"
                         });
                     }
@@ -994,16 +1020,19 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                if (req.user.userDetails.facebook) {
-                    targetid = req.user.userDetails.facebook.uid;
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No facebook account is linked."
+                        });
+                    }
                 } else {
                     return res.json({
-                        success: true,
-                        id: targetid,
-                        claimsCount: 0,
-                        yes: 0,
-                        notSure: 0,
-                        no: 0
+                        success: false,
+                        message: "No targetid provided and not found in session"
                     });
                 }
             }
@@ -1017,9 +1046,15 @@ module.exports = function (app, express) {
                 } else {
                     if (claims) {
                         console.log(chalk.blue("Target found: " + JSON.stringify(claims, null, "\t")));
-                        res.json({success: true, data: claims});
+                        res.json({
+                            success: true,
+                            data: claims
+                        });
                     } else {
-                        res.json({success: true, message: "No claims found."});
+                        res.json({
+                            success: false,
+                            message: "No claims found."
+                        });
                     }
                 }
             });
@@ -1065,16 +1100,19 @@ module.exports = function (app, express) {
             var order = req.body.order;
 
             if (!targetid) {
-                if (req.user.userDetails.facebook) {
-                    targetid = req.user.userDetails.facebook.uid;
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No facebook account is linked"
+                        });
+                    }
                 } else {
                     return res.json({
-                        success: true,
-                        id: targetid,
-                        claimsCount: 0,
-                        yes: 0,
-                        notSure: 0,
-                        no: 0
+                        success: false,
+                        message: "Error occurred"
                     });
                 }
             }
@@ -1101,13 +1139,19 @@ module.exports = function (app, express) {
                     function (err, claims) {
                         if (err) {
                             console.log("Error occured 7945");
-                            res.json({success: false, message: "Error occurred"});
+                            return res.json({
+                                success: false,
+                                message: "Error occurred"
+                            });
                         } else {
                             if (claims) {
                                 console.log(chalk.blue("Claims found: " + JSON.stringify(claims, null, "\t")));
                                 res.json({success: true, data: claims});
                             } else {
-                                res.json({success: true, message: "No claims user found."});
+                                return res.json({
+                                    success: false,
+                                    message: "No claims user found."
+                                });
                             }
                         }
                     });
@@ -1147,16 +1191,20 @@ module.exports = function (app, express) {
             var order = req.body.order;
 
             if (!targetid) {
-                if (req.user.userDetails.facebook) {
-                    targetid = req.user.userDetails.facebook.uid;
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Facebook is not linked"
+                        });
+                    }
                 } else {
                     return res.json({
-                        success: true,
-                        id: targetid,
-                        claimsCount: 0,
-                        yes: 0,
-                        notSure: 0,
-                        no: 0
+                        success: false,
+                        message: "No user found in the session",
+                        id: targetid
                     });
                 }
             }
@@ -1241,16 +1289,19 @@ module.exports = function (app, express) {
             var targetid = req.body.targetid;
 
             if (!targetid) {
-                if (req.user.userDetails.facebook) {
-                    targetid = req.user.userDetails.facebook.uid;
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: true,
+                            message: "No facebook account is linked"
+                        });
+                    }
                 } else {
                     return res.json({
-                        success: true,
-                        id: targetid,
-                        claimsCount: 0,
-                        yes: 0,
-                        notSure: 0,
-                        no: 0
+                        success: false,
+                        message: "No user found in the session"
                     });
                 }
             }
