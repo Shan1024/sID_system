@@ -488,12 +488,20 @@ module.exports = function (app, passport) {
       res.redirect('http://192.168.8.100:8080/getAllRatingsCount');
     });
 
-    app.get('/myratings', isLoggedIn, function (req, res) {
-        res.render('myratings.ejs', {user: req.user});
+    app.get('/facebookmyratings', isLoggedIn, function (req, res) {
+        res.render('facebookmyratings.ejs', {user: req.user});
     });
 
-    app.get('/ratedByMe', isLoggedIn, function (req, res) {
-        res.render('ratedByMe.ejs', {user: req.user});
+    app.get('/facebookratedByMe', isLoggedIn, function (req, res) {
+        res.render('facebookratedByMe.ejs', {user: req.user});
+    });
+
+    app.get('/linkedinmyratings', isLoggedIn, function (req, res) {
+        res.render('linkedinmyratings.ejs', {user: req.user});
+    });
+
+    app.get('/linkedinratedByMe', isLoggedIn, function (req, res) {
+        res.render('linkedinratedByMe.ejs', {user: req.user});
     });
 
     app.get('/history', isLoggedIn, function (req, res) {
