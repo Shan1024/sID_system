@@ -268,11 +268,13 @@ module.exports = function (app, passport) {
     });
 
     app.get('/auth/facebookHTTP', passport.authenticate('facebook-auth-http', {
+        scope : 'email, user_friends',
         failureRedirect: '/login',
         failureFlash: 'Authentication failed.'
     }));
 
     app.get('/auth/facebookHTTPS', passport.authenticate('facebook-auth-https', {
+        scope : 'email, user_friends',
         failureRedirect: '/login',
         failureFlash: 'Authentication failed.'
     }));
@@ -294,10 +296,11 @@ module.exports = function (app, passport) {
         })
     );
 
-    app.get('/auth/plugin/facebook', passport.authenticate('facebook-auth-plugin-https'));
+    app.get('/auth/plugin/facebook', passport.authenticate('facebook-auth-plugin-https',{ scope : 'email, user_friends' }));
 
     app.get('/auth/plugin/facebookHTTPS/callback',
         passport.authenticate('facebook-auth-plugin-https', {
+            scope : 'email, user_friends',
             successRedirect: 'https://www.facebook.com',
             failureRedirect: 'https://www.facebook.com'
         })
