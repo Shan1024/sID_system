@@ -119,22 +119,23 @@ module.exports = function (app, passport) {
                                         });
 
                                     } else {
+
+                                        var tempUser = {
+                                            iss: 'sID',
+                                            context: {
+                                                username: user.userDetails.local.username,
+                                                id: facebook.id,
+                                                uid: facebook.uid
+                                            }
+                                        };
+
+                                        var token = jwt.sign(tempUser, apiSecret, {
+                                            expiresInMinutes: 1440 // expires in 24 hours
+                                        });
+
                                         if (facebook) {
 
                                             console.log(chalk.blue("Facebook: " + JSON.stringify(facebook, null, "\t")));
-
-                                            var tempUser = {
-                                                iss: 'sID',
-                                                context: {
-                                                    username: user.userDetails.local.username,
-                                                    id: facebook.id,
-                                                    uid: facebook.uid
-                                                }
-                                            };
-
-                                            var token = jwt.sign(tempUser, apiSecret, {
-                                                expiresInMinutes: 1440 // expires in 24 hours
-                                            });
 
                                             // return the information including token as JSON
                                             return  res.json({
@@ -145,10 +146,9 @@ module.exports = function (app, passport) {
                                                 token: token
                                             });
                                         } else {
-                                            return  res.status(400).json({
-                                                success: false,
-                                                linked: false,
-                                                message: 'No facebook account linked.'
+                                            return  res.json({
+                                                success: true,
+                                                token: token
                                             });
                                         }
                                     }
