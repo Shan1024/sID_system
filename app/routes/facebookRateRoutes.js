@@ -191,451 +191,327 @@ module.exports = function (app, express) {
         var claim = req.body.claim;
         var rating = req.body.rating;
 
-        FacebookRatedByMe
-            .findOne({
-                myid: me._id,
-                targetid: target._id
-            }
-            //)
-            //.populate({
-            //        path: 'entries',
-            //        match: {
-            //            id: claimid
-            //        }
-            //    }
-            ).exec(function (err, facebookRatedByMe) {
+        //If an enty already exists
+        Entry.findOne({
+            claimid: claimid,
+            mysid: myid,
+            targetsid: targetid
+        }, function (err, entry) {
 
-            if (facebookRatedByMe) {
-                console.log(chalk.green("Previous ratings found"));
-                console.log(chalk.blue("Previous rating: " + JSON.stringify(facebookRatedByMe, null, "\t")));
+            if (err) {
+                console.log(chalk.red('Error occurred 9446151'));
+            } else {
+                if (entry) {
+                    console.log(chalk.yellow('Entry found'));
 
-                //if (facebookRatedByMe.entries[0]) {
-                //    console.log('Found');
+                    Claim.findOne({
+                        claimid: claimid,
+                        myid: targetid
+                    }, function (err, myClaim) {
 
-                //Entry.findOne({
-                //    _id: facebookRatedByMe.entries[0]._id
-                //}, function (err, entry) {
-
-                //console.log("Entry XX: " + entry);
-
-                Claim.findOne({
-                    claimid: claimid,
-                    myid: targetid
-                }, function (err, myClaim) {
-
-                    if (err) {
-                        console.log(chalk.red('Error occurred 4587'));
-                    } else {
-
-                        if (myClaim) {
-
-                            //remove the current rating and score from the myClaim
-                            if (entry.rating == defaultValues.votes.yes) {
-                                myClaim.yes = myClaim.yes - 1;
-                                myClaim.score = myClaim.score - defaultValues.multipliers.yes * entry.weight;
-                                targetUser.facebook.score = targetUser.facebook.score - defaultValues.multipliers.yes * entry.weight;
-                            } else if (entry.rating == defaultValues.votes.no) {
-                                myClaim.no = myClaim.no - 1;
-                                myClaim.score = myClaim.score - defaultValues.multipliers.no * entry.weight;
-                                targetUser.facebook.score = targetUser.facebook.score - defaultValues.multipliers.no * entry.weight;
-                            } else {
-                                myClaim.notSure = myClaim.notSure - 1;
-                                myClaim.score = myClaim.score - defaultValues.multipliers.notSure * entry.weight;
-                                targetUser.facebook.score = targetUser.facebook.score - defaultValues.multipliers.no * entry.weight;
-                            }
-
-                            //add the new rating and score to the myClaim
-                            if (rating == defaultValues.votes.yes) {
-                                myClaim.yes = myClaim.yes + 1;
-                                myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.facebook.weight;
-                                targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.yes * myUser.facebook.weight;
-                            } else if (rating == defaultValues.votes.no) {
-                                myClaim.no = myClaim.no + 1;
-                                myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.facebook.weight;
-                                targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.no * myUser.facebook.weight;
-                            } else {
-                                myClaim.notSure = myClaim.notSure + 1;
-                                myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
-                                targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
-                            }
-
-                            entry.rating = rating;
-                            entry.weight = myUser.facebook.weight;
-                            entry.lastUpdated = Date.now();
-
-                            entry.save(function (err) {
-                                if (err) {
-                                    console.log(chalk.red('Error occured while saving the entry 4564'));
-                                }
-                            });
-
-                            myClaim.lastUpdated = Date.now();
-                            myClaim.setOverallRating();
-
-                            myClaim.save(function (err) {
-                                if (err) {
-                                    console.log(chalk.red('Error occured while saving the myClaim 4648'));
-                                }
-                            });
-
-                            targetUser.setOverallFacebookRating();
-                            targetUser.save(function (err) {
-                                if (err) {
-                                    console.log("targetUser save error: " + err);
-                                } else {
-                                    console.log("targetUser saved successfully");
-                                }
-                            });
-
+                        if (err) {
+                            console.log(chalk.red('Error occurred 7984512'));
                         } else {
 
-                            console.log(chalk.red('No myClaim found 1456'));
+                            if (myClaim) {
 
-                            var newClaim = new Claim({
-                                claimid: claimid,
-                                claim: claim,
-                                myid: targetid
-                            });
-
-                            if (rating == defaultValues.votes.yes) {
-                                newClaim.yes = 1;
-                                newClaim.score = defaultValues.multipliers.yes * myUser.facebook.weight;
-                                targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.yes * myUser.facebook.weight;
-                            } else if (rating == defaultValues.votes.no) {
-                                newClaim.no = 1;
-                                newClaim.score = defaultValues.multipliers.no * myUser.facebook.weight;
-                                targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.no * myUser.facebook.weight;
-                            } else {
-                                newClaim.notSure = 1;
-                                newClaim.score = defaultValues.multipliers.notSure * myUser.facebook.weight;
-                                targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
-                            }
-
-                            newClaim.setOverallRating();
-                            newClaim.save(function (err) {
                                 if (err) {
-                                    console.log(chalk.red('Error occurred 1487'));
-                                }
-                            });
-
-                            targetUser.facebook.claims.push(newClaim);
-                            targetUser.setOverallFacebookRating();
-                            targetUser.save(function (err) {
-                                if (err) {
-                                    console.log("myUser save error: " + err);
+                                    console.log(chalk.red("Error 4654565"));
                                 } else {
-                                    console.log("myUser saved successfully");
+
+                                    //remove the current rating and score from the myClaim
+                                    if (entry.rating == defaultValues.votes.yes) {
+                                        myClaim.yes = myClaim.yes - 1;
+                                        myClaim.score = myClaim.score - defaultValues.multipliers.yes * entry.weight;
+                                        targetUser.facebook.score = targetUser.facebook.score - defaultValues.multipliers.yes * entry.weight;
+                                    } else if (entry.rating == defaultValues.votes.no) {
+                                        myClaim.no = myClaim.no - 1;
+                                        myClaim.score = myClaim.score - defaultValues.multipliers.no * entry.weight;
+                                        targetUser.facebook.score = targetUser.facebook.score - defaultValues.multipliers.no * entry.weight;
+                                    } else {
+                                        myClaim.notSure = myClaim.notSure - 1;
+                                        myClaim.score = myClaim.score - defaultValues.multipliers.notSure * entry.weight;
+                                        targetUser.facebook.score = targetUser.facebook.score - defaultValues.multipliers.no * entry.weight;
+                                    }
+
+                                    //add the new rating and score to the myClaim
+                                    if (rating == defaultValues.votes.yes) {
+                                        myClaim.yes = myClaim.yes + 1;
+                                        myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.facebook.weight;
+                                        targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.yes * myUser.facebook.weight;
+                                    } else if (rating == defaultValues.votes.no) {
+                                        myClaim.no = myClaim.no + 1;
+                                        myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.facebook.weight;
+                                        targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.no * myUser.facebook.weight;
+                                    } else {
+                                        myClaim.notSure = myClaim.notSure + 1;
+                                        myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
+                                        targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
+                                    }
+
+                                    entry.rating = rating;
+                                    entry.weight = myUser.facebook.weight;
+                                    entry.lastUpdated = Date.now();
+
+                                    entry.save(function (err) {
+                                        if (err) {
+                                            console.log(chalk.red('Error occurred while saving the entry 4564'));
+                                        }
+                                    });
+
+                                    myClaim.lastUpdated = Date.now();
+                                    myClaim.setOverallRating();
+
+                                    myClaim.save(function (err) {
+                                        if (err) {
+                                            console.log(chalk.red('Error occured while saving the myClaim 4648'));
+                                        }
+                                    });
+
+                                    targetUser.setOverallFacebookRating();
+                                    targetUser.save(function (err) {
+                                        if (err) {
+                                            console.log("targetUser save error: " + err);
+                                        } else {
+                                            console.log("targetUser saved successfully");
+                                        }
+                                    });
                                 }
-                            });
-                        }
-                    }
-                });
 
-
-                //});
-
-
-                //} else {
-                //
-                //    console.log('Not found');
-                //
-                //    var entry = new Entry({
-                //        id: claimid,
-                //        myid: me._id,
-                //        targetid: target._id,
-                //        claim: claim,
-                //        rating: rating,
-                //        weight: myUser.facebook.weight
-                //    });
-                //
-                //    entry.save(function (err) {
-                //
-                //        if (err) {
-                //            console.log("Error: " + err);
-                //        } else {
-                //
-                //            FacebookRatedByMe
-                //                .findOne({
-                //                    myid: me._id,
-                //                    targetid: target._id
-                //                }, function (err, fbRatedByMe) {
-                //
-                //                    if (err) {
-                //
-                //                        console.log("Error 741123");
-                //                    } else {
-                //                        if (fbRatedByMe) {
-                //
-                //                            fbRatedByMe.entries.push(entry);
-                //
-                //                            fbRatedByMe.save(function (err) {
-                //
-                //                                if (err) {
-                //                                    console.log("error: " + err);
-                //                                } else {
-                //                                    console.log("no error");
-                //
-                //                                    if (err) {
-                //                                        console.log("User not found: " + err);
-                //                                    } else {
-                //                                        //console.log(chalk.blue("User: " + JSON.stringify(user, null, "\t")));
-                //
-                //                                        targetUser.facebook.ratedByOthers.push(entry);
-                //
-                //                                        var newClaim = new Claim({
-                //                                            claimid: claimid,
-                //                                            claim: claim,
-                //                                            myid: targetid
-                //                                        });
-                //
-                //                                        if (rating == defaultValues.votes.yes) {
-                //                                            newClaim.yes = 1;
-                //                                            newClaim.score = defaultValues.multipliers.yes * myUser.facebook.weight;
-                //                                            targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.yes * myUser.facebook.weight;
-                //                                        } else if (rating == defaultValues.votes.no) {
-                //                                            newClaim.no = 1;
-                //                                            newClaim.score = defaultValues.multipliers.no * myUser.facebook.weight;
-                //                                            targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.no * myUser.facebook.weight;
-                //                                        } else {
-                //                                            newClaim.notSure = 1;
-                //                                            newClaim.score = defaultValues.multipliers.notSure * myUser.facebook.weight;
-                //                                            targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
-                //                                        }
-                //
-                //                                        newClaim.setOverallRating();
-                //
-                //                                        newClaim.save(function (err) {
-                //                                            if (err) {
-                //                                                console.log(chalk.red('Error occurred 1487'));
-                //                                            }
-                //                                        });
-                //
-                //                                        targetUser.facebook.claims.push(newClaim);
-                //                                        targetUser.setOverallFacebookRating();
-                //                                        targetUser.save(function (err) {
-                //                                            if (err) {
-                //                                                console.log("User save error: " + err);
-                //                                            } else {
-                //                                                console.log("User saved successfully");
-                //                                            }
-                //                                        });
-                //                                    }
-                //
-                //                                }
-                //                            });
-                //                        } else {
-                //                            console.log(chalk.red("ERROR XXXXX++++++++++++++++++++++++++++++++++++++++++++++"));
-                //
-                //                            var newFBRating = new FacebookRatedByMe({
-                //                                myid: me._id,
-                //                                targetid: target._id,
-                //                                entries: [entry._id]
-                //                            });
-                //
-                //                            newFBRating.save(function (err) {
-                //
-                //                                if (err) {
-                //                                    console.log("User not found: " + err);
-                //                                } else {
-                //                                    //console.log(chalk.blue("User: " + JSON.stringify(user, null, "\t")));
-                //
-                //                                    targetUser.facebook.ratedByOthers.push(entry);
-                //
-                //                                    var newClaim = new Claim({
-                //                                        claimid: claimid,
-                //                                        claim: claim,
-                //                                        myid: targetid
-                //                                    });
-                //
-                //                                    if (rating == defaultValues.votes.yes) {
-                //                                        newClaim.yes = 1;
-                //                                        newClaim.score = defaultValues.multipliers.yes * myUser.facebook.weight;
-                //                                        targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.yes * myUser.facebook.weight;
-                //                                    } else if (rating == defaultValues.votes.no) {
-                //                                        newClaim.no = 1;
-                //                                        newClaim.score = defaultValues.multipliers.no * myUser.facebook.weight;
-                //                                        targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.no * myUser.facebook.weight;
-                //                                    } else {
-                //                                        newClaim.notSure = 1;
-                //                                        newClaim.score = defaultValues.multipliers.notSure * myUser.facebook.weight;
-                //                                        targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
-                //                                    }
-                //
-                //                                    newClaim.setOverallRating();
-                //
-                //                                    newClaim.save(function (err) {
-                //                                        if (err) {
-                //                                            console.log(chalk.red('Error occurred 1487'));
-                //                                        }
-                //                                    });
-                //
-                //                                    targetUser.facebook.claims.push(newClaim);
-                //                                    targetUser.setOverallFacebookRating();
-                //                                    targetUser.save(function (err) {
-                //                                        if (err) {
-                //                                            console.log("User save error: " + err);
-                //                                        } else {
-                //                                            console.log("User saved successfully");
-                //                                        }
-                //                                    });
-                //
-                //                                    myUser.facebook.ratedByMe.push(newFBRating);
-                //
-                //                                    myUser.save(function (err) {
-                //                                        if (err) {
-                //                                            console.log("User(me) save error: " + err);
-                //                                        } else {
-                //                                            console.log("User(me) saved successfully");
-                //                                        }
-                //                                    });
-                //                                }
-                //                            });
-                //                        }
-                //                    }
-                //                });
-                //        }
-                //    });
-                //    return res.sendStatus(200);
-                //}
-                return res.sendStatus(200);
-
-            } else {
-                console.log(chalk.red("Previous ratings not found"));
-                //return res.json({message:"Previous ratings not found"});
-
-                var newEntry = new Entry({
-                    id: claimid,
-                    myid: me._id,
-                    targetid: target._id,
-                    claim: claim,
-                    rating: rating,
-                    weight: myUser.facebook.weight
-                });
-
-                newEntry.save(function (err) {
-
-                    if (err) {
-                        console.log(chalk.red("Error saving the entry"));
-                        return res.json({err: "Error saving the entry"});
-                    } else {
-
-                        var newFBRating = new FacebookRatedByMe({
-                            myid: me._id,
-                            targetid: target._id,
-                            entries: [newEntry._id]
-                        });
-
-                        newFBRating.save(function (err) {
-                            if (err) {
-                                console.log(chalk.red("Error saving the entry: " + err));
-                                return res.json({err: "Error saving the entry: " + err});
+                                //rating without a claim
                             } else {
 
-                                targetUser.facebook.ratedByOthers.push(newEntry);
+                                console.log(chalk.red('No myClaim found 1456'));
+                                console.log(chalk.red("ERROR XXXXX++++++++++++++++++++++++++++++++++++++++++++++ 984151513"));
 
-                                Claim.findOne({
+                                var newClaim = new Claim({
                                     claimid: claimid,
                                     claim: claim,
                                     myid: targetid
-                                }, function (err, myClaim) {
+                                });
+
+                                if (rating == defaultValues.votes.yes) {
+                                    newClaim.yes = 1;
+                                    newClaim.score = defaultValues.multipliers.yes * myUser.facebook.weight;
+                                    targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.yes * myUser.facebook.weight;
+                                } else if (rating == defaultValues.votes.no) {
+                                    newClaim.no = 1;
+                                    newClaim.score = defaultValues.multipliers.no * myUser.facebook.weight;
+                                    targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.no * myUser.facebook.weight;
+                                } else {
+                                    newClaim.notSure = 1;
+                                    newClaim.score = defaultValues.multipliers.notSure * myUser.facebook.weight;
+                                    targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
+                                }
+
+                                newClaim.setOverallRating();
+                                newClaim.save(function (err) {
+                                    if (err) {
+                                        console.log(chalk.red('Error occurred 1487'));
+                                    }
+                                });
+
+                                entry.rating = rating;
+                                entry.weight = myUser.facebook.weight;
+                                entry.lastUpdated = Date.now();
+
+                                entry.save(function (err) {
+                                    if (err) {
+                                        console.log(chalk.red('Error occured while saving the entry 4564'));
+                                    }
+                                });
+
+                                targetUser.facebook.claims.push(newClaim);
+                                targetUser.setOverallFacebookRating();
+                                targetUser.save(function (err) {
+                                    if (err) {
+                                        console.log("myUser save error: " + err);
+                                    } else {
+                                        console.log("myUser saved successfully");
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+                    //If no entry is found
+                } else {
+
+                    var entry = new Entry({
+                        claimid: claimid,
+                        mysid: myid,
+                        myid: me._id,
+                        targetsid: targetid,
+                        targetid: target._id,
+                        claim: claim,
+                        rating: rating,
+                        weight: myUser.facebook.weight
+                    });
+
+                    FacebookRatedByMe.findOne({
+                        myid: me._id,
+                        targetid: target._id
+                    }, function (err, facebookRatedByMe) {
+
+                        if (err) {
+                            console.log(chalk.red('Error occurred 941651218'));
+                        } else {
+
+                            //user has already rated some of the claims of the target
+                            if (facebookRatedByMe) {
+                                console.log(chalk.yellow('FacebookRatedByMe found'));
+
+                                entry.save(function (err) {
 
                                     if (err) {
-                                        console.log(chalk.red("Error occurred 154"));
+                                        console.log("Error: " + err);
                                     } else {
 
-                                        if (myClaim) {
-
-                                            if (rating == defaultValues.votes.yes) {
-                                                myClaim.yes = myClaim.yes + 1;
-                                                myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.facebook.weight;
-                                                targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.yes * myUser.facebook.weight;
-                                            } else if (rating == defaultValues.votes.no) {
-                                                myClaim.no = myClaim.no + 1;
-                                                myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.facebook.weight;
-                                                targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.no * myUser.facebook.weight;
-                                            } else {
-                                                myClaim.notSure = myClaim.notSure + 1;
-                                                myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
-                                                targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
-                                            }
-
-                                            myClaim.lastUpdated = Date.now();
-                                            myClaim.setOverallRating();
-
-                                            myClaim.save(function (err) {
-                                                if (err) {
-                                                    console.log(chalk.red('Error occurred 1487'));
-                                                }
-                                            });
-
-                                            targetUser.setOverallFacebookRating();
-                                            targetUser.save(function (err) {
-                                                if (err) {
-                                                    console.log("User(target) save error: " + err);
-                                                } else {
-                                                    console.log("User(target) saved successfully");
-                                                }
-                                            });
-
+                                        if (err) {
+                                            console.log("Error 41518");
                                         } else {
 
-                                            var newClaim = new Claim({
-                                                claimid: claimid,
-                                                claim: claim,
-                                                myid: targetid
-                                            });
+                                            facebookRatedByMe.entries.push(entry);
 
-                                            if (rating == defaultValues.votes.yes) {
-                                                newClaim.yes = 1;
-                                                newClaim.score = defaultValues.multipliers.yes * myUser.facebook.weight;
-                                                targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.yes * myUser.facebook.weight;
-                                            } else if (rating == defaultValues.votes.no) {
-                                                newClaim.no = 1;
-                                                newClaim.score = defaultValues.multipliers.no * myUser.facebook.weight;
-                                                targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.no * myUser.facebook.weight;
-                                            } else {
-                                                newClaim.notSure = 1;
-                                                newClaim.score = defaultValues.multipliers.notSure * myUser.facebook.weight;
-                                                targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
-                                            }
+                                            facebookRatedByMe.save(function (err) {
 
-                                            newClaim.setOverallRating();
-                                            newClaim.save(function (err) {
                                                 if (err) {
-                                                    console.log(chalk.red('Error occurred 1487'));
-                                                }
-                                            });
-
-                                            targetUser.facebook.claims.push(newClaim);
-                                            targetUser.setOverallFacebookRating();
-                                            targetUser.save(function (err) {
-                                                if (err) {
-                                                    console.log("User(target) save error: " + err);
+                                                    console.log("error: " + err);
                                                 } else {
-                                                    console.log("User(target) saved successfully");
+                                                    console.log("no error");
+
+                                                    if (err) {
+                                                        console.log("User not found: " + err);
+                                                    } else {
+                                                        //console.log(chalk.blue("User: " + JSON.stringify(user, null, "\t")));
+
+                                                        targetUser.facebook.ratedByOthers.push(entry);
+
+                                                        var newClaim = new Claim({
+                                                            claimid: claimid,
+                                                            claim: claim,
+                                                            myid: targetid
+                                                        });
+
+                                                        if (rating == defaultValues.votes.yes) {
+                                                            newClaim.yes = 1;
+                                                            newClaim.score = defaultValues.multipliers.yes * myUser.facebook.weight;
+                                                            targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.yes * myUser.facebook.weight;
+                                                        } else if (rating == defaultValues.votes.no) {
+                                                            newClaim.no = 1;
+                                                            newClaim.score = defaultValues.multipliers.no * myUser.facebook.weight;
+                                                            targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.no * myUser.facebook.weight;
+                                                        } else {
+                                                            newClaim.notSure = 1;
+                                                            newClaim.score = defaultValues.multipliers.notSure * myUser.facebook.weight;
+                                                            targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
+                                                        }
+
+                                                        newClaim.setOverallRating();
+
+                                                        newClaim.save(function (err) {
+                                                            if (err) {
+                                                                console.log(chalk.red('Error occurred 1487'));
+                                                            }
+                                                        });
+
+                                                        targetUser.facebook.claims.push(newClaim);
+                                                        targetUser.setOverallFacebookRating();
+                                                        targetUser.save(function (err) {
+                                                            if (err) {
+                                                                console.log("User save error: " + err);
+                                                            } else {
+                                                                console.log("User saved successfully");
+                                                            }
+                                                        });
+
+                                                    }
+
                                                 }
                                             });
+
                                         }
+
                                     }
-
                                 });
+                                //user haven't rated target before
+                            } else {
 
-                                myUser.facebook.ratedByMe.push(newFBRating);
+                                entry.save(function (err) {
 
-                                myUser.save(function (err) {
                                     if (err) {
-                                        console.log("User(me) save error: " + err);
+
                                     } else {
-                                        console.log("User(me) saved successfully");
+
+                                        var newFacebookRating = new FacebookRatedByMe({
+                                            myid: me._id,
+                                            targetid: target._id,
+                                            entries: [entry._id]
+                                        });
+
+                                        newFacebookRating.save(function (err) {
+
+                                            if (err) {
+                                                console.log("User not found: " + err);
+                                            } else {
+
+                                                targetUser.facebook.ratedByOthers.push(entry);
+
+                                                var newClaim = new Claim({
+                                                    claimid: claimid,
+                                                    claim: claim,
+                                                    myid: targetid
+                                                });
+
+                                                if (rating == defaultValues.votes.yes) {
+                                                    newClaim.yes = 1;
+                                                    newClaim.score = defaultValues.multipliers.yes * myUser.facebook.weight;
+                                                    targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.yes * myUser.facebook.weight;
+                                                } else if (rating == defaultValues.votes.no) {
+                                                    newClaim.no = 1;
+                                                    newClaim.score = defaultValues.multipliers.no * myUser.facebook.weight;
+                                                    targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.no * myUser.facebook.weight;
+                                                } else {
+                                                    newClaim.notSure = 1;
+                                                    newClaim.score = defaultValues.multipliers.notSure * myUser.facebook.weight;
+                                                    targetUser.facebook.score = targetUser.facebook.score + defaultValues.multipliers.notSure * myUser.facebook.weight;
+                                                }
+
+                                                newClaim.setOverallRating();
+
+                                                newClaim.save(function (err) {
+                                                    if (err) {
+                                                        console.log(chalk.red('Error occurred 1487'));
+                                                    }
+                                                });
+
+                                                targetUser.facebook.claims.push(newClaim);
+                                                targetUser.setOverallFacebookRating();
+                                                targetUser.save(function (err) {
+                                                    if (err) {
+                                                        console.log("User save error: " + err);
+                                                    } else {
+                                                        console.log("User saved successfully");
+                                                    }
+                                                });
+
+                                                myUser.facebook.ratedByMe.push(newFacebookRating);
+
+                                                myUser.save(function (err) {
+                                                    if (err) {
+                                                        console.log("User(me) save error: " + err);
+                                                    } else {
+                                                        console.log("User(me) saved successfully");
+                                                    }
+                                                });
+                                            }
+                                        });
                                     }
                                 });
-
-                                return res.sendStatus(200);
                             }
-                        });
-
-                    }
-                });
+                        }
+                    });
+                }
             }
         });
     };
@@ -828,9 +704,9 @@ module.exports = function (app, express) {
 
                         var character;
 
-                        if (claim.overallRating == defaultValues.ratings.trustedUser) {
+                        if (claim.overallRatingLevel == defaultValues.ratings.trustedUser) {
                             character = "T";
-                        } else if (claim.overallRating == defaultValues.ratings.untrustedUser) {
+                        } else if (claim.overallRatingLevel == defaultValues.ratings.untrustedUser) {
                             character = "R";
                         } else {
                             character = "C";
@@ -841,7 +717,7 @@ module.exports = function (app, express) {
                             yes: claim.yes,
                             no: claim.no,
                             notSure: claim.notSure,
-                            overallRating: claim.overallRating,
+                            overallRating: claim.overallRatingLevel,
                             claimScore: character
                         });
 
@@ -1031,11 +907,17 @@ module.exports = function (app, express) {
                             } else {
                                 console.log(chalk.green("USER: " + JSON.stringify(user, null, "\t")));
 
-                                if (user.facebook.overallRating) {
+                                console.log("overallRatingLevel: " + user.facebook.overallRatingLevel);
 
-                                    if (user.facebook.overallRating == defaultValues.ratings.trustedUser) {
+                                var temp = user.facebook.overallRatingLevel;
+
+                                if (temp == defaultValues.ratings.trustedUser || temp == defaultValues.ratings.untrustedUser || temp == defaultValues.ratings.averageUser) {
+
+                                    console.log("overallRatingLevel: " + user.facebook.overallRatingLevel);
+
+                                    if (user.facebook.overallRatingLevel == defaultValues.ratings.trustedUser) {
                                         res.json({success: true, ratingLevel: "T"});
-                                    } else if (user.facebook.overallRating == defaultValues.ratings.untrustedUser) {
+                                    } else if (user.facebook.overallRatingLevel == defaultValues.ratings.untrustedUser) {
                                         res.json({success: true, ratingLevel: "R"});
                                     } else {
                                         res.json({success: true, ratingLevel: "C"});
@@ -1295,7 +1177,9 @@ module.exports = function (app, express) {
                 order = defaultValues.defaultOrder;
             }
 
-            Facebook.findOne({uid: targetid}, function (err, facebook) {
+            Facebook.findOne({
+                uid: targetid
+            }, function (err, facebook) {
                 if (err) {
                     console.log("Error occured 49841");
                     res.json({success: false, message: "Error occurred"});
@@ -1304,23 +1188,24 @@ module.exports = function (app, express) {
                         console.log(chalk.blue("Facebook found: " + JSON.stringify(facebook, null, "\t")));
 
                         Entry.find({
-                            targetid: facebook._id
-                        }).select('id lastUpdated data rating')
+                            targetid: targetid
+                        }).select('claimid lastUpdated data rating')
                             .sort({lastUpdated: order})
-                            .limit(limit).exec(
-                            function (err, entries) {
-                                if (err) {
-                                    console.log("Error occured 7945");
-                                    res.json({success: false, message: "Error occurred"});
-                                } else {
-                                    if (entries) {
-                                        console.log(chalk.blue("Claims found: " + JSON.stringify(entries, null, "\t")));
-                                        res.json({success: true, data: entries});
+                            .limit(limit)
+                            .exec(
+                                function (err, entries) {
+                                    if (err) {
+                                        console.log("Error occured 7945");
+                                        res.json({success: false, message: "Error occurred"});
                                     } else {
-                                        res.json({success: true, message: "No entries user found."});
+                                        if (entries) {
+                                            console.log(chalk.blue("Claims found: " + JSON.stringify(entries, null, "\t")));
+                                            res.json({success: true, data: entries});
+                                        } else {
+                                            res.json({success: true, message: "No entries user found."});
+                                        }
                                     }
-                                }
-                            });
+                                });
                     } else {
                         res.json({success: true, message: "No facebook account found."});
                     }
@@ -1343,7 +1228,7 @@ module.exports = function (app, express) {
      *         "data": [
      *           {
      *             "_id": "5671b59e6993ff982e1cd811",
-     *             "id": {CLAIM_ID},
+     *             "claimid": {CLAIM_ID},
      *             "myid": "5671a265ebe27c396108ea77",
      *             "targetid": "5671a1dcebe27c396108ea74",
      *             "data": {CLAIM},
@@ -1391,20 +1276,20 @@ module.exports = function (app, express) {
                             myid: facebook._id
                         }).populate({
                                 path: 'entries',
-                                populate: {path: 'targetid', model: Facebook, select: 'uid name'}
+                                populate: {path: 'targetid', model: "Facebook", select: 'uid name'}
                             })
                             //.select('entries')
-                            .exec(function (err, fbRatedByMe) {
+                            .exec(function (err, facebookRatedByMe) {
                                 if (err) {
                                     console.log("Error occurred");
                                     res.json({success: false, message: "Error occurred"});
                                 } else {
-                                    if (fbRatedByMe) {
-                                        console.log(chalk.blue("fbRatedByMe found: " + JSON.stringify(fbRatedByMe, null, "\t")));
-                                        res.json({success: true, data: fbRatedByMe});
+                                    if (facebookRatedByMe) {
+                                        console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMe, null, "\t")));
+                                        res.json({success: true, data: facebookRatedByMe});
                                     } else {
-                                        console.log("fbRatedByMe not found");
-                                        res.json({success: false, message: "fbRatedByMe not found"});
+                                        console.log("facebookRatedByMe not found");
+                                        res.json({success: false, message: "facebookRatedByMe not found"});
                                     }
                                 }
                             });
