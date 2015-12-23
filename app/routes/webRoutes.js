@@ -60,127 +60,127 @@ module.exports = function (app, passport) {
      *     }
      *
      */
-    app.post('/authenticate',function (req, res) {
+    app.post('/authenticate', function (req, res) {
 
-            var username = req.body.username;
-            var password = req.body.password;
+        var username = req.body.username;
+        var password = req.body.password;
 
-            if (username) {
-                console.log(chalk.yellow('Username: ' + username));
-                // find the user
+        if (username) {
+            console.log(chalk.yellow('Username: ' + username));
+            // find the user
 
-                if (password) {
-                    console.log(chalk.yellow('Password: ---------'));
+            if (password) {
+                console.log(chalk.yellow('Password: ---------'));
 
-                    User.findOne({
-                        'userDetails.local.email': username
-                    }, function (err, user) {
+                User.findOne({
+                    'userDetails.local.email': username
+                }, function (err, user) {
 
-                        if (err) throw err;
+                    if (err) throw err;
 
-                        if (!user) {
+                    if (!user) {
+                        res.json({
+                            success: false,
+                            message: 'Authentication failed. User not found.'
+                        });
+                    } else if (user) {
+
+                        console.log(chalk.blue('User: ' + user));
+
+                        var hash = user.generateHash(password);
+                        console.log(chalk.green('Hash: ' + hash));
+
+                        // check if password matches
+                        if (!user.validPassword(password)) {
                             res.json({
                                 success: false,
-                                message: 'Authentication failed. User not found.'
+                                message: 'Authentication failed. Wrong password.'
                             });
-                        } else if (user) {
+                        } else {
 
-                            console.log(chalk.blue('User: ' + user));
+                            console.log(chalk.green('Password correct'));
 
-                            var hash = user.generateHash(password);
-                            console.log(chalk.green('Hash: ' + hash));
+                            var apiSecret = app.get('apiSecret');
 
-                            // check if password matches
-                            if (!user.validPassword(password)) {
-                                res.json({
-                                    success: false,
-                                    message: 'Authentication failed. Wrong password.'
-                                });
-                            } else {
+                            console.log(chalk.yellow('apiSecret: ' + apiSecret));
+                            // if user is found and password is right
+                            // create a token
 
-                                console.log(chalk.green('Password correct'));
+                            console.log("Searching facebook profile....")
+                            Facebook.findOne({
+                                _id: user.userDetails.facebook
+                            }, function (err, facebook) {
+                                if (err) {
 
-                                var apiSecret = app.get('apiSecret');
+                                    console.log("Error occurred");
+                                    return res.status(400).json({
+                                        success: false,
+                                        message: 'Error occurred.'
+                                    });
 
-                                console.log(chalk.yellow('apiSecret: ' + apiSecret));
-                                // if user is found and password is right
-                                // create a token
-
-                                console.log("Searching facebook profile....")
-                                Facebook.findOne({
-                                    _id:user.userDetails.facebook
-                                }, function (err, facebook) {
-                                    if (err) {
-
-                                        console.log("Error occurred");
-                                        return res.status(400).json({
-                                            success: false,
-                                            message: 'Error occurred.'
-                                        });
-
+                                } else {
+                                    var tempUser;
+                                    if (facebook) {
+                                        tempUser = {
+                                            iss: 'sID',
+                                            context: {
+                                                username: user.userDetails.local.username,
+                                                id: facebook.id,
+                                                uid: facebook.uid
+                                            }
+                                        };
                                     } else {
-                                        var tempUser;
-                                        if(facebook) {
-                                             tempUser = {
-                                                iss: 'sID',
-                                                context: {
-                                                    username: user.userDetails.local.username,
-                                                    id: facebook.id,
-                                                    uid: facebook.uid
-                                                }
-                                            };
-                                        }else{
-                                            tempUser = {
-                                                iss: 'sID',
-                                                context: {
-                                                    username: user.userDetails.local.username,
-                                                }
-                                            };
-                                        }
-                                        var token = jwt.sign(tempUser, apiSecret, {
-                                            expiresInMinutes: 1440 // expires in 24 hours
-                                        });
-
-                                        if (facebook) {
-
-                                            console.log(chalk.blue("Facebook: " + JSON.stringify(facebook, null, "\t")));
-
-                                            // return the information including token as JSON
-                                            return  res.json({
-                                                success: true,
-                                                linked: true,
-                                                fbappid: facebook.id,
-                                                fbid: facebook.uid,
-                                                token: token
-                                            });
-                                        } else {
-                                            return  res.json({
-                                                success: true,
-                                                token: token
-                                            });
-                                        }
+                                        tempUser = {
+                                            iss: 'sID',
+                                            context: {
+                                                username: user.userDetails.local.username,
+                                            }
+                                        };
                                     }
-                                });
-                            }
+                                    var token = jwt.sign(tempUser, apiSecret, {
+                                        expiresInMinutes: 1440 // expires in 24 hours
+                                    });
 
+                                    if (facebook) {
+
+                                        console.log(chalk.blue("Facebook: " + JSON.stringify(facebook, null, "\t")));
+
+                                        // return the information including token as JSON
+                                        return res.json({
+                                            success: true,
+                                            linked: true,
+                                            fbappid: facebook.id,
+                                            fbid: facebook.uid,
+                                            token: token
+                                        });
+                                    } else {
+                                        return res.json({
+                                            success: true,
+                                            token: token
+                                        });
+                                    }
+                                }
+                            });
                         }
 
-                    });
-                } else {
-                    console.log(chalk.red('Authentication failed. Password required.'));
-                    res.status(400).json({
-                        success: false,
-                        message: 'Authentication failed. Password required.'
-                    });
-                }
+                    }
 
+                });
             } else {
+                console.log(chalk.red('Authentication failed. Password required.'));
                 res.status(400).json({
                     success: false,
-                    message: 'Authentication failed. Username required.'
+                    message: 'Authentication failed. Password required.'
                 });
             }
-        });
+
+        } else {
+            res.status(400).json({
+                success: false,
+                message: 'Authentication failed. Username required.'
+            });
+        }
+    });
 
     app.get('/verify', function (req, res) {
         console.log("/verify called");
@@ -276,13 +276,13 @@ module.exports = function (app, passport) {
     });
 
     app.get('/auth/facebookHTTP', passport.authenticate('facebook-auth-http', {
-        scope : 'email, user_friends',
+        scope: 'email, user_friends',
         failureRedirect: '/login',
         failureFlash: 'Authentication failed.'
     }));
 
     app.get('/auth/facebookHTTPS', passport.authenticate('facebook-auth-https', {
-        scope : 'email, user_friends',
+        scope: 'email, user_friends',
         failureRedirect: '/login',
         failureFlash: 'Authentication failed.'
     }));
@@ -304,11 +304,11 @@ module.exports = function (app, passport) {
         })
     );
 
-    app.get('/auth/plugin/facebook', passport.authenticate('facebook-auth-plugin-https',{ scope : 'email, user_friends' }));
+    app.get('/auth/plugin/facebook', passport.authenticate('facebook-auth-plugin-https', {scope: 'email, user_friends'}));
 
     app.get('/auth/plugin/facebookHTTPS/callback',
         passport.authenticate('facebook-auth-plugin-https', {
-            scope : 'email, user_friends',
+            scope: 'email, user_friends',
             successRedirect: 'https://www.facebook.com',
             failureRedirect: 'https://www.facebook.com'
         })
@@ -317,10 +317,10 @@ module.exports = function (app, passport) {
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++
     //+++++++++++++++++++ LinkedIn Auth +++++++++++++++++++++
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    app.get('/auth/linkedin', passport.authenticate('linkedin'));
+    app.get('/auth/linkedin', passport.authenticate('linkedin-auth'));
 
     app.get('/auth/linkedin/callback',
-        passport.authenticate('linkedin', {
+        passport.authenticate('linkedin-auth', {
             successRedirect: '/home',
             failureRedirect: '/',
             failureFlash: 'LinkedIn account is not linked to any local user account. Please create a local user account and link the LinkedIn account to use the login with LinkedIn.'
@@ -389,9 +389,10 @@ module.exports = function (app, passport) {
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++
     //+++++++++++++++++ LinkedIn Connect ++++++++++++++++++++
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    app.get('/connect/linkedin', passport.authenticate('linkedin-connect', {
-        res: ['r_basicprofile', 'r_fullprofile', 'r_emailaddress']
-    }));
+    app.get('/connect/linkedin', passport.authenticate('linkedin-connect'));
+    //, {
+    //    res: ['r_basicprofile', 'r_fullprofile', 'r_emailaddress']
+    //}
 
     // the callback after google has authorized the user
     app.get('/connect/linkedin/callback',
@@ -487,16 +488,16 @@ module.exports = function (app, passport) {
 
 
     app.get('/home', isLoggedIn, function (req, res) {
-      res.render('home.ejs', {user: req.user});
+        res.render('home.ejs', {user: req.user});
     });
 
-    app.get('/morrisroute', function(req, res){
-      // res.json([
-      //   {label: "Download Sales", value: 100},
-      //   {label: "In-Store Sales", value: 30},
-      //   {label: "Mail-Order Sales", value: 20}
-      // ]);
-      res.redirect('http://192.168.8.100:8080/getAllRatingsCount');
+    app.get('/morrisroute', function (req, res) {
+        // res.json([
+        //   {label: "Download Sales", value: 100},
+        //   {label: "In-Store Sales", value: 30},
+        //   {label: "Mail-Order Sales", value: 20}
+        // ]);
+        res.redirect('http://192.168.8.100:8080/getAllRatingsCount');
     });
 
     app.get('/facebookmyratings', isLoggedIn, function (req, res) {
@@ -549,7 +550,7 @@ module.exports = function (app, passport) {
 
     app.get('/usersummary', function (req, res) {
         console.log('sender: ');
-        rest.post(req.protocol + '://' + req.get('host')+'/claimRating', {
+        rest.post(req.protocol + '://' + req.get('host') + '/claimRating', {
             data: {sender: 'Pubudu', target: 'Dodangoda', cClass: 'cClassTest', claimId: 334},
         }).on('complete', function (data, response) {
             //if (response.statusCode == 201) { // you can get at the raw response like this...
