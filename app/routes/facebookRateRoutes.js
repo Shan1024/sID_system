@@ -757,9 +757,9 @@ module.exports = function (app, express) {
 
                         var character;
 
-                        if (claim.overallRatingLevel >= defaultValues.bounds.trustedUser) {
+                        if (claim.overallRatingLevel >= defaultValues.bounds.claim.trustedUser) {
                             character = "T";
-                        } else if (claim.overallRatingLevel <=defaultValues.bounds.untrustedUser) {
+                        } else if (claim.overallRatingLevel <=defaultValues.bounds.claim.untrustedUser) {
                             character = "R";
                         } else {
                             character = "C";

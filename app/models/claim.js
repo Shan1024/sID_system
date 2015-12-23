@@ -37,12 +37,12 @@ claimSchema.methods.setOverallRating = function () {
     if (!this.score) {
         this.overallRating = defaultValues.ratings.averageUser;
     } else {
-        if (this.score >= defaultValues.bounds.trustedUser) {
+        if (this.score >= defaultValues.bounds.claim.trusted) {
             this.overallRating = defaultValues.ratings.trustedUser;
-        } else if (this.score >= defaultValues.bounds.averageUser) {
-            this.overallRating = defaultValues.ratings.averageUser;
-        } else {
+        } else if (this.score <= defaultValues.bounds.claim.untrusted) {
             this.overallRating = defaultValues.ratings.untrustedUser;
+        } else {
+            this.overallRating = defaultValues.ratings.averageUser;
         }
     }
 };
