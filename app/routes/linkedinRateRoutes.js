@@ -85,6 +85,7 @@ module.exports = function (app, express) {
 
             if (err) {
                 console.log(chalk.red('Error occurred 9446151'));
+                return res.json({success: false, message: "Error occurred"});
             } else {
                 if (entry) {
                     console.log(chalk.yellow('Entry found'));
@@ -96,72 +97,79 @@ module.exports = function (app, express) {
 
                         if (err) {
                             console.log(chalk.red('Error occurred 7984512'));
+                            return res.json({success: false, message: "Error occurred"});
                         } else {
 
                             if (myClaim) {
 
-                                if (err) {
-                                    console.log(chalk.red("Error 4654565"));
+                                //remove the current rating and score from the myClaim
+                                if (entry.rating == defaultValues.votes.yes) {
+                                    myClaim.yes = myClaim.yes - 1;
+                                    myClaim.score = myClaim.score - defaultValues.multipliers.yes * entry.weight;
+                                    targetUser.linkedin.score = targetUser.linkedin.score - defaultValues.multipliers.yes * entry.weight;
+                                } else if (entry.rating == defaultValues.votes.no) {
+                                    myClaim.no = myClaim.no - 1;
+                                    myClaim.score = myClaim.score - defaultValues.multipliers.no * entry.weight;
+                                    targetUser.linkedin.score = targetUser.linkedin.score - defaultValues.multipliers.no * entry.weight;
                                 } else {
-
-                                    //remove the current rating and score from the myClaim
-                                    if (entry.rating == defaultValues.votes.yes) {
-                                        myClaim.yes = myClaim.yes - 1;
-                                        myClaim.score = myClaim.score - defaultValues.multipliers.yes * entry.weight;
-                                        targetUser.linkedin.score = targetUser.linkedin.score - defaultValues.multipliers.yes * entry.weight;
-                                    } else if (entry.rating == defaultValues.votes.no) {
-                                        myClaim.no = myClaim.no - 1;
-                                        myClaim.score = myClaim.score - defaultValues.multipliers.no * entry.weight;
-                                        targetUser.linkedin.score = targetUser.linkedin.score - defaultValues.multipliers.no * entry.weight;
-                                    } else {
-                                        myClaim.notSure = myClaim.notSure - 1;
-                                        myClaim.score = myClaim.score - defaultValues.multipliers.notSure * entry.weight;
-                                        targetUser.linkedin.score = targetUser.linkedin.score - defaultValues.multipliers.no * entry.weight;
-                                    }
-
-                                    //add the new rating and score to the myClaim
-                                    if (rating == defaultValues.votes.yes) {
-                                        myClaim.yes = myClaim.yes + 1;
-                                        myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
-                                        targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
-                                    } else if (rating == defaultValues.votes.no) {
-                                        myClaim.no = myClaim.no + 1;
-                                        myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.linkedin.weight;
-                                        targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
-                                    } else {
-                                        myClaim.notSure = myClaim.notSure + 1;
-                                        myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
-                                        targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
-                                    }
-
-                                    entry.rating = rating;
-                                    entry.weight = myUser.linkedin.weight;
-                                    entry.lastUpdated = Date.now();
-
-                                    entry.save(function (err) {
-                                        if (err) {
-                                            console.log(chalk.red('Error occurred while saving the entry 4564'));
-                                        }
-                                    });
-
-                                    myClaim.lastUpdated = Date.now();
-                                    myClaim.setOverallRating();
-
-                                    myClaim.save(function (err) {
-                                        if (err) {
-                                            console.log(chalk.red('Error occured while saving the myClaim 4648'));
-                                        }
-                                    });
-
-                                    targetUser.setOverallLinkedInRating();
-                                    targetUser.save(function (err) {
-                                        if (err) {
-                                            console.log("targetUser save error: " + err);
-                                        } else {
-                                            console.log("targetUser saved successfully");
-                                        }
-                                    });
+                                    myClaim.notSure = myClaim.notSure - 1;
+                                    myClaim.score = myClaim.score - defaultValues.multipliers.notSure * entry.weight;
+                                    targetUser.linkedin.score = targetUser.linkedin.score - defaultValues.multipliers.no * entry.weight;
                                 }
+
+                                //add the new rating and score to the myClaim
+                                if (rating == defaultValues.votes.yes) {
+                                    myClaim.yes = myClaim.yes + 1;
+                                    myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                    targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                } else if (rating == defaultValues.votes.no) {
+                                    myClaim.no = myClaim.no + 1;
+                                    myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.linkedin.weight;
+                                    targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
+                                } else {
+                                    myClaim.notSure = myClaim.notSure + 1;
+                                    myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                    targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                }
+
+                                entry.rating = rating;
+                                entry.weight = myUser.linkedin.weight;
+                                entry.lastUpdated = Date.now();
+
+                                entry.save(function (err) {
+                                    if (err) {
+                                        console.log(chalk.red('Error occurred while saving the entry 4564'));
+                                        return res.json({success: false, message: "Error occurred"});
+                                    }
+                                });
+
+                                myClaim.lastUpdated = Date.now();
+                                myClaim.setOverallRating();
+
+                                myClaim.save(function (err) {
+                                    if (err) {
+                                        console.log(chalk.red('Error occured while saving the myClaim 4648'));
+                                        return res.json({success: false, message: "Error occurred"});
+                                    }
+                                });
+
+                                targetUser.setOverallLinkedInRating();
+                                targetUser.save(function (err) {
+                                    if (err) {
+                                        console.log("targetUser save error: " + err);
+                                        return res.json({success: false, message: "Error occurred"});
+                                    } else {
+                                        console.log("targetUser saved successfully");
+                                        return res.json({
+                                            success: true,
+                                            myid: myid,
+                                            targetid: targetid,
+                                            claimid: claimid,
+                                            claim: claim,
+                                            rating: rating
+                                        });
+                                    }
+                                });
 
                                 //rating without a claim
                             } else {
@@ -193,6 +201,7 @@ module.exports = function (app, express) {
                                 newClaim.save(function (err) {
                                     if (err) {
                                         console.log(chalk.red('Error occurred 1487'));
+                                        return res.json({success: false, message: "Error occurred"});
                                     }
                                 });
 
@@ -203,6 +212,7 @@ module.exports = function (app, express) {
                                 entry.save(function (err) {
                                     if (err) {
                                         console.log(chalk.red('Error occured while saving the entry 4564'));
+                                        return res.json({success: false, message: "Error occurred"});
                                     }
                                 });
 
@@ -211,8 +221,17 @@ module.exports = function (app, express) {
                                 targetUser.save(function (err) {
                                     if (err) {
                                         console.log("myUser save error: " + err);
+                                        return res.json({success: false, message: "Error occurred"});
                                     } else {
                                         console.log("myUser saved successfully");
+                                        return res.json({
+                                            success: true,
+                                            myid: myid,
+                                            targetid: targetid,
+                                            claimid: claimid,
+                                            claim: claim,
+                                            rating: rating
+                                        });
                                     }
                                 });
                             }
@@ -240,6 +259,7 @@ module.exports = function (app, express) {
 
                         if (err) {
                             console.log(chalk.red('Error occurred 941651218'));
+                            return res.json({success: false, message: "Error occurred"});
                         } else {
 
                             //user has already rated some of the claims of the target
@@ -250,82 +270,130 @@ module.exports = function (app, express) {
 
                                     if (err) {
                                         console.log("Error: " + err);
+                                        return res.json({success: false, message: "Error occurred"});
                                     } else {
 
-                                        if (err) {
-                                            console.log("Error 41518");
-                                        } else {
+                                        linkedinRatedByMe.entries.push(entry);
 
-                                            linkedinRatedByMe.entries.push(entry);
+                                        linkedinRatedByMe.save(function (err) {
 
-                                            linkedinRatedByMe.save(function (err) {
+                                            if (err) {
+                                                console.log("Error 41518");
+                                                return res.json({success: false, message: "Error occurred"});
+                                            } else {
+                                                //console.log(chalk.blue("User: " + JSON.stringify(user, null, "\t")));
 
-                                                if (err) {
-                                                    console.log("error: " + err);
-                                                } else {
-                                                    console.log("no error");
+                                                console.log("no error");
 
+                                                targetUser.linkedin.ratedByOthers.push(entry);
+
+                                                Claim.findOne({
+                                                    claimid: claimid,
+                                                    myid: targetid
+                                                }, function (err, myClaim) {
                                                     if (err) {
-                                                        console.log("User not found: " + err);
+
                                                     } else {
-                                                        //console.log(chalk.blue("User: " + JSON.stringify(user, null, "\t")));
+                                                        if (myClaim) {
 
-                                                        targetUser.linkedin.ratedByOthers.push(entry);
-
-                                                        var newClaim = new Claim({
-                                                            claimid: claimid,
-                                                            claim: claim,
-                                                            myid: targetid
-                                                        });
-
-                                                        if (rating == defaultValues.votes.yes) {
-                                                            newClaim.yes = 1;
-                                                            newClaim.score = defaultValues.multipliers.yes * myUser.linkedin.weight;
-                                                            targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
-                                                        } else if (rating == defaultValues.votes.no) {
-                                                            newClaim.no = 1;
-                                                            newClaim.score = defaultValues.multipliers.no * myUser.linkedin.weight;
-                                                            targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
-                                                        } else {
-                                                            newClaim.notSure = 1;
-                                                            newClaim.score = defaultValues.multipliers.notSure * myUser.linkedin.weight;
-                                                            targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
-                                                        }
-
-                                                        newClaim.setOverallRating();
-
-                                                        newClaim.save(function (err) {
-                                                            if (err) {
-                                                                console.log(chalk.red('Error occurred 1487'));
-                                                            }
-                                                        });
-
-                                                        targetUser.linkedin.claims.push(newClaim);
-                                                        targetUser.setOverallLinkedInRating();
-                                                        targetUser.save(function (err) {
-                                                            if (err) {
-                                                                console.log("User save error: " + err);
+                                                            if (rating == defaultValues.votes.yes) {
+                                                                myClaim.yes = myClaim.yes + 1;
+                                                                myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                                                targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                                            } else if (rating == defaultValues.votes.no) {
+                                                                myClaim.no = myClaim.no + 1;
+                                                                myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.linkedin.weight;
+                                                                targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
                                                             } else {
-                                                                console.log("User saved successfully");
+                                                                myClaim.notSure = myClaim.notSure + 1;
+                                                                myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                                                targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
                                                             }
-                                                        });
 
+                                                            myClaim.lastUpdated = Date.now();
+                                                            myClaim.setOverallRating();
+
+                                                            myClaim.save(function (err) {
+                                                                if (err) {
+                                                                    console.log(chalk.red('Error occured while saving the myClaim 4648'));
+                                                                    return res.json({
+                                                                        success: false,
+                                                                        message: "Error occurred"
+                                                                    });
+                                                                }
+                                                            });
+
+                                                        } else {
+
+                                                            var newClaim = new Claim({
+                                                                claimid: claimid,
+                                                                claim: claim,
+                                                                myid: targetid
+                                                            });
+
+                                                            if (rating == defaultValues.votes.yes) {
+                                                                newClaim.yes = 1;
+                                                                newClaim.score = defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                                                targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                                            } else if (rating == defaultValues.votes.no) {
+                                                                newClaim.no = 1;
+                                                                newClaim.score = defaultValues.multipliers.no * myUser.linkedin.weight;
+                                                                targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
+                                                            } else {
+                                                                newClaim.notSure = 1;
+                                                                newClaim.score = defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                                                targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                                            }
+
+                                                            newClaim.setOverallRating();
+
+                                                            newClaim.save(function (err) {
+                                                                if (err) {
+                                                                    console.log(chalk.red('Error occurred 1487'));
+                                                                    return res.json({
+                                                                        success: false,
+                                                                        message: "Error occurred"
+                                                                    });
+                                                                }
+                                                            });
+
+                                                            targetUser.linkedin.claims.push(newClaim);
+                                                            targetUser.setOverallLinkedInRating();
+                                                            targetUser.save(function (err) {
+                                                                if (err) {
+                                                                    console.log("User save error: " + err);
+                                                                    return res.json({
+                                                                        success: false,
+                                                                        message: "Error occurred"
+                                                                    });
+                                                                } else {
+                                                                    console.log("User saved successfully");
+                                                                    return res.json({
+                                                                        success: true,
+                                                                        myid: myid,
+                                                                        targetid: targetid,
+                                                                        claimid: claimid,
+                                                                        claim: claim,
+                                                                        rating: rating
+                                                                    });
+                                                                }
+                                                            });
+                                                        }
                                                     }
-
-                                                }
-                                            });
-
-                                        }
-
+                                                });
+                                            }
+                                        });
                                     }
                                 });
+
                                 //user haven't rated target before
                             } else {
 
                                 entry.save(function (err) {
 
                                     if (err) {
-
+                                        console.log("Error occurred 489421")
+                                        return res.json({success: false, message: "Error occurred"});
                                     } else {
 
                                         var newLinkedInRating = new LinkedInRatedByMe({
@@ -338,55 +406,118 @@ module.exports = function (app, express) {
 
                                             if (err) {
                                                 console.log("User not found: " + err);
+                                                return res.json({success: false, message: "Error occurred"});
                                             } else {
 
                                                 targetUser.linkedin.ratedByOthers.push(entry);
 
-                                                var newClaim = new Claim({
+                                                Claim.findOne({
                                                     claimid: claimid,
-                                                    claim: claim,
                                                     myid: targetid
-                                                });
-
-                                                if (rating == defaultValues.votes.yes) {
-                                                    newClaim.yes = 1;
-                                                    newClaim.score = defaultValues.multipliers.yes * myUser.linkedin.weight;
-                                                    targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
-                                                } else if (rating == defaultValues.votes.no) {
-                                                    newClaim.no = 1;
-                                                    newClaim.score = defaultValues.multipliers.no * myUser.linkedin.weight;
-                                                    targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
-                                                } else {
-                                                    newClaim.notSure = 1;
-                                                    newClaim.score = defaultValues.multipliers.notSure * myUser.linkedin.weight;
-                                                    targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
-                                                }
-
-                                                newClaim.setOverallRating();
-
-                                                newClaim.save(function (err) {
+                                                }, function (err, myClaim) {
                                                     if (err) {
-                                                        console.log(chalk.red('Error occurred 1487'));
-                                                    }
-                                                });
 
-                                                targetUser.linkedin.claims.push(newClaim);
-                                                targetUser.setOverallLinkedInRating();
-                                                targetUser.save(function (err) {
-                                                    if (err) {
-                                                        console.log("User save error: " + err);
                                                     } else {
-                                                        console.log("User saved successfully");
-                                                    }
-                                                });
+                                                        if (myClaim) {
 
-                                                myUser.linkedin.ratedByMe.push(newLinkedInRating);
+                                                            if (rating == defaultValues.votes.yes) {
+                                                                myClaim.yes = myClaim.yes + 1;
+                                                                myClaim.score = myClaim.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                                                targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                                            } else if (rating == defaultValues.votes.no) {
+                                                                myClaim.no = myClaim.no + 1;
+                                                                myClaim.score = myClaim.score + defaultValues.multipliers.no * myUser.linkedin.weight;
+                                                                targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
+                                                            } else {
+                                                                myClaim.notSure = myClaim.notSure + 1;
+                                                                myClaim.score = myClaim.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                                                targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                                            }
 
-                                                myUser.save(function (err) {
-                                                    if (err) {
-                                                        console.log("User(me) save error: " + err);
-                                                    } else {
-                                                        console.log("User(me) saved successfully");
+                                                            myClaim.lastUpdated = Date.now();
+                                                            myClaim.setOverallRating();
+
+                                                            myClaim.save(function (err) {
+                                                                if (err) {
+                                                                    console.log(chalk.red('Error occured while saving the myClaim 4648'));
+                                                                    return res.json({
+                                                                        success: false,
+                                                                        message: "Error occurred"
+                                                                    });
+                                                                }
+                                                            });
+
+                                                        } else {
+
+                                                            var newClaim = new Claim({
+                                                                claimid: claimid,
+                                                                claim: claim,
+                                                                myid: targetid
+                                                            });
+
+                                                            if (rating == defaultValues.votes.yes) {
+                                                                newClaim.yes = 1;
+                                                                newClaim.score = defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                                                targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.yes * myUser.linkedin.weight;
+                                                            } else if (rating == defaultValues.votes.no) {
+                                                                newClaim.no = 1;
+                                                                newClaim.score = defaultValues.multipliers.no * myUser.linkedin.weight;
+                                                                targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.no * myUser.linkedin.weight;
+                                                            } else {
+                                                                newClaim.notSure = 1;
+                                                                newClaim.score = defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                                                targetUser.linkedin.score = targetUser.linkedin.score + defaultValues.multipliers.notSure * myUser.linkedin.weight;
+                                                            }
+
+                                                            newClaim.setOverallRating();
+
+                                                            newClaim.save(function (err) {
+                                                                if (err) {
+                                                                    console.log(chalk.red('Error occurred 1487'));
+                                                                    return res.json({
+                                                                        success: false,
+                                                                        message: "Error occurred"
+                                                                    });
+                                                                }
+                                                            });
+
+                                                            targetUser.linkedin.claims.push(newClaim);
+                                                            targetUser.setOverallLinkedInRating();
+                                                            targetUser.save(function (err) {
+                                                                if (err) {
+                                                                    console.log("User save error: " + err);
+                                                                    return res.json({
+                                                                        success: false,
+                                                                        message: "Error occurred"
+                                                                    });
+                                                                } else {
+                                                                    console.log("User saved successfully");
+                                                                }
+                                                            });
+
+                                                            myUser.linkedin.ratedByMe.push(newLinkedInRating);
+
+                                                            myUser.save(function (err) {
+                                                                if (err) {
+                                                                    console.log("User(me) save error: " + err);
+                                                                    return res.json({
+                                                                        success: false,
+                                                                        message: "Error occurred"
+                                                                    });
+                                                                } else {
+                                                                    console.log("User(me) saved successfully");
+
+                                                                    return res.json({
+                                                                        success: true,
+                                                                        myid: myid,
+                                                                        targetid: targetid,
+                                                                        claimid: claimid,
+                                                                        claim: claim,
+                                                                        rating: rating
+                                                                    });
+                                                                }
+                                                            });
+                                                        }
                                                     }
                                                 });
                                             }
@@ -400,6 +531,7 @@ module.exports = function (app, express) {
             }
         });
     };
+
 
     /**
      * @api {post} /rate/linkedin/addRating Adds a new LinkedIn rating or update an existing one.
@@ -1014,8 +1146,8 @@ module.exports = function (app, express) {
         });
 
     /**
-     * @api {post} /rate/linkedin/getAllRatingsByMe Returns the all ratings done by a target user.
-     * @apiName GetAllRatingsByMe
+     * @api {post} /rate/linkedin/getAllRatingsByUser Returns the all ratings done by a target user.
+     * @apiName getAllRatingsByUser
      * @apiGroup LinkedIn
      * @apiVersion 0.1.0
      *
@@ -1057,7 +1189,7 @@ module.exports = function (app, express) {
                             myid: linkedin._id
                         }).populate({
                                 path: 'entries',
-                                populate: {path: 'targetid', model: "LinkedIn", select: 'uid name'}
+                                populate: {path: 'targetid', model: "LinkedIn", select: 'uid name url'}
                             })
                             //.select('entries')
                             .exec(function (err, linkedinRatedByMe) {
@@ -1081,11 +1213,11 @@ module.exports = function (app, express) {
                 }
             });
         });
-	
-	
-	/**
-		
-	 * Written By Dodan, Delete route if problems arise
+
+
+    /**
+
+     * Written By Dodan, Delete route if problems arise
      * @api {post} /rate/linkedin/getUrl Returns the linkedin url given the email address.
      * @apiName getUrl
      * @apiGroup LinkedIn
@@ -1094,40 +1226,50 @@ module.exports = function (app, express) {
      * @apiParam {String} email The LinkedIn sid user email of the user.
      *
      */
-	rateRouter.route('/getUrl')
+    rateRouter.route('/getUrl')
         .post(function (req, res) {
 
             var email = req.body.email;
-			if(!email){
-				if (req.user) {
-					if (req.user.userDetails.linkedin) {
-					   var email = req.user.userDetails.linkedin.email;
-					} else {
-						return res.json({
-							success: true,
-							message: "No linkedin account is linked"
-						});
-					}
-				} else {
+
+            console.log("Email: " + email);
+
+            if (!email) {
+                if (req.user) {
+                    if (req.user.userDetails.linkedin) {
+                        var email = req.user.userDetails.linkedin.email;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No linkedin account is linked"
+                        });
+                    }
+                } else {
                     return res.json({
                         success: false,
                         message: "No user found in the session"
                     });
                 }
-			}
-			
-			User.findOne({
-				'userDetails.local.email': email
-			}).populate({
-				path: 'userDetails.linkedin'
-			}).exec(function(err,user){
-				if(err){
-					return res.json({success: false, message: "Error occurred"});
-				}else{
-					var url = user.userDetails.linkedin.url;
-					return res.json({success: true, url: url});
-				}
-			});
+            }
+
+            User.findOne({
+                'userDetails.local.email': email
+            }).populate({
+                path: 'userDetails.linkedin'
+            }).exec(function (err, user) {
+
+                console.log(chalk.blue("User: " + JSON.stringify(user, null, "\t")));
+
+                if (err) {
+                    return res.json({success: false, message: "Error occurred"});
+                } else {
+                    if (user) {
+                        var url = user.userDetails.linkedin.url;
+                        return res.json({success: true, url: url});
+                    } else {
+
+                    }
+                }
+            });
         });
 
     app.use('/rate/linkedin', rateRouter);
