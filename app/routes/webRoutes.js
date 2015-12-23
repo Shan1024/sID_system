@@ -106,7 +106,7 @@ module.exports = function (app, passport) {
                             // if user is found and password is right
                             // create a token
 
-                            console.log("Searching facebook profile....")
+                            console.log("Searching facebook profile....");
                             Facebook.findOne({
                                 _id: user.userDetails.facebook
                             }, function (err, facebook) {

@@ -506,7 +506,7 @@ module.exports = function (app, express) {
                                 entry.save(function (err) {
 
                                     if (err) {
-                                        console.log("Error occurred 489421")
+                                        console.log("Error occurred 489421");
                                         return res.json({success: false, message: "Error occurred"});
                                     } else {
 
