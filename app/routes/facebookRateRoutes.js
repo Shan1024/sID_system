@@ -200,6 +200,7 @@ module.exports = function (app, express) {
 
             if (err) {
                 console.log(chalk.red('Error occurred 9446151'));
+                return res.json({success: false, message: "Error occurred"});
             } else {
                 if (entry) {
                     console.log(chalk.yellow('Entry found'));
@@ -211,12 +212,14 @@ module.exports = function (app, express) {
 
                         if (err) {
                             console.log(chalk.red('Error occurred 7984512'));
+                            return res.json({success: false, message: "Error occurred"});
                         } else {
 
                             if (myClaim) {
 
                                 if (err) {
                                     console.log(chalk.red("Error 4654565"));
+                                    return res.json({success: false, message: "Error occurred"});
                                 } else {
 
                                     //remove the current rating and score from the myClaim
@@ -256,6 +259,7 @@ module.exports = function (app, express) {
                                     entry.save(function (err) {
                                         if (err) {
                                             console.log(chalk.red('Error occurred while saving the entry 4564'));
+                                            return res.json({success: false, message: "Error occurred"});
                                         }
                                     });
 
@@ -265,6 +269,7 @@ module.exports = function (app, express) {
                                     myClaim.save(function (err) {
                                         if (err) {
                                             console.log(chalk.red('Error occured while saving the myClaim 4648'));
+                                            return res.json({success: false, message: "Error occurred"});
                                         }
                                     });
 
@@ -272,8 +277,17 @@ module.exports = function (app, express) {
                                     targetUser.save(function (err) {
                                         if (err) {
                                             console.log("targetUser save error: " + err);
+                                            return res.json({success: false, message: "Error occurred"});
                                         } else {
                                             console.log("targetUser saved successfully");
+                                            return res.json({
+                                                success: true,
+                                                myid: myid,
+                                                targetid: targetid,
+                                                claimid: claimid,
+                                                claim: claim,
+                                                rating: rating
+                                            });
                                         }
                                     });
                                 }
@@ -308,6 +322,7 @@ module.exports = function (app, express) {
                                 newClaim.save(function (err) {
                                     if (err) {
                                         console.log(chalk.red('Error occurred 1487'));
+                                        return res.json({success: false, message: "Error occurred"});
                                     }
                                 });
 
@@ -318,6 +333,7 @@ module.exports = function (app, express) {
                                 entry.save(function (err) {
                                     if (err) {
                                         console.log(chalk.red('Error occured while saving the entry 4564'));
+                                        return res.json({success: false, message: "Error occurred"});
                                     }
                                 });
 
@@ -326,8 +342,17 @@ module.exports = function (app, express) {
                                 targetUser.save(function (err) {
                                     if (err) {
                                         console.log("myUser save error: " + err);
+                                        return res.json({success: false, message: "Error occurred"});
                                     } else {
                                         console.log("myUser saved successfully");
+                                        return res.json({
+                                            success: true,
+                                            myid: myid,
+                                            targetid: targetid,
+                                            claimid: claimid,
+                                            claim: claim,
+                                            rating: rating
+                                        });
                                     }
                                 });
                             }
@@ -355,6 +380,7 @@ module.exports = function (app, express) {
 
                         if (err) {
                             console.log(chalk.red('Error occurred 941651218'));
+                            return res.json({success: false, message: "Error occurred"});
                         } else {
 
                             //user has already rated some of the claims of the target
@@ -365,10 +391,12 @@ module.exports = function (app, express) {
 
                                     if (err) {
                                         console.log("Error: " + err);
+                                        return res.json({success: false, message: "Error occurred"});
                                     } else {
 
                                         if (err) {
                                             console.log("Error 41518");
+                                            return res.json({success: false, message: "Error occurred"});
                                         } else {
 
                                             facebookRatedByMe.entries.push(entry);
@@ -382,6 +410,7 @@ module.exports = function (app, express) {
 
                                                     if (err) {
                                                         console.log("User not found: " + err);
+                                                        return res.json({success: false, message: "Error occurred"});
                                                     } else {
                                                         //console.log(chalk.blue("User: " + JSON.stringify(user, null, "\t")));
 
@@ -412,6 +441,7 @@ module.exports = function (app, express) {
                                                         newClaim.save(function (err) {
                                                             if (err) {
                                                                 console.log(chalk.red('Error occurred 1487'));
+                                                                return res.json({success: false, message: "Error occurred"});
                                                             }
                                                         });
 
@@ -420,8 +450,17 @@ module.exports = function (app, express) {
                                                         targetUser.save(function (err) {
                                                             if (err) {
                                                                 console.log("User save error: " + err);
+                                                                return res.json({success: false, message: "Error occurred"});
                                                             } else {
                                                                 console.log("User saved successfully");
+                                                                return res.json({
+                                                                    success: true,
+                                                                    myid: myid,
+                                                                    targetid: targetid,
+                                                                    claimid: claimid,
+                                                                    claim: claim,
+                                                                    rating: rating
+                                                                });
                                                             }
                                                         });
 
@@ -440,7 +479,8 @@ module.exports = function (app, express) {
                                 entry.save(function (err) {
 
                                     if (err) {
-
+                                        console.log("Error occurred 489421")
+                                        return res.json({success: false, message: "Error occurred"});
                                     } else {
 
                                         var newFacebookRating = new FacebookRatedByMe({
@@ -453,6 +493,7 @@ module.exports = function (app, express) {
 
                                             if (err) {
                                                 console.log("User not found: " + err);
+                                                return res.json({success: false, message: "Error occurred"});
                                             } else {
 
                                                 targetUser.facebook.ratedByOthers.push(entry);
@@ -482,6 +523,7 @@ module.exports = function (app, express) {
                                                 newClaim.save(function (err) {
                                                     if (err) {
                                                         console.log(chalk.red('Error occurred 1487'));
+                                                        return res.json({success: false, message: "Error occurred"});
                                                     }
                                                 });
 
@@ -490,6 +532,7 @@ module.exports = function (app, express) {
                                                 targetUser.save(function (err) {
                                                     if (err) {
                                                         console.log("User save error: " + err);
+                                                        return res.json({success: false, message: "Error occurred"});
                                                     } else {
                                                         console.log("User saved successfully");
                                                     }
@@ -500,8 +543,18 @@ module.exports = function (app, express) {
                                                 myUser.save(function (err) {
                                                     if (err) {
                                                         console.log("User(me) save error: " + err);
+                                                        return res.json({success: false, message: "Error occurred"});
                                                     } else {
                                                         console.log("User(me) saved successfully");
+
+                                                        return res.json({
+                                                            success: true,
+                                                            myid: myid,
+                                                            targetid: targetid,
+                                                            claimid: claimid,
+                                                            claim: claim,
+                                                            rating: rating
+                                                        });
                                                     }
                                                 });
                                             }
