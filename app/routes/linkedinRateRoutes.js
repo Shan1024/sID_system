@@ -624,7 +624,7 @@ module.exports = function (app, express) {
                                                 _id: me.user
                                             }, function (err, myUser) {
                                                 User.findOne({
-                                                    _id: target.user
+                                                    _id: linkedin.user
                                                 }, function (err, targetUser) {
                                                     addRating(req, res, me, linkedin, myUser, targetUser);
                                                 });
@@ -1236,7 +1236,7 @@ module.exports = function (app, express) {
             if (!email) {
                 if (req.user) {
                     if (req.user.userDetails.linkedin) {
-                        var email = req.user.userDetails.linkedin.email;
+                        email = req.user.userDetails.linkedin.email;
                     } else {
                         return res.json({
                             success: false,
