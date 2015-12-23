@@ -1081,6 +1081,54 @@ module.exports = function (app, express) {
                 }
             });
         });
+	
+	
+	/**
+		
+	 * Written By Dodan, Delete route if problems arise
+     * @api {post} /rate/linkedin/getUrl Returns the linkedin url given the email address.
+     * @apiName getUrl
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} email The LinkedIn sid user email of the user.
+     *
+     */
+	rateRouter.route('/getUrl')
+        .post(function (req, res) {
+
+            var email = req.body.email;
+			if(!email){
+				if (req.user) {
+					if (req.user.userDetails.linkedin) {
+					   var email = req.user.userDetails.linkedin.email;
+					} else {
+						return res.json({
+							success: true,
+							message: "No linkedin account is linked"
+						});
+					}
+				} else {
+                    return res.json({
+                        success: false,
+                        message: "No user found in the session"
+                    });
+                }
+			}
+			
+			User.findOne({
+				'userDetails.local.email': email
+			}).populate({
+				path: 'userDetails.linkedin'
+			}).exec(function(err,user){
+				if(err){
+					return res.json({success: false, message: "Error occurred"});
+				}else{
+					var url = user.userDetails.linkedin.url;
+					return res.json({success: true, url: url});
+				}
+			});
+        });
 
     app.use('/rate/linkedin', rateRouter);
 
