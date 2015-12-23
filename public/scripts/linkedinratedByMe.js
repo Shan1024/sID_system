@@ -47,7 +47,7 @@ $(function () {
                     type ="alert alert-warning";
                 }
 
-                $contentArea.append('<div class=\"row\"><div class=\"'+type+'\" > User: '+'<a href="https://www.facebook.com/'+response.data[i].entries[j].targetid.uid+'">'+response.data[i].entries[j].targetid.name+'</a>'+' Claim: ' + response.data[i].entries[j].claim +' , Rating: ' + response.data[i].entries[j].rating + ' , Time: ' + response.data[i].entries[j].lastUpdated + '</div></div></div>');
+                $contentArea.append('<div class=\"row\"><div class=\"'+type+'\" > User: '+'<a href="'+response.data[i].entries[j].targetid.url+'">'+response.data[i].entries[j].targetid.name+'</a>'+' Claim: ' + response.data[i].entries[j].claim +' , Rating: ' + response.data[i].entries[j].rating + ' , Time: ' + response.data[i].entries[j].lastUpdated + '</div></div></div>');
             }
         }
     });
