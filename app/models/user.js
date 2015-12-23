@@ -5,7 +5,7 @@ var chalk = require('chalk');
 var defaultValues = require("../../config/defaultValues");
 
 var Entry = require('./entry');
-var Entry = require('./claim');
+var Claim = require('./claim');
 var FacebookRatedByMe = require('./facebookRatedByMe');
 var LinkedInRatedByMe = require('./linkedinRatedByMe');
 var Facebook = require('./facebook');
@@ -31,10 +31,7 @@ var userSchema = mongoose.Schema({
         created: {
             type: Date,
             default: Date.now
-        },
-
-
-
+        }
     },
     facebook: {
         ratedByMe: [{
@@ -57,7 +54,7 @@ var userSchema = mongoose.Schema({
             type: Number,
             default: 0
         },
-        overallRating: Number
+        overallRatingLevel: Number
     },
     linkedin: {
         ratedByMe: [{
@@ -80,34 +77,34 @@ var userSchema = mongoose.Schema({
             type: Number,
             default: 0
         },
-        overallRating: Number
+        overallRatingLevel: Number
     }
 });
 
 userSchema.methods.setOverallFacebookRating = function () {
     if (!this.facebook.score) {
-        this.facebook.overallRating = defaultValues.ratings.averageUser;
+        this.facebook.overallRatingLevel = defaultValues.ratings.averageUser;
     } else {
-        if (this.facebook.score >= defaultValues.bounds.trustedUser) {
-            this.facebook.overallRating = defaultValues.ratings.trustedUser;
-        } else if (this.facebook.score >= defaultValues.bounds.averageUser) {
-            this.facebook.overallRating = defaultValues.ratings.averageUser;
+        if (this.facebook.score >= defaultValues.bounds.overall.trusted) {
+            this.facebook.overallRatingLevel = defaultValues.ratings.trustedUser;
+        } else if (this.facebook.score < defaultValues.bounds.overall.untrusted) {
+            this.facebook.overallRatingLevel = defaultValues.ratings.untrustedUser;
         } else {
-            this.facebook.overallRating = defaultValues.ratings.untrustedUser;
+            this.facebook.overallRatingLevel = defaultValues.ratings.averageUser;
         }
     }
 };
 
 userSchema.methods.setOverallLinkedInRating = function () {
     if (!this.linkedin.score) {
-        this.linkedin.overallRating = defaultValues.ratings.averageUser;
+        this.linkedin.overallRatingLevel = defaultValues.ratings.averageUser;
     } else {
-        if (this.linkedin.score >= defaultValues.bounds.trustedUser) {
-            this.linkedin.overallRating = defaultValues.ratings.trustedUser;
-        } else if (this.linkedin.score >= defaultValues.bounds.averageUser) {
-            this.linkedin.overallRating = defaultValues.ratings.averageUser;
+        if (this.linkedin.score >= defaultValues.bounds.overall.trusted) {
+            this.linkedin.overallRatingLevel = defaultValues.ratings.trustedUser;
+        } else if (this.linkedin.score < defaultValues.bounds.overall.untrusted) {
+            this.linkedin.overallRatingLevel = defaultValues.ratings.untrustedUser;
         } else {
-            this.linkedin.overallRating = defaultValues.ratings.untrustedUser;
+            this.linkedin.overallRatingLevel = defaultValues.ratings.averageUser;
         }
     }
 };

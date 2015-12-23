@@ -14,7 +14,7 @@ $(function () {
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "/rate/facebook/getAllRatedClaims",
+        "url": "/rate/linkedin/getAllRatedClaims",
         "method": "POST",
         "headers": {
             "cache-control": "no-cache",
@@ -54,27 +54,28 @@ $(function () {
 
                 var ctx = canvas.getContext("2d");
 
-
                 var myNewChart = new Chart(ctx).Pie([
                     {
                         value: response.data[i].yes,
-                        color: "#33cc33",
-                        highlight: "#85e085",
+                        color: "#46bf7d",//33cc33
+                        highlight: "#5ad391",//85e085
                         label: "Yes"
                     },
                     {
                         value: response.data[i].notSure,
-                        color: "#ffff00",
-                        highlight: "#ffff66",
+                        color: "#fdb45c",//ffff00
+                        highlight: "#ffc870",//ffff66
                         label: "No Sure"
                     },
                     {
                         value: response.data[i].no,
-                        color: "#ff0000",
-                        highlight: "#ff6666",
+                        color: "#f7464a",//ff0000
+                        highlight: "#ff5a5e",//ff6666
                         label: "No"
                     }
-                ]);
+                ], {
+                    animationEasing: "easeInQuart"
+                });
             }
         }
 

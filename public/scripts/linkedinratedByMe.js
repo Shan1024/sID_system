@@ -8,7 +8,7 @@ $(function () {
     var settings = {
         "async": true,
         "crossDomain": true,
-        "url": "/rate/facebook/getAllRatingsByUser",
+        "url": "/rate/linkedin/getAllRatingsByUser",
         "method": "POST",
         "headers": {
             "cache-control": "no-cache",

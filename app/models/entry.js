@@ -2,14 +2,13 @@ var mongoose = require('mongoose');
 
 //Entry schema
 var entrySchema = mongoose.Schema({
-    id: String,
-    myid: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Facebook'
+    claimid: String,
+    mysid: String, myid: {
+        type: mongoose.Schema.Types.ObjectId
     },
+    targetsid: String,
     targetid: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Facebook'
+        type: mongoose.Schema.Types.ObjectId
     },
     lastUpdated: {
         type: Date,

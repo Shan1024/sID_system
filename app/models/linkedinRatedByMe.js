@@ -7,7 +7,7 @@ var LinkedIn = require('./linkedin');
 var linkedinRatedByMeScheme = mongoose.Schema({
     myid: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Facebook'
+        ref: 'LinkedIn'
     },
     targetid: {
         type: mongoose.Schema.Types.ObjectId,

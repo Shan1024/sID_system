@@ -119,11 +119,9 @@ module.exports = function (app, passport) {
                                         });
 
                                     } else {
-                                        if (facebook) {
-
-                                            console.log(chalk.blue("Facebook: " + JSON.stringify(facebook, null, "\t")));
-
-                                            var tempUser = {
+                                        var tempUser;
+                                        if(facebook) {
+                                             tempUser = {
                                                 iss: 'sID',
                                                 context: {
                                                     username: user.userDetails.local.username,
@@ -131,10 +129,21 @@ module.exports = function (app, passport) {
                                                     uid: facebook.uid
                                                 }
                                             };
+                                        }else{
+                                            tempUser = {
+                                                iss: 'sID',
+                                                context: {
+                                                    username: user.userDetails.local.username,
+                                                }
+                                            };
+                                        }
+                                        var token = jwt.sign(tempUser, apiSecret, {
+                                            expiresInMinutes: 1440 // expires in 24 hours
+                                        });
 
-                                            var token = jwt.sign(tempUser, apiSecret, {
-                                                expiresInMinutes: 1440 // expires in 24 hours
-                                            });
+                                        if (facebook) {
+
+                                            console.log(chalk.blue("Facebook: " + JSON.stringify(facebook, null, "\t")));
 
                                             // return the information including token as JSON
                                             return  res.json({
@@ -145,10 +154,9 @@ module.exports = function (app, passport) {
                                                 token: token
                                             });
                                         } else {
-                                            return  res.status(400).json({
-                                                success: false,
-                                                linked: false,
-                                                message: 'No facebook account linked.'
+                                            return  res.json({
+                                                success: true,
+                                                token: token
                                             });
                                         }
                                     }
@@ -268,11 +276,13 @@ module.exports = function (app, passport) {
     });
 
     app.get('/auth/facebookHTTP', passport.authenticate('facebook-auth-http', {
+        scope : 'email, user_friends',
         failureRedirect: '/login',
         failureFlash: 'Authentication failed.'
     }));
 
     app.get('/auth/facebookHTTPS', passport.authenticate('facebook-auth-https', {
+        scope : 'email, user_friends',
         failureRedirect: '/login',
         failureFlash: 'Authentication failed.'
     }));
@@ -294,10 +304,11 @@ module.exports = function (app, passport) {
         })
     );
 
-    app.get('/auth/plugin/facebook', passport.authenticate('facebook-auth-plugin-https'));
+    app.get('/auth/plugin/facebook', passport.authenticate('facebook-auth-plugin-https',{ scope : 'email, user_friends' }));
 
     app.get('/auth/plugin/facebookHTTPS/callback',
         passport.authenticate('facebook-auth-plugin-https', {
+            scope : 'email, user_friends',
             successRedirect: 'https://www.facebook.com',
             failureRedirect: 'https://www.facebook.com'
         })

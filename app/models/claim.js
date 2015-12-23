@@ -27,7 +27,7 @@ var claimSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
-    overallRating: {
+    overallRatingLevel: {
         type: Number,
         default: defaultValues.ratings.averageUser
     }
@@ -35,14 +35,14 @@ var claimSchema = mongoose.Schema({
 
 claimSchema.methods.setOverallRating = function () {
     if (!this.score) {
-        this.overallRating = defaultValues.ratings.averageUser;
+        this.overallRatingLevel = defaultValues.ratings.averageUser;
     } else {
-        if (this.score >= defaultValues.bounds.trustedUser) {
-            this.overallRating = defaultValues.ratings.trustedUser;
-        } else if (this.score >= defaultValues.bounds.averageUser) {
-            this.overallRating = defaultValues.ratings.averageUser;
+        if (this.score >= defaultValues.bounds.claim.trusted) {
+            this.overallRatingLevel = defaultValues.ratings.trustedUser;
+        } else if (this.score < defaultValues.bounds.claim.untrusted) {
+            this.overallRatingLevel = defaultValues.ratings.untrustedUser;
         } else {
-            this.overallRating = defaultValues.ratings.untrustedUser;
+            this.overallRatingLevel = defaultValues.ratings.averageUser;
         }
     }
 };

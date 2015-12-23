@@ -198,50 +198,49 @@ module.exports = function (passport) {
                 }, function (err, facebook) {
                     if (err) {
                         return done(err);
-                    }
-                    if (facebook) {
+                    } else {
+                        if (facebook) {
 
-                        if (!facebook.token) {
-                            facebook.token = token;
                             facebook.name = profile.displayName;
                             if (profile.emails) {
                                 facebook.email = (profile.emails[0].value || '').toLowerCase();
                             }
-                            //console.log("USER: "+user);
 
-                            var newUser = new User({
-                                'userDetails.facebook': facebook._id
-                            });
+                            if (!facebook.token) {
+                                facebook.token = token;
+                                //console.log("USER: "+user);
 
-                            facebook.user = newUser._id;
+                                //var newUser = new User({
+                                //    'userDetails.facebook': facebook._id
+                                //});
 
-                            facebook.save(function (err) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                newUser.save(function (err) {
+                                //facebook.user = newUser._id;
+
+                                facebook.save(function (err) {
                                     if (err) {
                                         return done(err);
                                     }
-                                    return done(null, newUser);
+                                    //newUser.save(function (err) {
+                                    //    if (err) {
+                                    //        return done(err);
+                                    //    }
+                                    //    return done(null, newUser);
+                                    //});
                                 });
-
-                            });
+                            } else {
+                                User.findById(facebook.user, function (err, user) {
+                                    if (err) {
+                                        return done(err);
+                                    } else {
+                                        return done(null, user);
+                                    }
+                                });
+                            }
                         } else {
-
-                            User.findById(facebook.user, function (err, user) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                return done(null, user);
-                            });
+                            return done(null);
                         }
-
-                    } else {
-                        return done(null);
                     }
                 });
-
             } else {
                 return done(null);
             }
@@ -315,38 +314,38 @@ module.exports = function (passport) {
 
                         fbUser.token = token;
 
-                        var oldUserId = fbUser.user;
-
                         fbUser.user = newUser._id;
 
                         fbUser.save(function (err) {
                             if (err) {
                                 return done(err);
+                            } else {
+                                newUser.userDetails.facebook = fbUser._id;
+
+                                newUser.save(function (err) {
+                                    if (err) {
+                                        return done(err);
+                                    } else {
+                                        //Content merging
+
+                                        //User.findOne({
+                                        //    _id: oldUserId
+                                        //}, function (err, oldUser) {
+                                        //    User.update(
+                                        //        {_id: newUser._id},
+                                        //        {$addToSet: {'facebook.ratedByMe': {$each: oldUserId.facebook.ratedByMe}}}
+                                        //    )
+                                        //    User.update(
+                                        //        {_id: newUser._id},
+                                        //        {$addToSet: {'facebook.ratedByOthers': {$each: oldUserId.facebook.ratedByOthers}}}
+                                        //    )
+                                        //});
+
+
+                                        return done(null, newUser);
+                                    }
+                                });
                             }
-                            newUser.userDetails.facebook = fbUser._id;
-
-                            newUser.save(function (err) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                //Content merging
-
-                                //User.findOne({
-                                //    _id: oldUserId
-                                //}, function (err, oldUser) {
-                                //    User.update(
-                                //        {_id: newUser._id},
-                                //        {$addToSet: {'facebook.ratedByMe': {$each: oldUserId.facebook.ratedByMe}}}
-                                //    )
-                                //    User.update(
-                                //        {_id: newUser._id},
-                                //        {$addToSet: {'facebook.ratedByOthers': {$each: oldUserId.facebook.ratedByOthers}}}
-                                //    )
-                                //});
-
-
-                                return done(null, newUser);
-                            });
                         });
 
                     } else {
@@ -361,35 +360,33 @@ module.exports = function (passport) {
                         }
                         facebook.user = newUser._id;
 
-                        console.log("++++++++++++++++++++++++++++++++++++++")
-                        console.log('getting user ID')
-                        controller.getID(profile.id, function (error, uid) {
+                        console.log("++++++++++++++++++++++++++++++++++++++");
+                        console.log('getting user ID');
 
-                            if (!error) {
-                                facebook.uid = uid;
-                                console.log("UID: " + uid);
+                        //controller.getID(profile.id, function (error, uid) {
+                        //
+                        //    if (!error) {
+                        //        facebook.uid = uid;
+                        //        console.log("UID: " + uid);
+                        //    } else {
+                        //        console.log(error)
+                        //    }
+
+                        facebook.save(function (err) {
+                            if (err) {
+                                return done(err);
                             } else {
-                                console.log(error)
+                                newUser.userDetails.facebook = facebook._id;
+
+                                newUser.save(function (err) {
+                                    if (err) {
+                                        return done(err);
+                                    }
+                                    return done(null, newUser);
+                                });
                             }
-
-                            facebook.save(function (err) {
-                                if (err) {
-                                    return done(err);
-                                } else {
-                                    newUser.userDetails.facebook = facebook._id;
-
-                                    newUser.save(function (err) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        return done(null, newUser);
-                                    });
-                                }
-                            });
-
                         });
-
-
+                        //});
                     }
                 });
             }
@@ -459,9 +456,13 @@ module.exports = function (passport) {
                             // if there is a user id already but no token (user was linked at one point and then removed)
                             if (!linkedin.token) {
                                 linkedin.token = token;
-                                linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                                linkedin.email = (profile.emails[0].value || '').toLowerCase();
 
+                                if (profile.name) {
+                                    linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                                }
+                                if (profile.emails) {
+                                    linkedin.email = (profile.emails[0].value || '').toLowerCase();
+                                }
                                 //console.log("USER: "+user);
 
                                 var newUser = new User({
