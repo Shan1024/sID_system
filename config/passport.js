@@ -415,450 +415,183 @@ module.exports = function (passport) {
         })
     );
 
-    passport.use('linkedin-connect', new LinkedInStrategy({
-            clientID: configAuth.linkedinAuth.consumerKey,
-            clientSecret: configAuth.linkedinAuth.consumerSecret,
-            callbackURL: configAuth.linkedinAuth.callbackURL2,
-            passReqToCallback: true, // allows us to pass in the req from our route (lets us check if a user is logged in or not)
-            state: true,
-            profileFields: ['id', 'first-name', 'last-name', 'email-address'],
-            scope: ['r_emailaddress', 'r_basicprofile']
-        },
 
-        function (req, token, refreshToken, profile, done) {
+    var getLinkedInID = function getQueryVariable(variable, string) {
+        var qId = string.indexOf("?");
+        var query = string.substring(qId + 1);
+        var vars = query.split('&');
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split('=');
+            if (decodeURIComponent(pair[0]) == variable) {
+                return decodeURIComponent(pair[1]);
+            }
+        }
+        return null;
+    }
 
-            //console.log(profile);
-            /*console.log(' req    : '+ req);
-             console.log(' token  : '+ token);
-             console.log(' rtoken : '+ refreshToken);
-             console.log(' profile: '+ profile);
-             console.log(' done   : '+ done); */
 
-            //linkedin.setLinkedInToken(token);
+    passport.use('linkedin-auth', new LinkedInStrategy({
+        clientID: configAuth.linkedinAuth.consumerKey,
+        clientSecret: configAuth.linkedinAuth.consumerSecret,
+        callbackURL: configAuth.linkedinAuth.callbackURL,
+        passReqToCallback: true, // allows us to pass in the req from our route (lets us check if a user is logged in or not)
+        state: true,
+        //profileFields: ['id', 'first-name', 'last-name', 'email-address'],
+        scope: ['r_emailaddress', 'r_basicprofile']
+    }, function (req, token, refreshToken, profile, done) {
 
-            console.log(chalk.yellow("User found 564: " + JSON.stringify(profile, null, "\t")));
-            console.log(chalk.yellow("Token found  75876: " + JSON.stringify(token, null, "\t")));
-            console.log(chalk.yellow("refreshToken found: " + JSON.stringify(refreshToken, null, "\t")));
-            // asynchronous
-            process.nextTick(function () {
+        //console.log(profile);
+        /*console.log(' req    : '+ req);
+         console.log(' token  : '+ token);
+         console.log(' rtoken : '+ refreshToken);
+         console.log(' profile: '+ profile);
+         console.log(' done   : '+ done); */
 
-                // check if the user is already logged in
-                if (!req.user) {
+        //linkedin.setLinkedInToken(token);
 
-                    LinkedIn.findOne({
-                        uid: profile.id
-                    }, function (err, linkedin) {
-                        if (err) {
-                            return done(err);
-                        }
+        console.log(chalk.yellow("User found: " + JSON.stringify(profile, null, "\t")));
+        console.log(chalk.yellow("Token found 3232: " + JSON.stringify(token, null, "\t")));
+        console.log(chalk.yellow("refreshToken found b53453: " + JSON.stringify(refreshToken, null, "\t")));
+        // asynchronous
+        process.nextTick(function () {
+
+            // check if the user is already logged in
+            if (!req.user) {
+
+                LinkedIn.findOne({
+                    uid: profile.id
+                }, function (err, linkedin) {
+                    if (err) {
+                        return done(err);
+                    } else {
                         if (linkedin) {
 
-                            // if there is a user id already but no token (user was linked at one point and then removed)
-                            if (!linkedin.token) {
-                                linkedin.token = token;
-
-                                if (profile.name) {
-                                    linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                                }
-                                if (profile.emails) {
-                                    linkedin.email = (profile.emails[0].value || '').toLowerCase();
-                                }
-                                //console.log("USER: "+user);
-
-                                var newUser = new User({
-                                    'userDetails.linkedin': linkedin._id
-                                });
-
-                                linkedin.user = newUser._id;
-
-                                linkedin.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    newUser.save(function (err) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        return done(null, newUser);
-                                    });
-                                });
-
-                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function (data) {
-                                    linkedin.url = data.siteStandardProfileRequest.url;
-
-                                    linkedin.save(function (err) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-
-                                        return done(null, newUser);
-                                    });
-                                });
-
-
-                            } else {
-
-                                User.findById(linkedin.user, function (err, user) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    return done(null, user);
-                                });
-                            }
-                        } else {
-                            // if there is no user, create them
-                            var newLinkedIn = new LinkedIn();
-
-                            newLinkedIn.uid = profile.id;
-                            newLinkedIn.token = token;
-                            newLinkedIn.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                            newLinkedIn.email = (profile.emails[0].value || '').toLowerCase();
-
-
-                            var newLinkedInUser = new User({
-                                'userDetails.linkedin': newLinkedIn._id
-                            });
-
-                            newLinkedInUser.save(function (err) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                newLinkedIn.user = newLinkedInUser._id;
-
-                                newLinkedIn.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    return done(null, newLinkedInUser);
-                                });
-
-                                console.log(chalk.blue("sending restler request"));
-                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function (data) {
-                                    console.log(chalk.yellow("response: " + data));
-                                    linkedin.url = data.siteStandardProfileRequest.url;
-
-                                    console.log(chalk.yellow("linkedin.url: " + linkedin.url));
-
-                                    linkedin.save(function (err) {
-                                        if (err) {
-                                            console.log(chalk.red("Error occurred: " + err))
-                                            return done(err);
-                                        }
-
-                                        return done(null, newUser);
-                                    });
-                                });
-                            });
-                        }
-                    });
-
-                } else {
-                    // user already exists and is logged in, we have to link accounts
-                    var newUser = req.user; // pull the user out of the session
-
-
-                    LinkedIn.findOne({
-                        uid: profile.id
-                    }, function (err, linkedinUser) {
-
-                        if (linkedinUser) {
-
-                            linkedinUser.token = token;
-
-                            var oldUserId = linkedinUser.user;
-
-                            linkedinUser.user = newUser._id;
-
-                            linkedinUser.save(function (err) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                newUser.userDetails.linkedin = linkedinUser._id;
-
-                                newUser.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    //Content merging
-
-                                    //User.findOne({
-                                    //    _id: oldUserId
-                                    //}, function (err, oldUser) {
-                                    //    User.update(
-                                    //        {_id: newUser._id},
-                                    //        {$addToSet: {'facebook.ratedByMe': {$each: oldUserId.facebook.ratedByMe}}}
-                                    //    )
-                                    //    User.update(
-                                    //        {_id: newUser._id},
-                                    //        {$addToSet: {'facebook.ratedByOthers': {$each: oldUserId.facebook.ratedByOthers}}}
-                                    //    )
-                                    //});
-
-
-                                    return done(null, newUser);
-                                });
-                            });
-
-                        } else {
-
-                            var linkedin = new LinkedIn();
-
-                            linkedin.uid = profile.id;
                             linkedin.token = token;
                             linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                            linkedin.email = (profile.emails[0].value || '').toLowerCase();
-
-                            linkedin.user = newUser._id;
-
-                            linkedin.save(function (err) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                newUser.userDetails.linkedin = linkedin._id;
-
-                                console.log(chalk.blue("sending restler request"));
-                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function (data) {
-                                    console.log(chalk.yellow("response: " + data));
-                                    linkedin.url = data.siteStandardProfileRequest.url;
-
-                                    console.log(chalk.yellow("linkedin.url: " + linkedin.url));
-
-                                    linkedin.save(function (err) {
-                                        if (err) {
-                                            console.log(chalk.red("Error occurred: " + err))
-                                            return done(err);
-                                        }
-
-                                        return done(null, newUser);
-                                    });
-                                });
-
-                                newUser.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    return done(null, newUser);
-                                });
-                            });
-                        }
-                    });
-                }
-            });
-        }));
-
-    passport.use(new LinkedInStrategy({
-            clientID: configAuth.linkedinAuth.consumerKey,
-            clientSecret: configAuth.linkedinAuth.consumerSecret,
-            callbackURL: configAuth.linkedinAuth.callbackURL,
-            passReqToCallback: true, // allows us to pass in the req from our route (lets us check if a user is logged in or not)
-            state: true,
-            profileFields: ['id', 'first-name', 'last-name', 'email-address'],
-            scope: ['r_emailaddress', 'r_basicprofile']
-        },
-
-        function (req, token, refreshToken, profile, done) {
-
-            //console.log(profile);
-            /*console.log(' req    : '+ req);
-             console.log(' token  : '+ token);
-             console.log(' rtoken : '+ refreshToken);
-             console.log(' profile: '+ profile);
-             console.log(' done   : '+ done); */
-
-            //linkedin.setLinkedInToken(token);
-
-            console.log(chalk.yellow("User found: " + JSON.stringify(profile, null, "\t")));
-            console.log(chalk.yellow("Token found 3232: " + JSON.stringify(token, null, "\t")));
-            console.log(chalk.yellow("refreshToken found b53453: " + JSON.stringify(refreshToken, null, "\t")));
-            // asynchronous
-            process.nextTick(function () {
-
-                // check if the user is already logged in
-                if (!req.user) {
-
-                    LinkedIn.findOne({
-                        uid: profile.id
-                    }, function (err, linkedin) {
-                        if (err) {
-                            return done(err);
-                        }
-                        if (linkedin) {
-
-                            // if there is a user id already but no token (user was linked at one point and then removed)
-                            if (!linkedin.token) {
-                                linkedin.token = token;
-                                linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                            if (profile.emails) {
                                 linkedin.email = (profile.emails[0].value || '').toLowerCase();
-
-                                //console.log("USER: "+user);
-
-                                var newUser = new User({
-                                    'userDetails.linkedin': linkedin._id
-                                });
-
-                                linkedin.user = newUser._id;
-
-                                linkedin.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-
-                                    console.log(chalk.blue("sending restler request"));
-                                    rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function (data) {
-                                        console.log(chalk.yellow("response: " + data));
-                                        linkedin.url = data.siteStandardProfileRequest.url;
-
-                                        console.log(chalk.yellow("linkedin.url: " + linkedin.url));
-
-                                        linkedin.save(function (err) {
-                                            if (err) {
-                                                console.log(chalk.red("Error occurred: " + err))
-                                                return done(err);
-                                            }
-
-                                            return done(null, newUser);
-                                        });
-                                    });
-
-                                    newUser.save(function (err) {
-                                        if (err) {
-                                            return done(err);
-                                        }
-                                        return done(null, newUser);
-                                    });
-                                });
-
-                            } else {
-
-                                User.findById(linkedin.user, function (err, user) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    return done(null, user);
-                                });
                             }
-                        } else {
-                            // if there is no user, create them
-                            var newLinkedIn = new LinkedIn();
+                            linkedin.url = profile._json.siteStandardProfileRequest.url;
+                            linkedin.uid = getLinkedInID("id", linkedin.url);
 
-                            newLinkedIn.uid = profile.id;
-                            newLinkedIn.token = token;
-                            newLinkedIn.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                            newLinkedIn.email = (profile.emails[0].value || '').toLowerCase();
-
-
-                            var newLinkedInUser = new User({
-                                'userDetails.linkedin': newLinkedIn._id
-                            });
-
-                            newLinkedInUser.save(function (err) {
+                            linkedin.save(function (err) {
                                 if (err) {
+                                    console.log(chalk.red("Error occurred 51368435"));
                                     return done(err);
-                                }
-                                newLinkedIn.user = newLinkedInUser._id;
-
-                                newLinkedIn.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    return done(null, newLinkedInUser);
-                                });
-
-                                console.log(chalk.blue("sending restler request"));
-                                rest.get('https://api.linkedin.com/v1/people/~?format=json&oauth2_access_token=' + token).on('complete', function (data) {
-                                    console.log(chalk.yellow("response: " + data));
-                                    linkedin.url = data.siteStandardProfileRequest.url;
-
-                                    console.log(chalk.yellow("linkedin.url: " + linkedin.url));
-
-                                    linkedin.save(function (err) {
+                                } else {
+                                    User.findById(linkedin.user, function (err, user) {
                                         if (err) {
-                                            console.log(chalk.red("Error occurred: " + err))
                                             return done(err);
+                                        } else {
+                                            return done(null, user);
                                         }
-
-                                        return done(null, newUser);
                                     });
-                                });
-                            });
-
-                        }
-                    });
-
-                } else {
-                    // user already exists and is logged in, we have to link accounts
-                    var newUser = req.user; // pull the user out of the session
-
-
-                    LinkedIn.findOne({
-                        uid: profile.id
-                    }, function (err, linkedinUser) {
-
-                        if (linkedinUser) {
-
-                            linkedinUser.token = token;
-
-                            var oldUserId = linkedinUser.user;
-
-                            linkedinUser.user = newUser._id;
-
-                            linkedinUser.save(function (err) {
-                                if (err) {
-                                    return done(err);
                                 }
+                            });
+                        } else {
+                            return done(null);
+                        }
+                    }
+                });
+
+            } else {
+                return done(null);
+            }
+        });
+    }));
+
+
+    passport.use('linkedin-connect', new LinkedInStrategy({
+        clientID: configAuth.linkedinAuth.consumerKey,
+        clientSecret: configAuth.linkedinAuth.consumerSecret,
+        callbackURL: configAuth.linkedinAuth.callbackURL2,
+        passReqToCallback: true, // allows us to pass in the req from our route (lets us check if a user is logged in or not)
+        state: true,
+        //profileFields: ['id', 'first-name', 'last-name', 'email-address'],
+        scope: ['r_emailaddress', 'r_basicprofile']
+    }, function (req, token, refreshToken, profile, done) {
+
+        //console.log(profile);
+        /*console.log(' req    : '+ req);
+         console.log(' token  : '+ token);
+         console.log(' rtoken : '+ refreshToken);
+         console.log(' profile: '+ profile);
+         console.log(' done   : '+ done); */
+
+        //linkedin.setLinkedInToken(token);
+
+        console.log(chalk.yellow("User found 564: " + JSON.stringify(profile, null, "\t")));
+        console.log(chalk.yellow("Token found  75876: " + JSON.stringify(token, null, "\t")));
+        console.log(chalk.yellow("refreshToken found: " + JSON.stringify(refreshToken, null, "\t")));
+        // asynchronous
+        process.nextTick(function () {
+
+            // check if the user is already logged in
+            if (!req.user) {
+                return done(null);
+            } else {
+                // user already exists and is logged in, we have to link accounts
+                var newUser = req.user; // pull the user out of the session
+
+                LinkedIn.findOne({
+                    uid: profile.id
+                }, function (err, linkedinUser) {
+
+                    if (linkedinUser) {
+
+                        linkedinUser.token = token;
+
+                        linkedinUser.user = newUser._id;
+
+                        linkedinUser.save(function (err) {
+                            if (err) {
+                                return done(err);
+                            } else {
                                 newUser.userDetails.linkedin = linkedinUser._id;
 
                                 newUser.save(function (err) {
                                     if (err) {
                                         return done(err);
+                                    } else {
+                                        return done(null, newUser);
                                     }
-                                    //Content merging
-
-                                    //User.findOne({
-                                    //    _id: oldUserId
-                                    //}, function (err, oldUser) {
-                                    //    User.update(
-                                    //        {_id: newUser._id},
-                                    //        {$addToSet: {'facebook.ratedByMe': {$each: oldUserId.facebook.ratedByMe}}}
-                                    //    )
-                                    //    User.update(
-                                    //        {_id: newUser._id},
-                                    //        {$addToSet: {'facebook.ratedByOthers': {$each: oldUserId.facebook.ratedByOthers}}}
-                                    //    )
-                                    //});
-
-
-                                    return done(null, newUser);
                                 });
-                            });
+                            }
+                        });
 
-                        } else {
+                    } else {
 
-                            var linkedin = new LinkedIn();
+                        var linkedin = new LinkedIn();
 
-                            linkedin.uid = profile.id;
-                            linkedin.token = token;
-                            linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                        linkedin.appid = profile.id;
+                        linkedin.token = token;
+                        linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                        if (profile.emails) {
                             linkedin.email = (profile.emails[0].value || '').toLowerCase();
+                        }
+                        linkedin.url = profile._json.siteStandardProfileRequest.url;
+                        linkedin.uid = getLinkedInID("id", linkedin.url);
 
-                            linkedin.user = newUser._id;
+                        linkedin.user = newUser._id;
 
-                            linkedin.save(function (err) {
-                                if (err) {
-                                    return done(err);
-                                }
+                        linkedin.save(function (err) {
+                            if (err) {
+                                return done(err);
+                            } else {
                                 newUser.userDetails.linkedin = linkedin._id;
 
                                 newUser.save(function (err) {
                                     if (err) {
                                         return done(err);
+                                    } else {
+                                        return done(null, newUser);
                                     }
-                                    return done(null, newUser);
                                 });
-                            });
-                        }
-                    });
-                }
-            });
-        }));
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }));
 };
