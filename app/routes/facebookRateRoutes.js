@@ -734,7 +734,7 @@ module.exports = function (app, express) {
             }
 
             if (!claimid) {
-                return res.json({error: "Missing claimid paramter"});
+                return res.json({error: "Missing claimid parameter"});
             }
 
             Claim.findOne({
@@ -742,10 +742,10 @@ module.exports = function (app, express) {
                 myid: targetid
             }, function (err, claim) {
                 if (err) {
-                    console.log(chalk.red("Error occured 8975"));
+                    console.log(chalk.red("Error occurred 8975"));
                     res.json({
                         success: false,
-                        message: "Error occured",
+                        message: "Error occurred",
                         yes: 0,
                         no: 0,
                         notSure: 0,
@@ -757,9 +757,9 @@ module.exports = function (app, express) {
 
                         var character;
 
-                        if (claim.overallRatingLevel == defaultValues.ratings.trustedUser) {
+                        if (claim.overallRatingLevel >= defaultValues.bounds.trustedUser) {
                             character = "T";
-                        } else if (claim.overallRatingLevel == defaultValues.ratings.untrustedUser) {
+                        } else if (claim.overallRatingLevel <=defaultValues.bounds.untrustedUser) {
                             character = "R";
                         } else {
                             character = "C";
