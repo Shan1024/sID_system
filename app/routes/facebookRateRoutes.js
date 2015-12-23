@@ -285,7 +285,7 @@ module.exports = function (app, express) {
                                         });
                                     }
                                 });
-                                
+
                                 //rating without a claim
                             } else {
 
@@ -738,7 +738,7 @@ module.exports = function (app, express) {
                                                 _id: me.user
                                             }, function (err, myUser) {
                                                 User.findOne({
-                                                    _id: target.user
+                                                    _id: facebook.user
                                                 }, function (err, targetUser) {
                                                     addRating(req, res, me, facebook, myUser, targetUser);
                                                 });
