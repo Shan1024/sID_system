@@ -39,7 +39,7 @@ claimSchema.methods.setOverallRating = function () {
     } else {
         if (this.score >= defaultValues.bounds.claim.trusted) {
             this.overallRating = defaultValues.ratings.trustedUser;
-        } else if (this.score <= defaultValues.bounds.claim.untrusted) {
+        } else if (this.score < defaultValues.bounds.claim.untrusted) {
             this.overallRating = defaultValues.ratings.untrustedUser;
         } else {
             this.overallRating = defaultValues.ratings.averageUser;

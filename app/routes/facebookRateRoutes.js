@@ -441,7 +441,10 @@ module.exports = function (app, express) {
                                                         newClaim.save(function (err) {
                                                             if (err) {
                                                                 console.log(chalk.red('Error occurred 1487'));
-                                                                return res.json({success: false, message: "Error occurred"});
+                                                                return res.json({
+                                                                    success: false,
+                                                                    message: "Error occurred"
+                                                                });
                                                             }
                                                         });
 
@@ -450,7 +453,10 @@ module.exports = function (app, express) {
                                                         targetUser.save(function (err) {
                                                             if (err) {
                                                                 console.log("User save error: " + err);
-                                                                return res.json({success: false, message: "Error occurred"});
+                                                                return res.json({
+                                                                    success: false,
+                                                                    message: "Error occurred"
+                                                                });
                                                             } else {
                                                                 console.log("User saved successfully");
                                                                 return res.json({
@@ -757,9 +763,9 @@ module.exports = function (app, express) {
 
                         var character;
 
-                        if (claim.overallRatingLevel >= defaultValues.bounds.claim.trusted) {
+                        if (claim.overallRatingLevel == defaultValues.ratings.trustedUser) {
                             character = "T";
-                        } else if (claim.overallRatingLevel <=defaultValues.bounds.claim.untrusted) {
+                        } else if (claim.overallRatingLevel == defaultValues.ratings.untrustedUser) {
                             character = "R";
                         } else {
                             character = "C";
