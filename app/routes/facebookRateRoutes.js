@@ -2,6 +2,8 @@ var chalk = require('chalk');
 var mongoose = require('mongoose');
 var defaultValues = require("../../config/defaultValues");
 
+var facebookMisc = require('../../config/facebook.js');
+
 var Entry = require("../models/entry");
 var Claim = require('../models/claim');
 var FacebookRatedByMe = require('../models/facebookRatedByMe');
@@ -172,16 +174,13 @@ module.exports = function (app, express) {
                                     res.json({success: true, message: 'Successfully updated'});
                                 }
                             });
-
                         });
                     } else {
                         res.json({success: false, message: 'Email not found'});
                     }
                 }
             });
-
         });
-
 
     var addRating = function (req, res, me, target, myUser, targetUser) {
 
@@ -647,6 +646,86 @@ module.exports = function (app, express) {
         });
     };
 
+    var setName = function (me, target) {
+
+        if (!target.name) {
+            console.log("Name not found");
+
+            User.findOne({
+                    _id: me.user
+                })
+                .populate({
+                    path: "userDetails.facebook"
+                })
+                .exec(function (err, myUser) {
+                    if (err) {
+                        console.log("Error occurred 841513");
+                    } else {
+                        if (myUser) {
+                            facebookMisc.getFbName(myUser, '/' + target.uid, function (data) {
+                                console.log(data);
+
+                                obj = JSON.parse(data);
+
+                                if (obj.name) {
+                                    console.log("Name: " + obj.name);
+                                    target.name = obj.name;
+                                    target.save(function (err) {
+                                        if (err) {
+                                            console.log("Error occurred");
+                                        } else {
+                                            console.log("Name successfully updated");
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                });
+        }
+    };
+
+    rateRouter.route('/setName')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+            var myid = req.body.myid;
+
+            if (!targetid) {
+                return res.json({success: false, message: 'targetid is missing'});
+            }
+            if (!myid) {
+                return res.json({success: false, message: 'myid is missing'});
+            }
+
+            Facebook.findOne({
+                uid: myid
+            }, function (err, me) {
+                if (err) {
+                    res.json({success: false, message: 'Error occurred'});
+                } else {
+                    if (me) {
+                        Facebook.findOne({
+                            uid: targetid
+                        }, function (err, target) {
+                            if (err) {
+                                return res.json({success: false, message: 'Error occurred'});
+                            } else {
+                                if (target) {
+                                    setName(me, target);
+                                    res.sendStatus(200);
+                                } else {
+                                    return res.json({success: false, message: 'target not found'});
+                                }
+                            }
+                        });
+                    } else {
+                        return res.json({success: false, message: 'target not found'});
+                    }
+                }
+            });
+        });
+
     /**
      * @api {post} /rate/facebook/addRating Adds a new Facebook rating or update an existing one.
      * @apiName AddRating
@@ -710,6 +789,7 @@ module.exports = function (app, express) {
                                     _id: target.user
                                 }, function (err, targetUser) {
                                     addRating(req, res, me, target, myUser, targetUser);
+                                    setName(me, target);
                                 });
                             });
 
@@ -741,6 +821,7 @@ module.exports = function (app, express) {
                                                     _id: facebook.user
                                                 }, function (err, targetUser) {
                                                     addRating(req, res, me, facebook, myUser, targetUser);
+                                                    setName(me, target);
                                                 });
                                             });
                                         }
