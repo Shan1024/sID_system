@@ -5,12 +5,13 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="description" content="">
       <meta name="author" content="">
-      <title>sID Social Identity</title>
+      <title>sID social IDentity</title>
       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
       <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
       <script type="text/javascript" src="scripts/jquery.fullPage.min.js"></script>
       <script type="text/javascript" src="scripts/jquery.slimscroll.min.js"></script>
       <script type="text/javascript" src="scripts/landingpagefullPage.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
       <script type="text/javascript">
          $(document).ready(function() {
            $('#fullpage').fullpage({
@@ -20,7 +21,7 @@
              //to avoid problems with css3 transforms and fixed elements in Chrome, as detailed here: https://github.com/alvarotrigo/fullPage.js/issues/208
              anchors: ['aboutsid', 'platforms', 'progress', 'contactus'],
              menu: '#menu',
-             css3: true,
+             css3: false,
              scrollOverflow: true,
              afterLoad: function(anchorLink, index){
                   var loadedSection = $(this);
@@ -79,28 +80,27 @@
          * --------------------------------------- */
          #section0 {
          background-image: url(img/header-bg.jpg);
-         padding: 6% 0 0 0;
+         /*padding: 6% 0 0 0;*/
          }
          #section1 {
          background-color: #7BAABE;
-         padding: 6% 0 0 0;
+         padding: 0;
          }
          #section2 {
          background-color: #4BBFC3;
-         padding: 6% 0 0 0;
+         padding: 0;
          }
          #section3 {
          background-color: #7BAABE;
-         padding: 6% 0 0 0;
+         padding: 0;
          }
          /*#section3 h1{
          color: #000;
          }*/
-
          /*.animatedElements {
-          -webkit-animation-delay: 0.5s;
-          -MS-animation-iteration-count: infinite;
-          }*/
+         -webkit-animation-delay: 0.5s;
+         -MS-animation-iteration-count: infinite;
+         }*/
       </style>
       <!--[if IE]>
       <script type="text/javascript">
@@ -126,14 +126,14 @@
       <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="margin-bottom:0">
          <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
+            <div class="navbar-header" style="background-color: black;">
                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                <span class="sr-only">Toggle navigation</span>
                <span class="icon-bar"></span>
                <span class="icon-bar"></span>
                <span class="icon-bar"></span>
                </button>
-               <a class="navbar-brand page-scroll" href="#page-top">sID Social Identity</a>
+               <a class="navbar-brand page-scroll" href="#page-top">sID social IDentity</a>
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -160,6 +160,16 @@
                      <a class="page-scroll" href="/login"><span class="glyphicon glyphicon-log-in"></span> Sign In </a>
                   </li>
                </ul>
+               <div class="col-xs-12 col-sm-12 col-md-5 pull-left">
+                  <form class="navbar-form" role="search" action="/login" method="get">
+                      <div class="input-group" style="width: 100%;">
+                          <input type="text" class="form-control" placeholder="Search for sID users..." name="q">
+                          <div class="input-group-btn">
+                              <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                          </div>
+                      </div>
+                  </form>
+              </div>
             </div>
             <!-- /.navbar-collapse -->
          </div>
@@ -177,7 +187,7 @@
                <div class="container animatedElements" id="aboutsidanima">
                   <div class="row">
                      <div class="col-lg-12 text-center">
-                        <h2 class="section-heading">What we are doing</h2>
+                        <h2 class="section-heading">sID social IDentity</h2>
                         <h3 class="section-subheading text-muted">Provide verification to claims made on social networks using croud sourcing.</h3>
                      </div>
                   </div>
@@ -259,57 +269,47 @@
             </section>
          </div>
          <div class="section" id="section2">
-            <section>
-               <div class="container">
-                  <div class="row">
-                     <div class="col-lg-12 text-center">
-                        <h2 class="section-heading">Progress</h2>
-                        <h3 class="section-subheading text-muted">See where we are and how far we have come.</h3>
-                     </div>
+            <section id="Steps" class="container steps-section">
+               <div class="row">
+                 <div class="col-lg-12 text-center">
+                 <h2 class="section-heading">Progress</h2>
+                 <h3 class="section-subheading text-muted">See how far we have come.</h3>
+                 </div>
+               </div>
+               <!-- <h2 class="steps-header">
+                  How far we've come
+               </h2> -->
+               <div class="steps-timeline">
+                  <div class="steps-one">
+                     <!-- <img class="steps-img" src="http://placehold.it/50/3498DB/FFFFFF" alt="" /> -->
+                     <img class="img-circle img-responsive steps-img" src="img/about/1.jpg" alt="">
+                     <h3 class="steps-name">
+                        Project Initiation
+                     </h3>
+                     <p class="steps-description">
+                        Project sID was initiated under the guidance of Prof. Gihan Dias.
+                     </p>
                   </div>
-                  <div class="row">
-                     <div class="col-lg-12">
-                        <ul class="timeline">
-                           <li>
-                              <div class="timeline-image">
-                                 <img class="img-circle img-responsive" src="img/about/1.jpg" alt="">
-                              </div>
-                              <div class="timeline-panel">
-                                 <div class="timeline-heading">
-                                    <h4>2015 May</h4>
-                                    <h4 class="subheading">Our Humble Beginnings</h4>
-                                 </div>
-                                 <div class="timeline-body">
-                                    <p class="text-muted">Project sID was initiated under the guidance of Prof. Gihan Dias</p>
-                                 </div>
-                              </div>
-                           </li>
-                           <li class="timeline-inverted">
-                              <div class="timeline-image">
-                                 <img class="img-circle img-responsive" src="img/about/2.jpg" alt="">
-                              </div>
-                              <div class="timeline-panel">
-                                 <div class="timeline-heading">
-                                    <h4>2015 December</h4>
-                                    <h4 class="subheading">First Release is out!</h4>
-                                 </div>
-                                 <div class="timeline-body">
-                                    <p class="text-muted">We take pride in unveiling the first release of sID within 8 months of initialization!</p>
-                                 </div>
-                              </div>
-                           </li>
-                           <li>
-                              <div class="timeline-image">
-                                 <h4>Be Part
-                                    <br>Of Our
-                                    <br>Story!
-                                 </h4>
-                              </div>
-                           </li>
-                        </ul>
-                     </div>
+                  <div class="steps-two">
+                     <img class="img-circle img-responsive steps-img" src="img/about/2.jpg" alt="">
+                     <h3 class="steps-name">
+                        Coding Begins
+                     </h3>
+                     <p class="steps-description">
+                        Coding began around July, 2015.
+                     </p>
+                  </div>
+                  <div class="steps-three">
+                     <img class="img-circle img-responsive steps-img" src="img/about/3.jpg" alt="">
+                     <h3 class="steps-name">
+                        First Release
+                     </h3>
+                     <p class="steps-description">
+                        We take pride in announcing our first release in December, 2015.
+                     </p>
                   </div>
                </div>
+               <!-- /.steps-timeline -->
             </section>
          </div>
          <div class="section" id="section3">
