@@ -28,17 +28,39 @@
              afterLoad: function(anchorLink, index){
                   var loadedSection = $(this);
                   //using anchorLink
+                  if(anchorLink == 'home'){
+                      $('#homeanima').show();
+                      $('#homeanima').animo({animation: ['fadeInUp'], duration: 0.7});
+                  }
                   if(anchorLink == 'platforms'){
-                      //  alert('platforms loaded');
-                      //  $('#platformsanima').removeClass('animated slideInLeft');
-                      //  $('#platformsanima').addClass('animated slideInLeft');
-                      $('#homeanima').animo({animation: ['bounceInRight'], duration: 3});
-                      $('#platformsanima').animo({animation: ['bounceInLeft'], duration: 3});
+                      $('#platformsanima').show();
+                      $('#platformsanima').animo({animation: ['fadeIn'], duration: 0.9});
+                  }
+                  if(anchorLink == 'progress'){
+                      $('#Steps').show();
+                      $('#Steps').animo({animation: ['fadeIn'], duration: 0.9});
+                  }
+                  if(anchorLink == 'contactus'){
+                      $('#contactusanima').show();
+                      $('#contactusanima').animo({animation: ['fadeIn'], duration: 0.9});
+                  }
+              },
+              onLeave: function(index, nextIndex, direction){
+                  var leavingSection = $(this);
+
+                  if(index == 1){
+                      $('#homeanima').hide();
                   }
 
-                  //using anchorLink
-                  if(anchorLink == 'secondSlide'){
-                      alert("Section 2 ended loading");
+                  if(index == 2){
+                      $('#platformsanima').hide();
+                  }
+                  if(index == 3){
+                      $('#Steps').hide();
+                  }
+
+                  if(index == 4){
+                      $('#contactusanima').hide();
                   }
               }
            });
@@ -47,8 +69,12 @@
             //  $('#homeanima').addClass('animated slideInUp');
             //  $('#platformsanima').addClass('animated slideInRight');
             //  $('#signupformanima').addClass('animated slideInLeft');
-            $('#homeanima').animo({animation: ['bounceInRight'], duration: 3});
-            $('#platformsanima').animo({animation: ['bounceInLeft'], duration: 3});
+            // $('#homeanima').animo({animation: ['bounceInRight'], duration: 3});
+            // $('#platformsanima').animo({animation: ['bounceInLeft'], duration: 3});
+            $('#homeanima').hide();
+            $('#platformsanima').hide();
+            $('#Steps').hide();
+            $('#contactusanima').hide();
           });
       </script>
       <!-- Bootstrap Core CSS -->
@@ -92,15 +118,15 @@
          /*background-color: #a77dc2;*/
          }
          #section1 {
-         background-color: #7BAABE;
+         background-color: #3498db;
          padding: 0;
          }
          #section2 {
-         background-color: #4BBFC3;
+         background-color: #2ecc71;
          padding: 0;
          }
          #section3 {
-         background-color: #7BAABE;
+         background-color: #9b59b6;
          padding: 0;
          }
          /*#section3 h1{
@@ -263,7 +289,7 @@
             </section>
          </div>
          <div class="section" id="section2">
-            <section id="Steps" class="container steps-section">
+            <section id="Steps" class="container steps-section animatedElements">
                <div class="row">
                  <div class="col-lg-12 text-center">
                  <h2 class="section-heading">Progress</h2>
@@ -308,7 +334,7 @@
          </div>
          <div class="section" id="section3">
             <section>
-               <div class="container">
+               <div class="container animatedElements" id="contactusanima">
                   <div class="row">
                      <div class="col-lg-12 text-center">
                         <h2 class="section-heading">Contact Us</h2>
