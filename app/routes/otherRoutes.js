@@ -6,6 +6,8 @@ var Entry = require("../models/entry");
 var Claim = require('../models/claim');
 var FacebookRatedByMe = require('../models/facebookRatedByMe');
 var Facebook = require("../models/facebook");
+var LinkedInRatedByMe = require('../models/linkedinRatedByMe');
+var LinkedIn = require("../models/linkedin");
 var User = require("../models/user");
 
 module.exports = function (app, express) {
@@ -95,6 +97,66 @@ module.exports = function (app, express) {
                     }
                 }
             });
+        });
+
+
+    /**
+     * @api {post} /other/getSuggestions Get the Facebook and LinkedIn name suggestions for a given text.
+     * @apiName GetSuggestions
+     * @apiGroup Other
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} text The string that needs to get suggestions.
+     *
+     * @apiSuccessExample Success-Response:
+     * {
+     *     facebook: [
+     *          {
+     *              "name": {NAME}
+     *          },
+     *     ],
+     *     linkedin: [
+     *          {
+     *              "name": {NAME}
+     *          },
+     *     ],
+     *     success: true
+     * }
+     *
+     */
+
+    otherRoutes.route('/getSuggestions')
+        .post(function (req, res) {
+
+            var text = req.body.text;
+
+            if (!text) {
+                return res.json({success: false, message: "No text parameter fount"});
+            }
+
+            Facebook.find({
+                name: new RegExp(text, "i")
+            }).select("name")
+                .exec(function (err, facebook) {
+                    if (err) {
+                        console.log("Error occurred 441512");
+                        res.json({message: "Error occurred", success: true});
+                    } else {
+                        console.log("facebook: " + facebook);
+                        LinkedIn.find({
+                            name: new RegExp(text, "i")
+                        }).select("name")
+                            .exec(function (err, linkedin) {
+                                if (err) {
+                                    console.log("Error occurred 515614");
+                                    res.json({message: "Error occurred", success: true});
+                                } else {
+                                    console.log("LinkedIn: " + linkedin);
+                                    res.json({facebook: facebook, linkedin: linkedin, success: true});
+                                }
+                            });
+                    }
+                });
         });
 
     app.use('/other', otherRoutes);
