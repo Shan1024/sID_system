@@ -62,6 +62,8 @@ module.exports = function (app, passport) {
      */
     app.post('/authenticate',function (req, res) {
 
+			res.set("Access-Control-Allow-Origin", "*");
+			res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             var username = req.body.username;
             var password = req.body.password;
 
