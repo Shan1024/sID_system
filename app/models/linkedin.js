@@ -4,6 +4,7 @@ var User = require('./user');
 
 //LinkedInSchema schema
 var linkedinSchema = mongoose.Schema({
+    appid: String,
     uid: String,
     name: String,
     email: String,

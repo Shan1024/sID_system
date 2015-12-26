@@ -85,9 +85,9 @@ userSchema.methods.setOverallFacebookRating = function () {
     if (!this.facebook.score) {
         this.facebook.overallRatingLevel = defaultValues.ratings.averageUser;
     } else {
-        if (this.facebook.score >= defaultValues.bounds.trustedUser) {
+        if (this.facebook.score >= defaultValues.bounds.overall.trusted) {
             this.facebook.overallRatingLevel = defaultValues.ratings.trustedUser;
-        } else if (this.facebook.score <= defaultValues.bounds.untrustedUser) {
+        } else if (this.facebook.score < defaultValues.bounds.overall.untrusted) {
             this.facebook.overallRatingLevel = defaultValues.ratings.untrustedUser;
         } else {
             this.facebook.overallRatingLevel = defaultValues.ratings.averageUser;
@@ -99,9 +99,9 @@ userSchema.methods.setOverallLinkedInRating = function () {
     if (!this.linkedin.score) {
         this.linkedin.overallRatingLevel = defaultValues.ratings.averageUser;
     } else {
-        if (this.linkedin.score >= defaultValues.bounds.trustedUser) {
+        if (this.linkedin.score >= defaultValues.bounds.overall.trusted) {
             this.linkedin.overallRatingLevel = defaultValues.ratings.trustedUser;
-        } else if (this.linkedin.score <= defaultValues.bounds.untrustedUser) {
+        } else if (this.linkedin.score < defaultValues.bounds.overall.untrusted) {
             this.linkedin.overallRatingLevel = defaultValues.ratings.untrustedUser;
         } else {
             this.linkedin.overallRatingLevel = defaultValues.ratings.averageUser;

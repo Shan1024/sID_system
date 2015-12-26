@@ -20,11 +20,18 @@ module.exports = {
         no: -1
     },
     bounds: {
-        trustedUser: 50,
-        averageUser: 0,
-        untrustedUser:-50
-    },
+        claim: {
+            trusted: 10,
+            untrusted: 0
+        },
+        overall: {
+            trusted: 50,
+            untrusted: 0
+        }
+    }
+
+    ,
     claimsLimit: 10,
     entriesLimit: 20,
-    defaultOrder:-1
+    defaultOrder: -1
 };
