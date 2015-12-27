@@ -34,6 +34,7 @@ module.exports = function (app, passport) {
         } else {
             res.render('index.ejs', {
                 user: req.user,
+                signUpVisible: true,
                 failureFlash: req.flash('error'),
                 successFlash: req.flash('success')
             });
@@ -237,7 +238,8 @@ module.exports = function (app, passport) {
     // LOGIN ===============================
     // show the login form
     app.get('/login', function (req, res) {
-        res.render('login.ejs', {
+        res.render('index.ejs', {
+            signUpVisible: false,
             message: req.flash('loginMessage'),
             successFlash: req.flash('success')
         });
@@ -253,7 +255,8 @@ module.exports = function (app, passport) {
     // SIGNUP =================================
     // show the signup form
     app.get('/signup', function (req, res) {
-        res.render('signup.ejs', {
+        res.render('index.ejs', {
+            signUpVisible: true,
             message: req.flash('signupMessage')
         });
     });
