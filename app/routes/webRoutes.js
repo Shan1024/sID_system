@@ -634,6 +634,24 @@ module.exports = function (app, passport) {
 
     });
 
+    app.post("/overview", function (req, res) {
+      var name = req.body.name;
+      var id = req.body.id;
+
+      if(id === ""){
+        res.json({success: true, id: "id not defined", name: name});
+      }else{
+        // rest.post(req.protocol + '://' + req.get('host') + '/getOverallRating', {
+        //     data: {id: id, name: name},
+        // }).on('complete', function (data, response) {
+        //     res.json({success: true, data: data});
+        // });
+        // res.json({success: true, data: "id defined"});
+        res.json({success: true, id: id, name: name});
+      }
+
+    });
+
 };
 
 // route middleware to ensure user is logged in
