@@ -1,70 +1,74 @@
-.typeahead,
-.tt-query,
+.tt-query, /* UPDATE: newer versions use tt-input instead of tt-query */
 .tt-hint {
-  width: 396px;
-  height: 30px;
-  padding: 8px 12px;
-  font-size: 24px;
-  line-height: 30px;
-  border: 2px solid #ccc;
-  -webkit-border-radius: 8px;
-     -moz-border-radius: 8px;
-          border-radius: 8px;
-  outline: none;
+    width: 396px;
+    height: 30px;
+    padding: 8px 12px;
+    font-size: 24px;
+    line-height: 30px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    outline: none;
 }
 
-.typeahead {
-  background-color: #fff;
-}
-
-.typeahead:focus {
-  border: 2px solid #0097cf;
-}
-
-.tt-query {
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+.tt-query { /* UPDATE: newer versions use tt-input instead of tt-query */
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
 .tt-hint {
-  color: #999
+    color: #999;
 }
 
-.tt-dropdown-menu {
-  width: 422px;
-  margin-top: 12px;
-  padding: 8px 0;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  -webkit-border-radius: 8px;
-     -moz-border-radius: 8px;
-          border-radius: 8px;
-  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-     -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
-          box-shadow: 0 5px 10px rgba(0,0,0,.2);
+.tt-menu { /* UPDATE: newer versions use tt-menu instead of tt-dropdown-menu */
+    width: 422px;
+    /*margin-top: 12px;*/
+    margin-top: 33px;
+    padding: 8px 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0px;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
 }
 
 .tt-suggestion {
-  padding: 3px 20px;
-  font-size: 18px;
-  line-height: 24px;
-  background-color: white;
-  color: black;
+    padding: 3px 20px;
+    font-size: 18px;
+    line-height: 24px;
 }
 
-.tt-suggestion.tt-cursor {
-  color: #fff;
-  background-color: #0097cf;
+.tt-suggestion.tt-is-under-cursor { /* UPDATE: newer versions use .tt-suggestion.tt-cursor */
+    color: #fff;
+    background-color: #0097cf;
 
 }
 
 .tt-suggestion p {
-  margin: 0;
+    margin: 0;
 }
-tt-highlight{
-    color:red;
+
+span.twitter-typeahead {
+  width: 100%;
+}
+.input-group span.twitter-typeahead {
+  display: block !important;
+}
+
+.input-group span.twitter-typeahead .tt-hint {
+  /*top: 32px !important;*/
+  width: 100%;
+}
+
+.input-group span.twitter-typeahead .tt-input {
+  /*top: 32px !important;*/
+  width: 100%;
+}
+
+.tt-menu{
+    width: 100%;
+}
+
+.tt-menu .tt-open{
+    display: none;
 }
 
 .facebook-name {
@@ -83,44 +87,15 @@ tt-highlight{
   color: black;
 }
 
-span.twitter-typeahead {
-  width: 100%;
-}
-.input-group span.twitter-typeahead {
-  display: block !important;
-}
-/*.input-group span.twitter-typeahead .tt-dropdown-menu {
-  top: 32px !important;
-}
-.input-group.input-group-lg span.twitter-typeahead .tt-dropdown-menu {
-  top: 44px !important;
-}
-.input-group.input-group-sm span.twitter-typeahead .tt-dropdown-menu {
-  top: 28px !important;
-}*/
 
-/*.form-control.tt-hint{
-  width: 100%;
+#sidusersearch{
+  border-bottom-left-radius: 4px;
+  border-top-left-radius: 4px;
 }
 
-.form-control.tt-input{
-  width: 100%;
-}*/
-
-.input-group span.twitter-typeahead .tt-hint {
-  /*top: 32px !important;*/
-  width: 100%;
-}
-
-.input-group span.twitter-typeahead .tt-input {
-  /*top: 32px !important;*/
-  width: 100%;
-}
-
-.tt-menu{
-    width: 100%;
-}
-
-.tt-menu .tt-open{
-    display: none;
+#typeahead_photo{
+  position: absolute;
+  right: 5px;
+  width: 40px;
+  height: 40px;
 }
