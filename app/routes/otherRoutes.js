@@ -159,98 +159,108 @@ module.exports = function (app, express) {
                 });
         });
 
-        otherRoutes.route('/getSuggestions')
-            .get(function (req, res) {
+    otherRoutes.route('/getSuggestions')
+        .get(function (req, res) {
 
-                var text = req.param('text');
+            var text = req.query.text;
 
-                console.log('==================inside get========================');
+            console.log('==================inside get========================');
 
-                if (!text) {
-                    return res.json({success: false, message: "No text parameter fount"});
-                }
+            if (!text) {
+                return res.json({success: false, message: "No text parameter fount"});
+            }
 
-                Facebook.find({
-                    name: new RegExp(text, "i")
-                }).select("name")
-                    .exec(function (err, facebook) {
-                        if (err) {
-                            console.log("Error occurred 441512");
-                            res.json({year: 1923, value: "Error facebook", tokens: ["error facebook"], success: false});
-                        } else {
-                            console.log("facebook: " + facebook);
-                            LinkedIn.find({
-                                name: new RegExp(text, "i")
-                            }).select("name")
-                                .exec(function (err, linkedin) {
-                                    if (err) {
-                                        console.log("Error occurred 515614");
-                                        res.json({year: 1923, value: "Error linkedin", tokens: ["error linkedin"], success: false});
-                                    } else {
-                                        console.log("LinkedIn: " + linkedin);
-                                        if(facebook.length > 0){
-                                          res.json({year: 1923, value: facebook[0].name, tokens: ["seetee", "tharanga"], success: true});
-                                        }else{
-                                          res.json({year: 1923, value: "No User", tokens: ["no user"], success: true});
-                                        }
-                                    }
-                                });
-                        }
-                    });
-            });
-
-            otherRoutes.route('/getSuggestionsFacebook')
-                .get(function (req, res) {
-
-                    var text = req.param('text');
-
-                    if (!text) {
-                        return res.json({success: false, message: "No text parameter fount"});
-                    }
-
-                    Facebook.find({
-                        name: new RegExp(text, "i")
-                    }).select("name user id")
-                        .exec(function (err, facebook) {
-                            if (err) {
-                                console.log("Error occurred 441512");
-                                res.json({values: "Error facebook", tokens: ["error facebook"], success: false});
-                            } else {
-                              if(facebook.length > 0){
-                                res.json({values: facebook, tokens: [], success: true});
-                              }else{
-                                res.json({values: "No Facebook Suggestions", tokens: ["no facebook user"], success: true});
-                              }
-                            }
-                        });
-                });
-
-
-                otherRoutes.route('/getSuggestionsLinkedIn')
-                    .get(function (req, res) {
-
-                        var text = req.param('text');
-
-                        if (!text) {
-                            return res.json({success: false, message: "No text parameter fount"});
-                        }
-
+            Facebook.find({
+                name: new RegExp(text, "i")
+            }).select("name")
+                .exec(function (err, facebook) {
+                    if (err) {
+                        console.log("Error occurred 441512");
+                        res.json({year: 1923, value: "Error facebook", tokens: ["error facebook"], success: false});
+                    } else {
+                        console.log("facebook: " + facebook);
                         LinkedIn.find({
                             name: new RegExp(text, "i")
-                        }).select("name user photo")
+                        }).select("name")
                             .exec(function (err, linkedin) {
                                 if (err) {
-                                    console.log("Error occurred 441512");
-                                    res.json({values: "Error linkedin", tokens: ["error linkedin"], success: false});
+                                    console.log("Error occurred 515614");
+                                    res.json({
+                                        year: 1923,
+                                        value: "Error linkedin",
+                                        tokens: ["error linkedin"],
+                                        success: false
+                                    });
                                 } else {
-                                  if(linkedin.length > 0){
-                                    res.json({values: linkedin, tokens: [], success: true});
-                                  }else{
-                                    res.json({values: "No LinkedIn Suggestions", tokens: ["no linkedin user"], success: true});
-                                  }
+                                    console.log("LinkedIn: " + linkedin);
+                                    if (facebook.length > 0) {
+                                        res.json({
+                                            year: 1923,
+                                            value: facebook[0].name,
+                                            tokens: ["seetee", "tharanga"],
+                                            success: true
+                                        });
+                                    } else {
+                                        res.json({year: 1923, value: "No User", tokens: ["no user"], success: true});
+                                    }
                                 }
                             });
-                    });
+                    }
+                });
+        });
+
+    otherRoutes.route('/getSuggestionsFacebook')
+        .get(function (req, res) {
+
+            var text = req.query.text;
+
+            if (!text) {
+                return res.json({success: false, message: "No text parameter fount"});
+            }
+
+            Facebook.find({
+                name: new RegExp(text, "i")
+            }).select("name user id")
+                .exec(function (err, facebook) {
+                    if (err) {
+                        console.log("Error occurred 441512");
+                        res.json({values: "Error facebook", tokens: ["error facebook"], success: false});
+                    } else {
+                        if (facebook.length > 0) {
+                            res.json({values: facebook, tokens: [], success: true});
+                        } else {
+                            res.json({values: "No Facebook Suggestions", tokens: ["no facebook user"], success: true});
+                        }
+                    }
+                });
+        });
+
+
+    otherRoutes.route('/getSuggestionsLinkedIn')
+        .get(function (req, res) {
+
+            var text = req.query.text;
+
+            if (!text) {
+                return res.json({success: false, message: "No text parameter fount"});
+            }
+
+            LinkedIn.find({
+                name: new RegExp(text, "i")
+            }).select("name user photo")
+                .exec(function (err, linkedin) {
+                    if (err) {
+                        console.log("Error occurred 441512");
+                        res.json({values: "Error linkedin", tokens: ["error linkedin"], success: false});
+                    } else {
+                        if (linkedin.length > 0) {
+                            res.json({values: linkedin, tokens: [], success: true});
+                        } else {
+                            res.json({values: "No LinkedIn Suggestions", tokens: ["no linkedin user"], success: true});
+                        }
+                    }
+                });
+        });
 
     app.use('/other', otherRoutes);
 

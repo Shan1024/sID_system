@@ -542,7 +542,19 @@ module.exports = function (passport) {
 
                     if (linkedinUser) {
 
+                        console.log("LinkedIn user found");
+
                         linkedinUser.token = token;
+
+                        linkedinUser.name = profile.name.givenName + ' ' + profile.name.familyName;
+
+                        linkedinUser.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                        if (profile.emails&& profile.emails.length > 0) {
+                            linkedinUser.email = (profile.emails[0].value || '').toLowerCase();
+                        }
+                        if (profile.photos && profile.photos.length > 0) {
+                            linkedinUser.photo = profile.photos[0].value;
+                        }
 
                         linkedinUser.user = newUser._id;
 
@@ -563,6 +575,8 @@ module.exports = function (passport) {
                         });
 
                     } else {
+
+                        console.log("LinkedIn user not found");
 
                         var linkedin = new LinkedIn();
 
