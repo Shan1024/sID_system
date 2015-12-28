@@ -25,7 +25,7 @@
               <div id="donut-facebook" style="height: 250px;"></div>
           </div>
         </div> -->
-        <div class="col-xs-6 col-xs-offset-3 col-sm-6 col-sm-offset-3 text-center" >
+        <div class="col-xs-6 col-xs-offset-3 col-sm-6 col-sm-offset-3 text-center" id="overallratingstitle">
           <h3>Overall Profile Rating for : <%= name %></h3>
         </div>
         <div class="col-xs-6 col-xs-offset-3 col-sm-6 col-sm-offset-3 text-center" >
@@ -38,15 +38,37 @@
 </div>
 
 <script type="text/javascript">
-  Morris.Donut({
-    element: 'donut-overall',
-    data: <%-JSON.stringify(summary)%>,
-    colors: [
-      '#33cc33',
-      '#ff0000',
-      '#ffff00'
-    ]
-  });
+  // Morris.Donut({
+  //   element: 'donut-overall',
+  //   data: <%-JSON.stringify(summary)%>,
+  //   colors: [
+  //     '#33cc33',
+  //     '#ff0000',
+  //     '#ffff00'
+  //   ]
+  // });
+
+  var tempdata = <%-JSON.stringify(summary)%>;
+
+  console.log(tempdata);
+
+  if(tempdata[0].value == 0 && tempdata[1].value == 0 && tempdata[2].value == 0){
+
+      var $content = $('#overallratingstitle');
+
+      $content.replaceWith("<div class='text-center'> <h3>Sorry! No rating data is available for <%= name %>.</h3></div>");
+
+  }else{
+    Morris.Donut({
+      element: 'donut-overall',
+      data: tempdata,
+      colors: [
+        '#33cc33',
+        '#ff0000',
+        '#ffff00'
+      ]
+    });
+  }
 </script>
 </body>
 </html>
