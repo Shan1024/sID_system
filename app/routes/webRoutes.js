@@ -639,7 +639,12 @@ module.exports = function (app, passport) {
       var id = req.body.id;
 
       if(id === ""){
-        res.json({success: false, id: "id not defined", name: name});
+        // res.json({success: false, id: "id not defined", name: name});
+        rest.post(req.protocol + '://' + req.get('host') + '/other/getSuggestions', {
+            data: {text: name},
+        }).on('complete', function (data, response) {
+            res.render('usersummarysuggestions.ejs', {user: req.user, suggestions: data});
+        });
       }else{
         // rest.post(req.protocol + '://' + req.get('host') + '/getOverallRating', {
         //     data: {id: id, name: name},
@@ -648,6 +653,7 @@ module.exports = function (app, passport) {
         // });
         // res.json({success: true, data: "id defined"});
         // res.json({success: true, id: id, name: name});
+
         var summary =   [{label: "Yes", value: 10},
                         {label: "No", value: 20},
                         {label: "Not Sure", value: 30}];
@@ -655,6 +661,9 @@ module.exports = function (app, passport) {
       }
 
     });
+
+
+    
 
 };
 
