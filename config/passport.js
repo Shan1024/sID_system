@@ -468,8 +468,11 @@ module.exports = function (passport) {
 
                             linkedin.token = token;
                             linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                            if (profile.emails) {
+                            if (profile.emails && profile.emails.length > 0) {
                                 linkedin.email = (profile.emails[0].value || '').toLowerCase();
+                            }
+                            if (profile.photos && profile.photos.length > 0) {
+                                linkedin.photo = profile.photos[0].value;
                             }
                             linkedin.url = profile._json.siteStandardProfileRequest.url;
                             linkedin.uid = getLinkedInID("id", linkedin.url);
@@ -534,7 +537,7 @@ module.exports = function (passport) {
                 var newUser = req.user; // pull the user out of the session
 
                 LinkedIn.findOne({
-                    uid: profile.id
+                    appid: profile.id
                 }, function (err, linkedinUser) {
 
                     if (linkedinUser) {
@@ -566,8 +569,11 @@ module.exports = function (passport) {
                         linkedin.appid = profile.id;
                         linkedin.token = token;
                         linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                        if (profile.emails) {
+                        if (profile.emails&& profile.emails.length > 0) {
                             linkedin.email = (profile.emails[0].value || '').toLowerCase();
+                        }
+                        if (profile.photos && profile.photos.length > 0) {
+                            linkedin.photo = profile.photos[0].value;
                         }
                         linkedin.url = profile._json.siteStandardProfileRequest.url;
                         linkedin.uid = getLinkedInID("id", linkedin.url);

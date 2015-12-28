@@ -10,6 +10,7 @@ var linkedinSchema = mongoose.Schema({
     email: String,
     token: String,
     url: String,
+    photo: String,
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

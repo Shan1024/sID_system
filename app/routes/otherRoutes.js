@@ -237,7 +237,7 @@ module.exports = function (app, express) {
 
                         LinkedIn.find({
                             name: new RegExp(text, "i")
-                        }).select("name user")
+                        }).select("name user photo")
                             .exec(function (err, linkedin) {
                                 if (err) {
                                     console.log("Error occurred 441512");
