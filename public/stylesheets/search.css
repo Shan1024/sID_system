@@ -49,6 +49,8 @@
 .tt-suggestion:hover {
   background-color: cornflowerblue;
   color: #fff;
+  cursor: pointer;
+  cursor: hand;
 }
 
 .tt-suggestion.tt-cursor {
