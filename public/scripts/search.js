@@ -68,6 +68,7 @@ typeahead.typeahead({
 var idSelectedHandler = function (eventObject, suggestionObject, suggestionDataset) {
     // alert(suggestionObject.id);
     storedId = suggestionObject.id;
+    $("#sidusersearchform").submit();
 };
 
 typeahead.on('typeahead:selected', idSelectedHandler);
