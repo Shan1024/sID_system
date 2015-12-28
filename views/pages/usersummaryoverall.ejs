@@ -1,0 +1,52 @@
+<html>
+<head>
+    <% include ../partials/head %>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+
+    <link rel="stylesheet" href="/stylesheets/sb-admin.css">
+
+</head>
+<body style="padding: 0px">
+
+
+<div id="wrapper" style="padding-left:0px">
+  <% include ../partials/navbar-overallrating %>
+  <div id="page-wrapper">
+    <div class="container-fluid">
+      <div class="row" style="width: 100%;">
+        <!-- <div class="panel panel-default col-md-offset-2 col-md-4" style="margin-right: 5px">
+          <div class="panel-heading">
+              <h3><span class="fa fa-facebook"></span> Facebook - Overall Rating </h3>
+          </div>
+          <div class="panel-body">
+              <div id="donut-facebook" style="height: 250px;"></div>
+          </div>
+        </div> -->
+        <div class="col-xs-6 col-xs-offset-3 col-sm-6 col-sm-offset-3 text-center" >
+          <h3>Overall Profile Rating for : <%= name %></h3>
+        </div>
+        <div class="col-xs-6 col-xs-offset-3 col-sm-6 col-sm-offset-3 text-center" >
+          <div id="donut-overall" style="height: 250px;"></div>
+        </div>
+      </div>
+      <% include ../partials/footer %>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  Morris.Donut({
+    element: 'donut-overall',
+    data: <%-JSON.stringify(summary)%>,
+    colors: [
+      '#33cc33',
+      '#ff0000',
+      '#ffff00'
+    ]
+  });
+</script>
+</body>
+</html>

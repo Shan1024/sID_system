@@ -241,3 +241,17 @@ p{
 	right:10px;
 	z-index: 999;
  }
+
+
+#footer {
+     bottom: 0px;
+     position: absolute;
+     height: 50px;
+     display: block;
+     width: 100%;
+     background: #9b59b6;
+     z-index: 9;
+     text-align: center;
+     color: #fff;
+     padding: 20px 0 0 0;
+ }
