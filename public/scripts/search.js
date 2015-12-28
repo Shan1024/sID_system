@@ -1,3 +1,6 @@
+var storedId;
+var storedName;
+
 var facebookSuggestions = new Bloodhound({
   datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
   queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -11,7 +14,7 @@ var facebookSuggestions = new Bloodhound({
     url: "/other/getSuggestionsFacebook?text=%QUERY",
     filter: function (x) {
       return $.map(x.values, function(item){
-        return {value: item.name};
+        return {value: item.name, id: item.user, fbid: item.id};
       });
     },
     wildcard: "%QUERY"
@@ -31,21 +34,26 @@ var linkedinSuggestions = new Bloodhound({
     url: "/other/getSuggestionsLinkedIn?text=%QUERY",
     filter: function (x) {
       return $.map(x.values, function(item){
-        return {value: item.name};
+        return {value: item.name, id: item.user};
       });
     },
     wildcard: "%QUERY"
   }
 });
 
-$('#sidusersearch').typeahead({
+var typeahead = $('#sidusersearch');
+
+typeahead.typeahead({
   highlight: true
 }, {
   name: 'facebook-suggestions',
   display: 'value',
   source: facebookSuggestions,
   templates: {
-    header: '<h3 class="facebook-name">Facebook</h3>'
+    header: '<h3 class="facebook-name">Facebook</h3>',
+    // // suggestion: Handlebars.compile('{{value}}')
+    // suggestion: '<% value %> <img src="https://graph.facebook.com/v2.3/<% fbid %>/picture"/>'
+    suggestion: Handlebars.compile('<div><strong>{{value}}</strong> – <img class="typeahead_photo" src="https://graph.facebook.com/v2.3/{{fbid}}/picture"/></div>')
   }
 },{
   name: 'linkedin-suggestions',
@@ -54,4 +62,19 @@ $('#sidusersearch').typeahead({
   templates: {
     header: '<h3 class="linkedin-name">LinkedIn</h3>'
   }
+});
+
+var idSelectedHandler = function (eventObject, suggestionObject, suggestionDataset) {
+    // alert(suggestionObject.id);
+    storedId = suggestionObject.id;
+};
+
+typeahead.on('typeahead:selected', idSelectedHandler);
+
+$("#sidusersearchform").submit( function(eventObj) {
+  $('<input />').attr('type', 'hidden')
+  .attr('name', "id")
+  .attr('value', storedId)
+  .appendTo('#sidusersearchform');
+   return true;
 });
