@@ -46,6 +46,16 @@
     margin: 0;
 }
 
+.tt-suggestion:hover {
+  background-color: cornflowerblue;
+  color: #fff;
+}
+
+.tt-suggestion.tt-cursor {
+  background-color: cornflowerblue;
+  color: #fff;
+}
+
 span.twitter-typeahead {
   width: 100%;
 }
