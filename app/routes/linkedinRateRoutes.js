@@ -241,7 +241,7 @@ module.exports = function (app, express) {
                     //If no entry is found
                 } else {
 
-                    var entry = new Entry({
+                    var newEntry = new Entry({
                         claimid: claimid,
                         mysid: myid,
                         myid: me._id,
@@ -266,14 +266,14 @@ module.exports = function (app, express) {
                             if (linkedinRatedByMe) {
                                 console.log(chalk.yellow('LinkedInRatedByMe found'));
 
-                                entry.save(function (err) {
+                                newEntry.save(function (err) {
 
                                     if (err) {
                                         console.log("Error: " + err);
                                         return res.json({success: false, message: "Error occurred"});
                                     } else {
 
-                                        linkedinRatedByMe.entries.push(entry);
+                                        linkedinRatedByMe.entries.push(newEntry);
 
                                         linkedinRatedByMe.save(function (err) {
 
@@ -285,7 +285,7 @@ module.exports = function (app, express) {
 
                                                 console.log("no error");
 
-                                                targetUser.linkedin.ratedByOthers.push(entry);
+                                                targetUser.linkedin.ratedByOthers.push(newEntry);
 
                                                 Claim.findOne({
                                                     claimid: claimid,
@@ -389,17 +389,17 @@ module.exports = function (app, express) {
                                 //user haven't rated target before
                             } else {
 
-                                entry.save(function (err) {
+                                newEntry.save(function (err) {
 
                                     if (err) {
-                                        console.log("Error occurred 489421")
+                                        console.log("Error occurred 489421");
                                         return res.json({success: false, message: "Error occurred"});
                                     } else {
 
                                         var newLinkedInRating = new LinkedInRatedByMe({
                                             myid: me._id,
                                             targetid: target._id,
-                                            entries: [entry._id]
+                                            entries: [newEntry._id]
                                         });
 
                                         newLinkedInRating.save(function (err) {
@@ -409,7 +409,7 @@ module.exports = function (app, express) {
                                                 return res.json({success: false, message: "Error occurred"});
                                             } else {
 
-                                                targetUser.linkedin.ratedByOthers.push(entry);
+                                                targetUser.linkedin.ratedByOthers.push(newEntry);
 
                                                 Claim.findOne({
                                                     claimid: claimid,

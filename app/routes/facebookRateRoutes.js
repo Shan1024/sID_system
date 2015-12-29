@@ -355,7 +355,7 @@ module.exports = function (app, express) {
                     //If no entry is found
                 } else {
 
-                    var entry = new Entry({
+                    var newEntry = new Entry({
                         claimid: claimid,
                         mysid: myid,
                         myid: me._id,
@@ -380,14 +380,14 @@ module.exports = function (app, express) {
                             if (facebookRatedByMe) {
                                 console.log(chalk.yellow('FacebookRatedByMe found'));
 
-                                entry.save(function (err) {
+                                newEntry.save(function (err) {
 
                                     if (err) {
                                         console.log("Error: " + err);
                                         return res.json({success: false, message: "Error occurred"});
                                     } else {
 
-                                        facebookRatedByMe.entries.push(entry);
+                                        facebookRatedByMe.entries.push(newEntry);
 
                                         facebookRatedByMe.save(function (err) {
 
@@ -399,7 +399,7 @@ module.exports = function (app, express) {
 
                                                 console.log("no error");
 
-                                                targetUser.facebook.ratedByOthers.push(entry);
+                                                targetUser.facebook.ratedByOthers.push(newEntry);
 
                                                 Claim.findOne({
                                                     claimid: claimid,
@@ -503,7 +503,7 @@ module.exports = function (app, express) {
                                 //user haven't rated target before
                             } else {
 
-                                entry.save(function (err) {
+                                newEntry.save(function (err) {
 
                                     if (err) {
                                         console.log("Error occurred 489421");
@@ -513,7 +513,7 @@ module.exports = function (app, express) {
                                         var newFacebookRating = new FacebookRatedByMe({
                                             myid: me._id,
                                             targetid: target._id,
-                                            entries: [entry._id]
+                                            entries: [newEntry._id]
                                         });
 
                                         newFacebookRating.save(function (err) {
@@ -523,7 +523,7 @@ module.exports = function (app, express) {
                                                 return res.json({success: false, message: "Error occurred"});
                                             } else {
 
-                                                targetUser.facebook.ratedByOthers.push(entry);
+                                                targetUser.facebook.ratedByOthers.push(newEntry);
 
                                                 Claim.findOne({
                                                     claimid: claimid,

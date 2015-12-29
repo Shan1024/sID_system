@@ -64,8 +64,8 @@ module.exports = function (app, passport) {
     app.post('/authenticate', function (req, res) {
 
 
-		res.set("Access-Control-Allow-Origin", "*");
-		res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.set("Access-Control-Allow-Origin", "*");
+        res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
         var username = req.body.username;
         var password = req.body.password;
@@ -635,60 +635,68 @@ module.exports = function (app, passport) {
     });
 
     app.post("/overview", function (req, res) {
-      var name = req.body.name;
-      var id = req.body.id;
+        var name = req.body.name;
+        var id = req.body.id;
 
-      if(id === ""){
-        // res.json({success: false, id: "id not defined", name: name});
-        rest.post(req.protocol + '://' + req.get('host') + '/other/getSuggestions', {
-            data: {text: name},
-        }).on('complete', function (data, response) {
-            res.render('usersummarysuggestions.ejs', {user: req.user, suggestions: data});
-        });
-      }else{
-        // rest.post(req.protocol + '://' + req.get('host') + '/getOverallRating', {
-        //     data: {id: id, name: name},
-        // }).on('complete', function (data, response) {
-        //     res.json({success: true, data: data});
-        // });
-        // res.json({success: true, data: "id defined"});
-        // res.json({success: true, id: id, name: name});
+        console.log("/overview POST: " + name + ", " + id);
 
-        var summary =   [{label: "Yes", value: 10},
-                        {label: "No", value: 20},
-                        {label: "Not Sure", value: 30}];
-        res.render('usersummaryoverall.ejs', {user: req.user, summary: summary, name: name});
-      }
+        if (id === "") {
+            // res.json({success: false, id: "id not defined", name: name});
+            rest.post(req.protocol + '://' + req.get('host') + '/other/getSuggestions', {
+                data: {text: name},
+            }).on('complete', function (data, response) {
+                console.log(chalk.blue("datax: " + JSON.stringify(data, null, "\t")));
+                //console.log(chalk.blue("responsex: " + JSON.stringify(response, null, "\t")));
+                console.log("response: "+response);
+                res.render('usersummarysuggestions.ejs', {user: req.user, suggestions: data});
+            });
+        } else {
+            // rest.post(req.protocol + '://' + req.get('host') + '/getOverallRating', {
+            //     data: {id: id, name: name},
+            // }).on('complete', function (data, response) {
+            //     res.json({success: true, data: data});
+            // });
+            // res.json({success: true, data: "id defined"});
+            // res.json({success: true, id: id, name: name});
 
-    });
+            var summary = [{label: "Yes", value: 10},
+                {label: "No", value: 20},
+                {label: "Not Sure", value: 30}];
+            console.log("summary: " + summary);
+            res.render('usersummaryoverall.ejs', {user: req.user, summary: summary, name: name});
+        }
 
+    }).get("/overview", function (req, res) {
+        var name = req.query.name;
+        var id = req.query.id;
 
-    app.get("/overview", function (req, res) {
-      var name = req.query.name;
-      var id = req.query.id;
+        console.log("/overview: " + name + ", " + id);
 
-      if(id === ""){
-        // res.json({success: false, id: "id not defined", name: name});
-        rest.post(req.protocol + '://' + req.get('host') + '/other/getSuggestions', {
-            data: {text: name},
-        }).on('complete', function (data, response) {
-            res.render('usersummarysuggestions.ejs', {user: req.user, suggestions: data});
-        });
-      }else{
-        // rest.post(req.protocol + '://' + req.get('host') + '/getOverallRating', {
-        //     data: {id: id, name: name},
-        // }).on('complete', function (data, response) {
-        //     res.json({success: true, data: data});
-        // });
-        // res.json({success: true, data: "id defined"});
-        // res.json({success: true, id: id, name: name});
+        if (id === "") {
+            // res.json({success: false, id: "id not defined", name: name});
+            rest.post(req.protocol + '://' + req.get('host') + '/other/getSuggestions', {
+                data: {text: name},
+            }).on('complete', function (data, response) {
+                console.log("Data: " + data);
+                console.log("response: " + response);
+                res.render('usersummarysuggestions.ejs', {user: req.user, suggestions: data});
+            });
+        } else {
+            // rest.post(req.protocol + '://' + req.get('host') + '/getOverallRating', {
+            //     data: {id: id, name: name},
+            // }).on('complete', function (data, response) {
+            //     res.json({success: true, data: data});
+            // });
+            // res.json({success: true, data: "id defined"});
+            // res.json({success: true, id: id, name: name});
 
-
-        var summary =   [{label: "Yes", value: 10},
-                        {label: "No", value: 20},
-                        {label: "Not Sure", value: 30}];
-        res.render('usersummaryoverall.ejs', {user: req.user, summary: summary, name: name});
-      }
+            console.log("Else called");
+            var summary = [{label: "Yes", value: 10},
+                {label: "No", value: 20},
+                {label: "Not Sure", value: 30}];
+            console.log("summary: " + summary);
+            res.render('usersummaryoverall.ejs', {user: req.user, summary: summary, name: name});
+        }
 
     });
 
