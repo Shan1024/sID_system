@@ -53,7 +53,7 @@ typeahead.typeahead({
         header: '<h3 class="facebook-name">Facebook</h3>',
         // // suggestion: Handlebars.compile('{{value}}')
         // suggestion: '<% value %> <img src="https://graph.facebook.com/v2.3/<% fbid %>/picture"/>'
-        suggestion: Handlebars.compile('<div><strong>{{value}}</strong> – <img class="typeahead_photo" src="https://graph.facebook.com/v2.3/{{fbid}}/picture"/></div>')
+        suggestion: Handlebars.compile('<div class="row"><div class="col-xs-8"><strong>{{value}}</strong></div>  <div class="col-xs-1 col-md-offset-1 col-md-1"><img class="typeahead_photo" src="https://graph.facebook.com/v2.3/{{fbid}}/picture"/></div></div>')
     }
 }, {
     name: 'linkedin-suggestions',
@@ -61,7 +61,7 @@ typeahead.typeahead({
     source: linkedinSuggestions,
     templates: {
         header: '<h3 class="linkedin-name">LinkedIn</h3>',
-        suggestion: Handlebars.compile('<div><strong>{{value}}</strong> – <img class="typeahead_photo" src="{{photoUrl}}" height="50" width="50"/></div>')
+        suggestion: Handlebars.compile('<div class="row"><div class="col-xs-8"><strong>{{value}}</strong></div>  <div class="col-xs-1 col-md-offset-1 col-md-1"><img class="typeahead_photo" src="{{photoUrl}}" height="50" width="50"/></div></div>')
     }
 });
 

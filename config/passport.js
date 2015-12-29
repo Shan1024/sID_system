@@ -126,9 +126,14 @@ module.exports = function (passport) {
                             return re.test(email);
                         }
 
-                        if(validateEmail(req.body.email)){
+                        if(!validateEmail(req.body.email)){
                           return done(null, false, req.flash('signupMessage', 'Please enter a valid email address.'));
                         }
+
+                        // if(!password){
+                          // console.log(chalk.blue('Inside validateEmail' + password));
+                          // return done(null, false, req.flash('signupMessage', 'Please a password for your sID account.'));
+                        // }
 
                         // check to see if theres already a user with that email
                         if (user) {
