@@ -13,60 +13,79 @@
 
 
 <div id="wrapper" style="padding-left:0px">
-  <% include ../partials/navbar-overallrating %>
-  <div id="page-wrapper">
-    <div class="container-fluid">
-      <div class="row" style="width: 100%;">
-        <!-- <div class="panel panel-default col-md-offset-2 col-md-4" style="margin-right: 5px">
-          <div class="panel-heading">
-              <h3><span class="fa fa-facebook"></span> Facebook - Overall Rating </h3>
-          </div>
-          <div class="panel-body">
-              <div id="donut-facebook" style="height: 250px;"></div>
-          </div>
-        </div> -->
-        <div class="col-xs-6 col-xs-offset-3 col-sm-6 col-sm-offset-3 text-center" id="overallratingstitle">
-          <h3>Overall Profile Rating for : <%= name %></h3>
+    <% include ../partials/navbar-overallrating %>
+    <div id="page-wrapper">
+        <div class="container-fluid">
+            <div class="row" style="width: 100%;">
+                <!-- <div class="panel panel-default col-md-offset-2 col-md-4" style="margin-right: 5px">
+                  <div class="panel-heading">
+                      <h3><span class="fa fa-facebook"></span> Facebook - Overall Rating </h3>
+                  </div>
+                  <div class="panel-body">
+                      <div id="donut-facebook" style="height: 250px;"></div>
+                  </div>
+                </div> -->
+                <div class="col-xs-6 col-xs-offset-3 col-sm-6 col-sm-offset-3 text-center" id="overallratingstitle">
+                    <h3>Overall Profile Rating for : <%= name %></h3>
+                </div>
+                <div class="col-xs-6 col-xs-offset-3 col-sm-6 col-sm-offset-3 text-center">
+                    <div id="donut-facebook" style="height: 250px;"></div>
+                </div>
+                <div class="col-xs-6 col-xs-offset-3 col-sm-6 col-sm-offset-3 text-center">
+                    <div id="donut-linkedin" style="height: 250px;"></div>
+                </div>
+            </div>
+            <% include ../partials/footer %>
         </div>
-        <div class="col-xs-6 col-xs-offset-3 col-sm-6 col-sm-offset-3 text-center" >
-          <div id="donut-overall" style="height: 250px;"></div>
-        </div>
-      </div>
-      <% include ../partials/footer %>
     </div>
-  </div>
 </div>
 
 <script type="text/javascript">
-  // Morris.Donut({
-  //   element: 'donut-overall',
-  //   data: <%-JSON.stringify(summary)%>,
-  //   colors: [
-  //     '#33cc33',
-  //     '#ff0000',
-  //     '#ffff00'
-  //   ]
-  // });
 
-  var tempdata = <%-JSON.stringify(summary)%>;
+    var facebookTempData = <%-JSON.stringify(facebook)%>;
+    console.log("Data: " + facebookTempData);
+    console.log("Length: " + facebookTempData.length);
 
-  if(tempdata[0].value == 0 && tempdata[1].value == 0 && tempdata[2].value == 0){
+    var linkedinTempData = <%-JSON.stringify(linkedin)%>;
+    console.log("Data: " + linkedinTempData);
+    console.log("Length: " + linkedinTempData.length);
 
-      var $content = $('#overallratingstitle');
+    if (facebookTempData.length > 0 && linkedinTempData.length > 0) {
+        if (facebookTempData[0].value == 0 && facebookTempData[1].value == 0 && facebookTempData[2].value == 0) {
+            var $content = $('#donut-facebook');
+            $content.replaceWith("<div class='text-center'> <h3>Sorry! No facebook rating data is available for <%= name %>.</h3></div>");
+        } else {
+            Morris.Donut({
+                element: 'donut-facebook',
+                data: facebookTempData,
+                colors: [
+                    '#33cc33',
+                    '#ff0000',
+                    '#ffff00'
+                ]
+            });
+        }
 
-      $content.replaceWith("<div class='text-center'> <h3>Sorry! No rating data is available for <%= name %>.</h3></div>");
+        if (linkedinTempData[0].value == 0 && linkedinTempData[1].value == 0 && linkedinTempData[2].value == 0) {
+            var $content = $('#donut-linkedin');
+            $content.replaceWith("<div class='text-center'> <h3>Sorry! No LinkedIn rating data is available for <%= name %>.</h3></div>");
+        } else {
+            Morris.Donut({
+                element: 'donut-linkedin',
+                data: linkedinTempData,
+                colors: [
+                    '#33cc33',
+                    '#ff0000',
+                    '#ffff00'
+                ]
+            });
+        }
 
-  }else{
-    Morris.Donut({
-      element: 'donut-overall',
-      data: tempdata,
-      colors: [
-        '#33cc33',
-        '#ff0000',
-        '#ffff00'
-      ]
-    });
-  }
+    } else {
+        var $content = $('#overallratingstitle');
+        $content.replaceWith("<div class='text-center'> <h3>Sorry! No rating data is available for <%= name %>.</h3></div>");
+    }
+
 </script>
 </body>
 </html>

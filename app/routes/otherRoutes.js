@@ -136,7 +136,8 @@ module.exports = function (app, express) {
 
             Facebook.find({
                 name: new RegExp(text, "i")
-            }).select("name user id")
+            }).limit(defaultValues.suggestionsLimit)
+                .select("name user id")
                 .exec(function (err, facebook) {
                     if (err) {
                         console.log("Error occurred 441512");
@@ -145,7 +146,8 @@ module.exports = function (app, express) {
                         console.log("facebook: " + facebook);
                         LinkedIn.find({
                             name: new RegExp(text, "i")
-                        }).select("name user photo")
+                        }).limit(defaultValues.suggestionsLimit)
+                            .select("name user photo")
                             .exec(function (err, linkedin) {
                                 if (err) {
                                     console.log("Error occurred 515614");
@@ -172,7 +174,8 @@ module.exports = function (app, express) {
 
             Facebook.find({
                 name: new RegExp(text, "i")
-            }).select("name")
+            }).limit(defaultValues.suggestionsLimit)
+                .select("name")
                 .exec(function (err, facebook) {
                     if (err) {
                         console.log("Error occurred 441512");
@@ -181,7 +184,8 @@ module.exports = function (app, express) {
                         console.log("facebook: " + facebook);
                         LinkedIn.find({
                             name: new RegExp(text, "i")
-                        }).select("name")
+                        }).limit(defaultValues.suggestionsLimit)
+                            .select("name")
                             .exec(function (err, linkedin) {
                                 if (err) {
                                     console.log("Error occurred 515614");
@@ -220,7 +224,8 @@ module.exports = function (app, express) {
 
             Facebook.find({
                 name: new RegExp(text, "i")
-            }).select("name user id")
+            }).limit(defaultValues.suggestionsLimit)
+                .select("name user id")
                 .exec(function (err, facebook) {
                     if (err) {
                         console.log("Error occurred 441512");
@@ -247,7 +252,8 @@ module.exports = function (app, express) {
 
             LinkedIn.find({
                 name: new RegExp(text, "i")
-            }).select("name user photo")
+            }).limit(defaultValues.suggestionsLimit)
+                .select("name user photo")
                 .exec(function (err, linkedin) {
                     if (err) {
                         console.log("Error occurred 441512");

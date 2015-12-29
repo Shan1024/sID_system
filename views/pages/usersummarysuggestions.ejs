@@ -13,57 +13,59 @@
 
 
 <div id="wrapper" style="padding-left:0px">
-  <% include ../partials/navbar-overallrating %>
-  <div id="page-wrapper">
-    <div class="container-fluid">
-      <div class="row" style="width: 100%;">
-        <div class="row text-center">
-          <h3>Are you looking for</h3>
-        </div>
-        <div class="row">
-          <% if (suggestions.facebook.length > 0) { %>
-            <% for(var i = 0; i < suggestions.facebook.length ; i++) { %>
-            <% var fbid = suggestions.facebook[i]._id %>
-            <% var fbname = suggestions.facebook[i].name %>
-            <div class="row">
-                <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
-                    <div class="well">
-                      <img src="https://graph.facebook.com/v2.3/<%= suggestions.facebook[i].id %>/picture">
-                      <strong><a style="color:#428bca;" href="/overview?id=<%= fbid %>&name=<%= fbname %>"> <%= fbname %> </a></strong>
+    <% include ../partials/navbar-overallrating %>
+    <div id="page-wrapper">
+        <div class="container-fluid">
+            <div class="row" style="width: 100%;">
+                <div class="row text-center">
+                    <h3>Are you looking for</h3>
+                </div>
+                <div class="row">
+                    <% if (suggestions.facebook && suggestions.facebook.length > 0) { %>
+                    <% for(var i = 0; i < suggestions.facebook.length ; i++) { %>
+                    <% var fbid = suggestions.facebook[i]._id %>
+                    <% var fbname = suggestions.facebook[i].name %>
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
+                            <div class="well">
+                                <img src="https://graph.facebook.com/v2.3/<%= suggestions.facebook[i].id %>/picture">
+                                <strong><a style="color:#428bca;"
+                                           href="/overview?id=<%= fbid %>&name=<%= fbname %>"> <%= fbname %> </a></strong>
+                            </div>
+                        </div>
                     </div>
+                    <% } %>
+                    <% } %>
+                </div>
+                <div class="row">
+                    <% if (suggestions.linkedin && suggestions.linkedin.length > 0) { %>
+                    <% for(var i = 0; i < suggestions.linkedin.length ; i++) { %>
+                    <% var linkid = suggestions.linkedin[i]._id %>
+                    <% var linkname = suggestions.linkedin[i].name %>
+                    <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
+                            <div class="well">
+                                <img src="<%= suggestions.linkedin[i].photo %>" style="width: 50px; height: 50px;">
+                                <strong><a style="color:#428bca;"
+                                           href="/overview?id=<%= linkid %>&name=<%= linkname %>"> <%= linkname %> </a></strong>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+                    <% } %>
                 </div>
             </div>
-            <% } %>
-          <% } %>
+            <% include ../partials/footer %>
         </div>
-        <div class="row">
-          <% if (suggestions.linkedin.length > 0) { %>
-            <% for(var i = 0; i < suggestions.linkedin.length ; i++) { %>
-            <% var linkid = suggestions.linkedin[i]._id %>
-            <% var linkname = suggestions.linkedin[i].name %>
-            <div class="row">
-                <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
-                    <div class="well">
-                      <img src="<%= suggestions.linkedin[i].photo %>" style="width: 50px; height: 50px;">
-                      <strong><a style="color:#428bca;" href="/overview?id=<%= linkid %>&name=<%= linkname %>"> <%= linkname %> </a></strong>
-                    </div>
-                </div>
-            </div>
-            <% } %>
-          <% } %>
-        </div>
-      </div>
-      <% include ../partials/footer %>
     </div>
-  </div>
 </div>
 
 <script type="text/javascript">
 
-// $('#clickme').click(function(){
-//   console.log('insideclickme');
-// $('#frmPost').submit();
-// });
+    // $('#clickme').click(function(){
+    //   console.log('insideclickme');
+    // $('#frmPost').submit();
+    // });
 
 </script>
 </body>

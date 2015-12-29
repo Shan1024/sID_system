@@ -28,10 +28,9 @@ module.exports = {
             trusted: 50,
             untrusted: 0
         }
-    }
-
-    ,
+    },
     claimsLimit: 10,
     entriesLimit: 20,
-    defaultOrder: -1
+    defaultOrder: -1,
+    suggestionsLimit: 5
 };

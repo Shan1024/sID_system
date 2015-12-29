@@ -9,6 +9,7 @@ var facebook = require('../../config/facebook.js');
 var User = require('../models/user');
 var Facebook = require('../models/facebook');
 var Entry = require("../models/entry");
+var Claim = require("../models/claim");
 var LinkedIn = require("../models/linkedin");
 
 var controller = require('../controllers/controllers');
@@ -64,8 +65,8 @@ module.exports = function (app, passport) {
     app.post('/authenticate', function (req, res) {
 
 
-		res.set("Access-Control-Allow-Origin", "*");
-		res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.set("Access-Control-Allow-Origin", "*");
+        res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
         var username = req.body.username;
         var password = req.body.password;
@@ -635,60 +636,398 @@ module.exports = function (app, passport) {
     });
 
     app.post("/overview", function (req, res) {
-      var name = req.body.name;
-      var id = req.body.id;
+        var name = req.body.name;
+        var id = req.body.id;
 
-      if(id === ""){
-        // res.json({success: false, id: "id not defined", name: name});
-        rest.post(req.protocol + '://' + req.get('host') + '/other/getSuggestions', {
-            data: {text: name},
-        }).on('complete', function (data, response) {
-            res.render('usersummarysuggestions.ejs', {user: req.user, suggestions: data});
-        });
-      }else{
-        // rest.post(req.protocol + '://' + req.get('host') + '/getOverallRating', {
-        //     data: {id: id, name: name},
-        // }).on('complete', function (data, response) {
-        //     res.json({success: true, data: data});
-        // });
-        // res.json({success: true, data: "id defined"});
-        // res.json({success: true, id: id, name: name});
+        console.log("/overview POST: " + name + ", " + id);
 
-        var summary =   [{label: "Yes", value: 10},
-                        {label: "No", value: 20},
-                        {label: "Not Sure", value: 30}];
-        res.render('usersummaryoverall.ejs', {user: req.user, summary: summary, name: name});
-      }
-
-    });
-
-
-    app.get("/overview", function (req, res) {
-      var name = req.query.name;
-      var id = req.query.id;
-
-      if(id === ""){
-        // res.json({success: false, id: "id not defined", name: name});
-        rest.post(req.protocol + '://' + req.get('host') + '/other/getSuggestions', {
-            data: {text: name},
-        }).on('complete', function (data, response) {
-            res.render('usersummarysuggestions.ejs', {user: req.user, suggestions: data});
-        });
-      }else{
-        // rest.post(req.protocol + '://' + req.get('host') + '/getOverallRating', {
-        //     data: {id: id, name: name},
-        // }).on('complete', function (data, response) {
-        //     res.json({success: true, data: data});
-        // });
-        // res.json({success: true, data: "id defined"});
-        // res.json({success: true, id: id, name: name});
+        if (!name) {
+            name = 'a';
+        }
+        if (!id) {
+            // res.json({success: false, id: "id not defined", name: name});
+            rest.post(req.protocol + '://' + req.get('host') + '/other/getSuggestions', {
+                data: {text: name},
+            }).on('complete', function (data, response) {
+                console.log(chalk.blue("datax: " + JSON.stringify(data, null, "\t")));
+                //console.log(chalk.blue("responsex: " + JSON.stringify(response, null, "\t")));
+                console.log("response: " + response);
+                res.render('usersummarysuggestions.ejs', {user: req.user, suggestions: data});
+            });
+        } else {
+            // rest.post(req.protocol + '://' + req.get('host') + '/getOverallRating', {
+            //     data: {id: id, name: name},
+            // }).on('complete', function (data, response) {
+            //     res.json({success: true, data: data});
+            // });
+            // res.json({success: true, data: "id defined"});
+            // res.json({success: true, id: id, name: name});
 
 
-        var summary =   [{label: "Yes", value: 10},
-                        {label: "No", value: 20},
-                        {label: "Not Sure", value: 30}];
-        res.render('usersummaryoverall.ejs', {user: req.user, summary: summary, name: name});
-      }
+            User.findOne({
+                _id: id
+            }, function (err, user) {
+                if (err) {
+                    console.log("Error occurred");
+                    res.render('usersummaryoverall.ejs', {user: req.user, name: name, facebook: [], linkedin: []});
+                } else {
+                    if (user) {
+
+                        console.log("User found");
+
+                        var facebookData = [];
+                        var linkedinData = [];
+
+                        if (user.userDetails.facebook) {
+                            console.log("Facebook found");
+                            Facebook.findOne({
+                                _id: user.userDetails.facebook
+                            }, function (err, facebook) {
+                                if (err) {
+                                    console.log("Error occurred");
+                                    res.render('usersummaryoverall.ejs', {
+                                        user: req.user,
+                                        name: name,
+                                        facebook: facebookData,
+                                        linkedin: linkedinData
+                                    });
+                                } else {
+                                    if (facebook) {
+
+                                        Claim.find({
+                                            myid: facebook.uid
+                                        }, function (err, claims) {
+
+                                            if (err) {
+                                                console.log("Error occurred");
+                                                res.render('usersummaryoverall.ejs', {
+                                                    user: req.user,
+                                                    name: name,
+                                                    facebook: facebookData,
+                                                    linkedin: linkedinData
+                                                });
+                                            } else {
+                                                if (claims) {
+
+                                                    console.log("Claims found");
+                                                    var yes = 0, no = 0, notSure = 0;
+
+                                                    for (var i = 0; i < claims.length; i++) {
+                                                        yes += claims[i].yes;
+                                                        no += claims[i].no;
+                                                        notSure += claims[i].notSure;
+                                                    }
+                                                    facebookData = [
+                                                        {label: "Yes", value: yes},
+                                                        {label: "No", value: no},
+                                                        {label: "Not Sure", value: notSure}
+                                                    ];
+                                                    console.log("facebookData: " + facebookData);
+
+                                                    if (user.userDetails.linkedin) {
+                                                        console.log("Linkedin found");
+                                                        LinkedIn.findOne({
+                                                            _id: user.userDetails.linkedin
+                                                        }, function (err, linkedin) {
+                                                            if (err) {
+                                                                console.log("Error occurred");
+                                                                res.render('usersummaryoverall.ejs', {
+                                                                    user: req.user,
+                                                                    name: name,
+                                                                    facebook: facebookData,
+                                                                    linkedin: linkedinData
+                                                                });
+                                                            } else {
+                                                                if (linkedin) {
+
+                                                                    Claim.find({
+                                                                        myid: linkedin.uid
+                                                                    }, function (err, claims) {
+
+                                                                        if (err) {
+                                                                            console.log("Error occurred");
+                                                                            res.render('usersummaryoverall.ejs', {
+                                                                                user: req.user,
+                                                                                name: name,
+                                                                                facebook: facebookData,
+                                                                                linkedin: linkedinData
+                                                                            });
+                                                                        } else {
+                                                                            if (claims) {
+
+                                                                                console.log("Claims found");
+                                                                                yes = 0, no = 0, notSure = 0;
+
+                                                                                for (var i = 0; i < claims.length; i++) {
+                                                                                    yes += claims[i].yes;
+                                                                                    no += claims[i].no;
+                                                                                    notSure += claims[i].notSure;
+                                                                                }
+
+                                                                                linkedinData = [
+                                                                                    {
+                                                                                        label: "Yes",
+                                                                                        value: yes
+                                                                                    },
+                                                                                    {
+                                                                                        label: "No",
+                                                                                        value: no
+                                                                                    },
+                                                                                    {
+                                                                                        label: "Not Sure",
+                                                                                        value: notSure
+                                                                                    }
+                                                                                ];
+                                                                                console.log("linkedinData: " + linkedinData);
+
+                                                                                res.render('usersummaryoverall.ejs', {
+                                                                                    user: req.user,
+                                                                                    name: name,
+                                                                                    facebook: facebookData,
+                                                                                    linkedin: linkedinData
+                                                                                });
+
+                                                                            } else {
+                                                                                console.log("No claims found");
+                                                                                res.render('usersummaryoverall.ejs', {
+                                                                                    user: req.user,
+                                                                                    name: name,
+                                                                                    facebook: facebookData,
+                                                                                    linkedin: linkedinData
+                                                                                });
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                } else {
+                                                                    console.log("No linkedin found");
+                                                                    res.render('usersummaryoverall.ejs', {
+                                                                        user: req.user,
+                                                                        name: name,
+                                                                        facebook: facebookData,
+                                                                        linkedin: linkedinData
+                                                                    });
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+
+                                                } else {
+                                                    console.log("No claims found");
+                                                    res.render('usersummaryoverall.ejs', {
+                                                        user: req.user,
+                                                        name: name,
+                                                        facebook: facebookData,
+                                                        linkedin: linkedinData
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        console.log("No facebook found");
+                                        res.render('usersummaryoverall.ejs', {
+                                            user: req.user,
+                                            name: name,
+                                            facebook: facebookData,
+                                            linkedin: linkedinData
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    } else {
+                        console.log("No user found");
+                        res.render('usersummaryoverall.ejs', {user: req.user, name: name, facebook: [], linkedin: []});
+                    }
+                }
+            });
+
+            //console.log("Else called");
+
+            //res.render('usersummaryoverall.ejs', {user: req.user, name: name, facebook: [], linkedin: []});
+
+        }
+
+    }).get("/overview", function (req, res) {
+        var name = req.query.name;
+        var id = req.query.id;
+
+        console.log("/overview: " + name + ", " + id);
+
+
+        if (!name) {
+            name = 'a';
+        }
+        if (!id) {
+            // res.json({success: false, id: "id not defined", name: name});
+            rest.post(req.protocol + '://' + req.get('host') + '/other/getSuggestions', {
+                data: {text: name},
+            }).on('complete', function (data, response) {
+                console.log("Data: " + data);
+                console.log("response: " + response);
+                res.render('usersummarysuggestions.ejs', {user: req.user, suggestions: data});
+            });
+        } else {
+            User.findOne({
+                _id: id
+            }, function (err, user) {
+                if (err) {
+                    console.log("Error occurred");
+                    res.render('usersummaryoverall.ejs', {user: req.user, name: name, facebook: [], linkedin: []});
+                } else {
+                    if (user) {
+
+                        console.log("User found");
+
+                        var facebookData = [];
+                        var linkedinData = [];
+
+                        if (user.userDetails.facebook) {
+                            console.log("Facebook found");
+                            Facebook.findOne({
+                                _id: user.userDetails.facebook
+                            }, function (err, facebook) {
+                                if (err) {
+                                    console.log("Error occurred");
+                                    res.render('usersummaryoverall.ejs', {
+                                        user: req.user,
+                                        name: name,
+                                        facebook: facebookData,
+                                        linkedin: linkedinData
+                                    });
+                                } else {
+                                    if (facebook) {
+
+                                        Claim.find({
+                                            myid: facebook.uid
+                                        }, function (err, claims) {
+
+                                            if (err) {
+                                                console.log("Error occurred");
+                                                res.render('usersummaryoverall.ejs', {
+                                                    user: req.user,
+                                                    name: name,
+                                                    facebook: facebookData,
+                                                    linkedin: linkedinData
+                                                });
+                                            } else {
+                                                if (claims) {
+
+                                                    console.log("Claims found");
+                                                    var yes = 0, no = 0, notSure = 0;
+
+                                                    for (var i = 0; i < claims.length; i++) {
+                                                        yes += claims[i].yes;
+                                                        no += claims[i].no;
+                                                        notSure += claims[i].notSure;
+                                                    }
+
+                                                    facebookData = [yes, no, notSure];
+                                                    console.log("facebookData: " + facebookData);
+
+                                                    if (user.userDetails.linkedin) {
+                                                        console.log("Linkedin found");
+                                                        LinkedIn.findOne({
+                                                            _id: user.userDetails.linkedin
+                                                        }, function (err, linkedin) {
+                                                            if (err) {
+                                                                console.log("Error occurred");
+                                                                res.render('usersummaryoverall.ejs', {
+                                                                    user: req.user,
+                                                                    name: name,
+                                                                    facebook: facebookData,
+                                                                    linkedin: linkedinData
+                                                                });
+                                                            } else {
+                                                                if (linkedin) {
+
+                                                                    Claim.find({
+                                                                        myid: linkedin.uid
+                                                                    }, function (err, claims) {
+
+                                                                        if (err) {
+                                                                            console.log("Error occurred");
+                                                                            res.render('usersummaryoverall.ejs', {
+                                                                                user: req.user,
+                                                                                name: name,
+                                                                                facebook: facebookData,
+                                                                                linkedin: linkedinData
+                                                                            });
+                                                                        } else {
+                                                                            if (claims) {
+
+                                                                                console.log("Claims found");
+                                                                                yes = 0, no = 0, notSure = 0;
+
+                                                                                for (var i = 0; i < claims.length; i++) {
+                                                                                    yes += claims[i].yes;
+                                                                                    no += claims[i].no;
+                                                                                    notSure += claims[i].notSure;
+                                                                                }
+
+                                                                                linkedinData = [yes, no, notSure];
+                                                                                console.log("linkedinData: " + linkedinData);
+
+                                                                                res.render('usersummaryoverall.ejs', {
+                                                                                    user: req.user,
+                                                                                    name: name,
+                                                                                    facebook: facebookData,
+                                                                                    linkedin: linkedinData
+                                                                                });
+
+                                                                            } else {
+                                                                                console.log("No claims found");
+                                                                                res.render('usersummaryoverall.ejs', {
+                                                                                    user: req.user,
+                                                                                    name: name,
+                                                                                    facebook: facebookData,
+                                                                                    linkedin: linkedinData
+                                                                                });
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                } else {
+                                                                    console.log("No linkedin found");
+                                                                    res.render('usersummaryoverall.ejs', {
+                                                                        user: req.user,
+                                                                        name: name,
+                                                                        facebook: facebookData,
+                                                                        linkedin: linkedinData
+                                                                    });
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+
+                                                } else {
+                                                    console.log("No claims found");
+                                                    res.render('usersummaryoverall.ejs', {
+                                                        user: req.user,
+                                                        name: name,
+                                                        facebook: facebookData,
+                                                        linkedin: linkedinData
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        console.log("No facebook found");
+                                        res.render('usersummaryoverall.ejs', {
+                                            user: req.user,
+                                            name: name,
+                                            facebook: facebookData,
+                                            linkedin: linkedinData
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    } else {
+                        console.log("No user found");
+                        res.render('usersummaryoverall.ejs', {user: req.user, name: name, facebook: [], linkedin: []});
+                    }
+                }
+            });
+        }
 
     });
 
