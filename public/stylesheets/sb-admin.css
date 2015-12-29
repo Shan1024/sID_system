@@ -19,6 +19,7 @@ body {
 
 #wrapper {
     padding-left: 0;
+    overflow:auto;
 }
 
 #page-wrapper {
@@ -26,6 +27,7 @@ body {
     height: 100%;
     padding: 0;
     background-color: #fff;
+    overflow: auto;
 }
 
 .myratingcontainerrow{
