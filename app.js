@@ -17,6 +17,9 @@ var morgan = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+
+var cors = require('cors');
+
 //var winston = require('winston');
 //winston.add(winston.transports.File, { filename: 'logs/sID.log' });
 
@@ -65,6 +68,9 @@ app.set('host', config.host);
 app.set('username', config.username);
 app.set('password', config.password);
 
+//Enabling cors
+app.use(cors());
+
 // set up our express application
 logger.debug("Overriding 'Express' logger");
 //app.use(require('morgan')({ "stream": winston.stream.write }));
@@ -94,7 +100,7 @@ require('./app/routes/facebookRateRoutes')(app, express);
 require('./app/routes/linkedinRateRoutes')(app, express);
 require('./app/routes/otherRoutes')(app, express);
 //require('./app/routes/testRoutes.js')(app, express);
-require('./app/routes/dummyRoutes')(app, express);
+//require('./app/routes/dummyRoutes')(app, express);
 // launch ======================================================================
 //app.listen(port);
 //console.log('The magic happens on port ' + port);
