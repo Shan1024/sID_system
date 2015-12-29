@@ -136,7 +136,7 @@ module.exports = function (app, express) {
 
             Facebook.find({
                 name: new RegExp(text, "i")
-            }).select("name")
+            }).select("name user id")
                 .exec(function (err, facebook) {
                     if (err) {
                         console.log("Error occurred 441512");
@@ -145,7 +145,7 @@ module.exports = function (app, express) {
                         console.log("facebook: " + facebook);
                         LinkedIn.find({
                             name: new RegExp(text, "i")
-                        }).select("name")
+                        }).select("name user photo")
                             .exec(function (err, linkedin) {
                                 if (err) {
                                     console.log("Error occurred 515614");
