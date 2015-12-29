@@ -37,7 +37,8 @@ module.exports = function (app, passport) {
                 user: req.user,
                 signUpVisible: true,
                 failureFlash: req.flash('error'),
-                successFlash: req.flash('success')
+                successFlash: req.flash('success'),
+                message: req.flash('signupMessage')
             });
         }
 

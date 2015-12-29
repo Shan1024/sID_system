@@ -116,6 +116,20 @@ module.exports = function (passport) {
                         if (err) {
                             return done(err);
                         }
+
+                        if(req.body.firstname === "" || req.body.lastname === ""){
+                          return done(null, false, req.flash('signupMessage', 'Please enter your full name.'));
+                        }
+
+                        function validateEmail(email) {
+                            var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                            return re.test(email);
+                        }
+
+                        if(validateEmail(req.body.email)){
+                          return done(null, false, req.flash('signupMessage', 'Please enter a valid email address.'));
+                        }
+
                         // check to see if theres already a user with that email
                         if (user) {
                             return done(null, false, req.flash('signupMessage', 'Email that you have entered is already used to create an account.'));
