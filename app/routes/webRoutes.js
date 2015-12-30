@@ -30,7 +30,7 @@ module.exports = function (app, passport) {
 
         //req.user.userDetails.local.email
 
-        if (req.user) {
+        if (req.isAuthenticated()) {
             res.redirect('/home');
         } else {
             res.render('index.ejs', {
@@ -243,7 +243,8 @@ module.exports = function (app, passport) {
         res.render('index.ejs', {
             signUpVisible: false,
             message: req.flash('loginMessage'),
-            successFlash: req.flash('success')
+            successFlash: req.flash('success'),
+            failureFlash: req.flash('error')
         });
     });
 
@@ -259,7 +260,8 @@ module.exports = function (app, passport) {
     app.get('/signup', function (req, res) {
         res.render('index.ejs', {
             signUpVisible: true,
-            message: req.flash('signupMessage')
+            message: req.flash('signupMessage'),
+            failureFlash: req.flash('error')
         });
     });
 
@@ -313,15 +315,15 @@ module.exports = function (app, passport) {
         })
     );
 
-    app.get('/auth/plugin/facebook', passport.authenticate('facebook-auth-plugin-https', {scope: 'email, user_friends'}));
-
-    app.get('/auth/plugin/facebookHTTPS/callback',
-        passport.authenticate('facebook-auth-plugin-https', {
-            scope: 'email, user_friends',
-            successRedirect: 'https://www.facebook.com',
-            failureRedirect: 'https://www.facebook.com'
-        })
-    );
+    //app.get('/auth/plugin/facebook', passport.authenticate('facebook-auth-plugin-https', {scope: 'email, user_friends'}));
+    //
+    //app.get('/auth/plugin/facebookHTTPS/callback',
+    //    passport.authenticate('facebook-auth-plugin-https', {
+    //        scope: 'email, user_friends',
+    //        successRedirect: 'https://www.facebook.com',
+    //        failureRedirect: 'https://www.facebook.com'
+    //    })
+    //);
 
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++
     //+++++++++++++++++++ LinkedIn Auth +++++++++++++++++++++
@@ -331,8 +333,8 @@ module.exports = function (app, passport) {
     app.get('/auth/linkedin/callback',
         passport.authenticate('linkedin-auth', {
             successRedirect: '/home',
-            failureRedirect: '/',
-            failureFlash: 'LinkedIn account is not linked to any local user account. Please create a local user account and link the LinkedIn account to use the login with LinkedIn.'
+            failureRedirect: '/login',
+            failureFlash: 'Authentication failed.'
         })
         //,
         //function (req, res) {
