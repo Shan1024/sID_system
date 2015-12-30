@@ -845,6 +845,7 @@ module.exports = function (app, express) {
      *
      * @apiParam {String} claimid The Facebook Claim ID.
      * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
+	 * @apiParam {String} [myid] The Facebook User ID of the logged in user.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -854,7 +855,8 @@ module.exports = function (app, express) {
      *         "no": 0,
      *         "notSure": 1,
      *         "overallRating": 0,
-     *         "claimScore": "C"
+     *         "claimScore": "C",
+	 *		   "my rating : -1"
      *    }
      *
      */
@@ -863,6 +865,7 @@ module.exports = function (app, express) {
 
             var targetid = req.body.targetid;
             var claimid = req.body.claimid;
+			var viewerid = req.body.myid;
 
             if (!targetid) {
                 if (req.user) {
@@ -923,7 +926,38 @@ module.exports = function (app, express) {
                         } else {
                             character = "C";
                         }
-
+						
+						/**Added by Dodan*/
+						
+						Entry.findOne({
+							claimid: claimid,
+							targetsid: targetid,
+							mysid: viewerid
+						},function(err,entry){
+							var myrating;
+							if(err){
+								//do nothingg
+								console.log(chalk.red("Error occurred when getting entry"));
+							}else{
+								if(entry){
+									myrating = entry.rating;
+								}
+							}
+							res.json({
+								success: true,
+								yes: claim.yes,
+								no: claim.no,
+								notSure: claim.notSure,
+								overallRating: claim.overallRatingLevel,
+								claimScore: character,
+								myrating: myrating
+							});
+						});
+						
+						/** Addition done*/
+						
+						/*** Commented by Dodan
+						
                         res.json({
                             success: true,
                             yes: claim.yes,
@@ -931,7 +965,7 @@ module.exports = function (app, express) {
                             notSure: claim.notSure,
                             overallRating: claim.overallRatingLevel,
                             claimScore: character
-                        });
+                        });*/
 
                     } else {
                         console.log(chalk.red("Claim not found"));
