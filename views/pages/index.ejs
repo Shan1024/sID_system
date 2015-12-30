@@ -292,6 +292,11 @@
                             <% if (successFlash.length > 0) { %>
                             <div class="alert alert-success"><%= successFlash %></div>
                             <% } %>
+
+                            <% if (failureFlash.length > 0) { %>
+                            <div class="alert alert-danger"><%= failureFlash %></div>
+                            <% } %>
+
                             <form action="/login" method="post">
                                 <div class="form-group">
                                     <input type="text" style="border: 0px; border-radius: 3px 3px 0px 0px;"
