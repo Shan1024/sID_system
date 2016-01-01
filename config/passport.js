@@ -117,8 +117,8 @@ module.exports = function (passport) {
                             return done(err);
                         }
 
-                        if(req.body.firstname === "" || req.body.lastname === ""){
-                          return done(null, false, req.flash('signupMessage', 'Please enter your full name.'));
+                        if (req.body.firstname === "" || req.body.lastname === "") {
+                            return done(null, false, req.flash('signupMessage', 'Please enter your full name.'));
                         }
 
                         function validateEmail(email) {
@@ -126,13 +126,13 @@ module.exports = function (passport) {
                             return re.test(email);
                         }
 
-                        if(!validateEmail(req.body.email)){
-                          return done(null, false, req.flash('signupMessage', 'Please enter a valid email address.'));
+                        if (!validateEmail(req.body.email)) {
+                            return done(null, false, req.flash('signupMessage', 'Please enter a valid email address.'));
                         }
 
                         // if(!password){
-                          // console.log(chalk.blue('Inside validateEmail' + password));
-                          // return done(null, false, req.flash('signupMessage', 'Please a password for your sID account.'));
+                        // console.log(chalk.blue('Inside validateEmail' + password));
+                        // return done(null, false, req.flash('signupMessage', 'Please a password for your sID account.'));
                         // }
 
                         // check to see if theres already a user with that email
@@ -151,45 +151,47 @@ module.exports = function (passport) {
 
                             controller.sendEmail(req);
 
-
                             newUser.save(function (err) {
                                 if (err) {
                                     return done(err);
+                                } else {
+                                    return done(null);
                                 }
-
-                                return done(null, newUser);
                             });
                         }
 
                     });
                     // if the user is logged in but has no local account...
-                } else if (!req.user.userDetails.local.email) {
-                    // ...presumably they're trying to connect a local account
-                    // BUT let's check if the email used to connect a local account is being used by another user
-                    User.findOne({'userDetails.local.email': email}, function (err, user) {
-                        if (err) {
-                            return done(err);
-                        }
-                        if (user) {
-                            return done(null, false, req.flash('loginMessage', 'Email that you have entered is already used to create an account.'));
-                            // Using 'loginMessage instead of signupMessage because it's used by /connect/local'
-                        } else {
-                            var tempUser = req.user;//User already used above
-                            tempUser.userDetails.local.email = email;
-                            var newUser = new User();
-                            tempUser.userDetails.local.password = newUser.generateHash(password);
-                            tempUser.save(function (err) {
-                                if (err) {
-                                    return done(err);
-                                }
-                                return done(null, tempUser);
-                            });
-                        }
-                    });
                 } else {
-                    // user is logged in and already has a local account. Ignore signup. (You should log out before trying to create a new account, user!)
                     return done(null, req.user);
                 }
+                //else if (!req.user.userDetails.local.email) {
+                //    // ...presumably they're trying to connect a local account
+                //    // BUT let's check if the email used to connect a local account is being used by another user
+                //    User.findOne({'userDetails.local.email': email}, function (err, user) {
+                //        if (err) {
+                //            return done(err);
+                //        }
+                //        if (user) {
+                //            return done(null, false, req.flash('loginMessage', 'Email that you have entered is already used to create an account.'));
+                //            // Using 'loginMessage instead of signupMessage because it's used by /connect/local'
+                //        } else {
+                //            var tempUser = req.user;//User already used above
+                //            tempUser.userDetails.local.email = email;
+                //            var newUser = new User();
+                //            tempUser.userDetails.local.password = newUser.generateHash(password);
+                //            tempUser.save(function (err) {
+                //                if (err) {
+                //                    return done(err);
+                //                }
+                //                return done(null, tempUser);
+                //            });
+                //        }
+                //    });
+                //} else {
+                //    // user is logged in and already has a local account. Ignore signup. (You should log out before trying to create a new account, user!)
+                //    return done(null, req.user);
+                //}
 
             });
 
@@ -478,13 +480,14 @@ module.exports = function (passport) {
             if (!req.user) {
 
                 LinkedIn.findOne({
-                    uid: profile.id
+                    appid: profile.id
                 }, function (err, linkedin) {
                     if (err) {
+                        console.log("Error 54654: " + err);
                         return done(err);
                     } else {
                         if (linkedin) {
-
+                            console.log("Linkedin found");
                             linkedin.token = token;
                             linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
                             if (profile.emails && profile.emails.length > 0) {
@@ -511,12 +514,14 @@ module.exports = function (passport) {
                                 }
                             });
                         } else {
+                            console.log("No linkedin connected");
                             return done(null);
                         }
                     }
                 });
 
             } else {
+                console.log("Already authenticated");
                 return done(null);
             }
         });
@@ -568,7 +573,7 @@ module.exports = function (passport) {
                         linkedinUser.name = profile.name.givenName + ' ' + profile.name.familyName;
 
                         linkedinUser.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                        if (profile.emails&& profile.emails.length > 0) {
+                        if (profile.emails && profile.emails.length > 0) {
                             linkedinUser.email = (profile.emails[0].value || '').toLowerCase();
                         }
                         if (profile.photos && profile.photos.length > 0) {
@@ -602,7 +607,7 @@ module.exports = function (passport) {
                         linkedin.appid = profile.id;
                         linkedin.token = token;
                         linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                        if (profile.emails&& profile.emails.length > 0) {
+                        if (profile.emails && profile.emails.length > 0) {
                             linkedin.email = (profile.emails[0].value || '').toLowerCase();
                         }
                         if (profile.photos && profile.photos.length > 0) {
