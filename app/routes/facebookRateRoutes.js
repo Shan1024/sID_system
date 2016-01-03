@@ -9,6 +9,7 @@ var Claim = require('../models/claim');
 var FacebookRatedByMe = require('../models/facebookRatedByMe');
 var Facebook = require("../models/facebook");
 var User = require("../models/user");
+var Comment = require("../models/comment");
 
 module.exports = function (app, express) {
 
@@ -645,6 +646,80 @@ module.exports = function (app, express) {
             }
         });
     };
+	
+	var addComment = function (req, res, me, target, myUser, targetUser) {
+
+        var myid = req.body.myid;
+        var targetid = req.body.targetid;
+        var commentid = req.body.commentid;
+        var commentData = req.body.comment;
+
+        //If an enty already exists
+        Comment.findOne({
+            commentid: commentid,
+            mysid: myid,
+            targetsid: targetid
+        }, function (err, comment) {
+
+            if (err) {
+                console.log(chalk.red('Error occurred 9446151'));
+                return res.json({success: false, message: "Error occurred"});
+            } else {
+                if (comment) {
+                    console.log(chalk.yellow('comment found'));
+					
+					comment.comment = commentData;
+					comment.lastUpdated = Date.now();
+
+					comment.save(function (err) {
+						if (err) {
+							console.log(chalk.red('Error occurred while saving the comment'));
+							return res.json({success: false, message: "Error occurred"});
+						}
+						else{
+							return res.json({
+								success: true, 
+								commentid: commentid,
+								mysid: myid,
+								myid: me._id,
+								targetsid: targetid,
+								targetid: target._id,
+								comment: commentData
+							});
+						}
+					});
+                    //If no entry is found
+                } else {
+
+                    var newComment = new Comment({
+                        commentid: commentid,
+                        mysid: myid,
+                        myid: me._id,
+                        targetsid: targetid,
+                        targetid: target._id,
+                        comment: commentData
+                    });
+					
+					newComment.save(function (err) {
+						if (err) {
+							console.log("Error: " + err);
+							return res.json({success: false, message: "Error occurred"});
+						} else {
+							return res.json({
+								success: true, 
+								commentid: commentid,
+								mysid: myid,
+								myid: me._id,
+								targetsid: targetid,
+								targetid: target._id,
+								comment: commentData
+							});
+						}
+					});
+                }
+            }
+        });
+    };
 
     var setName = function (me, target) {
 
@@ -837,6 +912,113 @@ module.exports = function (app, express) {
             });
         });
 
+
+	/**
+     * @api {post} /rate/facebook/addComment Adds a new Facebook comment or update an existing one.
+     * @apiName AddComment
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} myid The Facebook User ID of the user who is commenting.
+     * @apiParam {String} targetid The Facebook User ID of the user who is getting commented.
+     * @apiParam {String} commentid The comment ID.
+     * @apiParam {String} comment The comment details.
+     *
+     */
+    rateRouter.route('/addComment')
+        .post(function (req, res) {
+
+            var myid = req.body.myid;
+            var targetid = req.body.targetid;
+            var commentid = req.body.commentid;
+            var comment = req.body.comment;
+
+            if (!myid) {
+                return res.json({error: "Missing myid paramter"});
+            }
+
+            if (!targetid) {
+                return res.json({error: "Missing targetid paramter"});
+            }
+
+            if (!commentid) {
+                return res.json({error: "Missing commentid paramter"});
+            }
+
+            if (!comment) {
+                return res.json({error: "Missing comment paramter"});
+            }
+
+
+            Facebook.findOne({
+                uid: myid
+            }, function (err, me) {
+                if (me) {
+                    console.log(chalk.yellow("User found: " + JSON.stringify(me, null, "\t")));
+
+                    Facebook.findOne({
+                        uid: targetid
+                    }, function (err, target) {
+                        if (target) {
+
+                            console.log(chalk.blue("Target found: " + JSON.stringify(target, null, "\t")));
+
+                            User.findOne({
+                                _id: me.user
+                            }, function (err, myUser) {
+                                User.findOne({
+                                    _id: target.user
+                                }, function (err, targetUser) {
+                                    addComment(req, res, me, target, myUser, targetUser);
+                                    setName(me, target);
+                                });
+                            });
+
+                        } else {
+
+                            console.log(chalk.red("Target not found. Creating a new Facebook account."));
+
+                            var facebook = new Facebook();
+                            var newUser = new User();
+
+                            facebook.uid = targetid;
+                            facebook.user = newUser._id;
+
+                            facebook.save(function (err) {
+                                if (err) {
+                                    return res.json({message: "Target with uid=" + targetid + " not found and Facebook cannot be created"});
+                                } else {
+
+                                    newUser.userDetails.facebook = facebook._id;
+
+                                    newUser.save(function (err) {
+                                        if (err) {
+                                            return res.json({message: "Target with uid=" + targetid + " not found and User cannot be created"});
+                                        } else {
+                                            User.findOne({
+                                                _id: me.user
+                                            }, function (err, myUser) {
+                                                User.findOne({
+                                                    _id: facebook.user
+                                                }, function (err, targetUser) {
+                                                    addComment(req, res, me, facebook, myUser, targetUser);
+                                                    setName(me, target);
+                                                });
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    console.log(chalk.red("Me not found"));
+                    return res.json({message: "User with uid=" + myid + " not found"});
+                }
+            });
+        });
+
+	
     /**
      * @api {post} /rate/facebook/getRating Returns the ratings of a claim.
      * @apiName GetRating
@@ -982,6 +1164,77 @@ module.exports = function (app, express) {
             });
         });
 
+		
+		
+		
+	/**
+     * @api {post} /rate/facebook/getComments Returns all the comments of a user.
+     * @apiName GetComments
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
+	 * @apiParam {String} [myid] The Facebook User ID of the logged in user.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "comments": ["this is a comment",...]
+     *    }
+     *
+     */
+    rateRouter.route('/getComments')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+			var viewerid = req.body.myid;
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Comments not found"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "Comments not found"
+                    });
+                }
+            }
+
+            Comment.find({
+				targetsid: targetid
+            }, function (err, comments) {
+                if (err) {
+                    console.log(chalk.red("Error occurred 8975") + " " + commentid + " "+ targetid + " " + viewerid + err);
+                    res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+                    if (comments) {
+						return res.json({
+							success: true,
+							comments: comments
+						});
+					}else{
+						return res.json({
+							success: false,
+							message: "Unexpected error"
+						});
+					}
+                    
+                }
+            });
+        });
+		
+	
     /**
      * @api {post} /rate/facebook/getAllRatingsCount Get sum of Yes, No, NotSure counts of all claims made by the target user.
      * @apiName GetAllRatingsCount
