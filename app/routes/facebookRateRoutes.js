@@ -656,7 +656,6 @@ module.exports = function (app, express) {
 
         //If an enty already exists
         Comment.findOne({
-            commentid: commentid,
             mysid: myid,
             targetsid: targetid
         }, function (err, comment) {
@@ -940,41 +939,48 @@ module.exports = function (app, express) {
             if (!myid) {
                 return res.json({error: "Missing myid paramter"});
             }
-
             if (!targetid) {
                 return res.json({error: "Missing targetid paramter"});
             }
-
             if (!commentid) {
                 return res.json({error: "Missing commentid paramter"});
             }
-
             if (!comment) {
                 return res.json({error: "Missing comment paramter"});
             }
 
-
             Facebook.findOne({
                 uid: myid
             }, function (err, me) {
+				if(err){
+					return res.json({error: "Unexpected error occured when getting target fb object: "+ err});
+				}
                 if (me) {
                     console.log(chalk.yellow("User found: " + JSON.stringify(me, null, "\t")));
 
                     Facebook.findOne({
                         uid: targetid
                     }, function (err, target) {
+						if(err){
+							return res.json({error: "Unexpected error occured when getting my fb object: "+ err});
+						}
                         if (target) {
-
                             console.log(chalk.blue("Target found: " + JSON.stringify(target, null, "\t")));
-
                             User.findOne({
                                 _id: me.user
                             }, function (err, myUser) {
+								if(err){
+									return res.json({error: "Unexpected error occured when getting user object: "+ err});
+								}
                                 User.findOne({
                                     _id: target.user
                                 }, function (err, targetUser) {
+									if(err){
+										return res.json({error: "Unexpected error occured when getting user object: "+ err});
+									}
                                     addComment(req, res, me, target, myUser, targetUser);
-                                    setName(me, target);
+									setName(me, target);
+									
                                 });
                             });
 
@@ -1002,11 +1008,19 @@ module.exports = function (app, express) {
                                             User.findOne({
                                                 _id: me.user
                                             }, function (err, myUser) {
+												if(err){
+													return res.json({error: "Unexpected error occured when getting user object: "+ err});
+												}
                                                 User.findOne({
                                                     _id: facebook.user
                                                 }, function (err, targetUser) {
+													if(err){
+														return res.json({error: "Unexpected error occured when getting user object: "+ err});
+													}
                                                     addComment(req, res, me, facebook, myUser, targetUser);
-                                                    setName(me, target);
+													if(facebook){
+														setName(me, facebook);
+													}
                                                 });
                                             });
                                         }
