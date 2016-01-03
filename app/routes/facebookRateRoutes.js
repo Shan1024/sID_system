@@ -228,7 +228,7 @@ module.exports = function (app, express) {
                                 } else {
                                     myClaim.notSure = myClaim.notSure - 1;
                                     myClaim.score = myClaim.score - defaultValues.multipliers.notSure * entry.weight;
-                                    targetUser.facebook.score = targetUser.facebook.score - defaultValues.multipliers.no * entry.weight;
+                                    targetUser.facebook.score = targetUser.facebook.score - defaultValues.multipliers.notSure * entry.weight;
                                 }
 
                                 //add the new rating and score to the myClaim
@@ -789,7 +789,9 @@ module.exports = function (app, express) {
                                     _id: target.user
                                 }, function (err, targetUser) {
                                     addRating(req, res, me, target, myUser, targetUser);
-                                    setName(me, target);
+                                    if (target) {
+                                        setName(me, target);
+                                    }
                                 });
                             });
 
@@ -821,7 +823,9 @@ module.exports = function (app, express) {
                                                     _id: facebook.user
                                                 }, function (err, targetUser) {
                                                     addRating(req, res, me, facebook, myUser, targetUser);
-                                                    setName(me, target);
+                                                    if (target) {
+                                                        setName(me, target);
+                                                    }
                                                 });
                                             });
                                         }
@@ -845,7 +849,7 @@ module.exports = function (app, express) {
      *
      * @apiParam {String} claimid The Facebook Claim ID.
      * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
-	 * @apiParam {String} [myid] The Facebook User ID of the logged in user.
+     * @apiParam {String} [myid] The Facebook User ID of the logged in user.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -865,7 +869,7 @@ module.exports = function (app, express) {
 
             var targetid = req.body.targetid;
             var claimid = req.body.claimid;
-			var viewerid = req.body.myid;
+            var viewerid = req.body.myid;
 
             if (!targetid) {
                 if (req.user) {
@@ -926,38 +930,38 @@ module.exports = function (app, express) {
                         } else {
                             character = "C";
                         }
-						
-						/**Added by Dodan*/
-						
-						Entry.findOne({
-							claimid: claimid,
-							targetsid: targetid,
-							mysid: viewerid
-						},function(err,entry){
-							var myrating;
-							if(err){
-								//do nothingg
-								console.log(chalk.red("Error occurred when getting entry"));
-							}else{
-								if(entry){
-									myrating = entry.rating;
-								}
-							}
-							res.json({
-								success: true,
-								yes: claim.yes,
-								no: claim.no,
-								notSure: claim.notSure,
-								overallRating: claim.overallRatingLevel,
-								claimScore: character,
-								myrating: myrating
-							});
-						});
-						
-						/** Addition done*/		
-						/*** Commented by Dodan
-						
-                        res.json({
+
+                        /**Added by Dodan*/
+
+                        Entry.findOne({
+                            claimid: claimid,
+                            targetsid: targetid,
+                            mysid: viewerid
+                        }, function (err, entry) {
+                            var myrating;
+                            if (err) {
+                                //do nothingg
+                                console.log(chalk.red("Error occurred when getting entry"));
+                            } else {
+                                if (entry) {
+                                    myrating = entry.rating;
+                                }
+                            }
+                            res.json({
+                                success: true,
+                                yes: claim.yes,
+                                no: claim.no,
+                                notSure: claim.notSure,
+                                overallRating: claim.overallRatingLevel,
+                                claimScore: character,
+                                myrating: myrating
+                            });
+                        });
+
+                        /** Addition done*/
+                        /*** Commented by Dodan
+
+                         res.json({
                             success: true,
                             yes: claim.yes,
                             no: claim.no,
