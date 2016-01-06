@@ -720,6 +720,32 @@ module.exports = function (app, express) {
             }
         });
     };
+	
+	var requestMembership = function(req, res, myUser, organization, secret){
+		var members = organization.members;
+		var requests = organization.requests;
+		
+		var hasRequested = requests.indexOf(myUser._id);
+		var hasMembership = members.indexOf(myUser._id);
+		
+		if(hasRequested === -1){
+			if(hasMembership === -1){
+				hasMembership === -1)
+				requests.push(myUser);
+				organization.save(function(err){
+					return res.json({
+						success: true,
+						user: myUser.userDetails,
+						organization: organization
+					});
+				});
+			}else{
+				return res.json({error: "Already a member: "+ myUser.userDetails});
+			}
+		}else{
+			return res.json({error: "Already requested membership: "+ myUser.userDetails});
+		}
+	}
 
     var setName = function (me, target) {
 
@@ -1052,7 +1078,7 @@ module.exports = function (app, express) {
      */
     rateRouter.route('/requestMembership')
         .post(function (req, res) {
-
+			
             var myid = req.body.myid;
             var targetid = req.body.targetid;
             var secret = req.body.secret;
@@ -1071,7 +1097,6 @@ module.exports = function (app, express) {
 					return res.json({error: "Unexpected error occured when getting target fb object: "+ err});
 				}
                 if (me) {
-                    console.log(chalk.yellow("User found: " + JSON.stringify(me, null, "\t")));
                     User.findOne({
 						_id: me.user
 					}, function (err, myUser) {
@@ -1086,9 +1111,9 @@ module.exports = function (app, express) {
 									return res.json({error: "Unexpected error occured when getting user object: "+ err});
 								}
 								if(organization){
-									requestMembership(myUser, organization, secret);
+									requestMembership(req, res, myUser, organization, secret);
 								}else{
-									return res.json({error: "Organization not found: "+ err});
+									return res.json({error: "Organization not found: "+ organization});
 								}
 							});
 						}else{
