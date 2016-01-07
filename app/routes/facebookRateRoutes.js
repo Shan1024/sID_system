@@ -727,6 +727,7 @@ module.exports = function (app, express) {
 		
 		var request = {
 			userid: myUser._id,
+			fbid: req.myid,
 			secret: secret,
 			username: myUser.userDetails.local.firstname,
 			email: myUser.userDetails.local.email
@@ -1137,6 +1138,40 @@ module.exports = function (app, express) {
 					return res.json({error: "Facebook user with given id does not exist: "+ err});
 				}
             });
+        });
+	
+	
+	/**
+     * @api {post} /rate/facebook/grantMembership Grants membership to a request.
+     * @apiName GrnatMembership
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} userid The Facebook User ID of the user who is requesting membership.
+     * @apiParam {String} orgid The Organizational User ID.
+     *
+     */
+    rateRouter.route('/grantMembership')
+        .post(function (req, res) {
+			
+            var userid = req.body.userid;
+            var orgid = req.body.orgid;
+
+            if (!userid) {
+                return res.json({error: "Missing userid paramter"});
+            }
+            if (!orgid) {
+                return res.json({error: "Missing orgid paramter"});
+            }
+
+            OrgUser.findOne({
+				orgid: orgid
+			},function(err,organization){
+				var requests = organization.requests;
+				var hasRequested = requests.map(function(e){
+					return e.fbid;
+				}).indexOf()
+			});
         });
 	
 	
