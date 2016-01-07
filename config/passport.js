@@ -341,11 +341,6 @@ module.exports = function (passport) {
                             console.log("FB user found");
 
                             newUser.userDetails.facebook = fbUser._id;
-                            newUser.save(function (err) {
-                                if (err) {
-                                    console.log("Error 894541");
-                                }
-                            });
 
                             fbUser.id = profile.id;
                             fbUser.token = token;
@@ -358,6 +353,16 @@ module.exports = function (passport) {
                             fbUser.save(function (err) {
                                 if (err) {
                                     console.log("Error 51586");
+                                    return done(err);
+                                } else {
+                                    newUser.save(function (err) {
+                                        if (err) {
+                                            console.log("Error 894541");
+                                            return done(err);
+                                        } else {
+                                            return done(null, newUser);
+                                        }
+                                    });
                                 }
                             });
                             //if (fbUser.user == newUser._id) {
