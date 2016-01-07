@@ -727,7 +727,7 @@ module.exports = function (app, express) {
 		
 		var request = {
 			userid: myUser._id,
-			fbid: req.myid,
+			fbid: req.body.myid,
 			secret: secret,
 			username: myUser.userDetails.local.firstname,
 			email: myUser.userDetails.local.email
@@ -1167,10 +1167,36 @@ module.exports = function (app, express) {
             OrgUser.findOne({
 				orgid: orgid
 			},function(err,organization){
+				if(err){
+					return res.json({error:"Unexpected error when getting organization",err:err});
+				}
 				var requests = organization.requests;
-				var hasRequested = 	requests.map(function(e){
+				var requestIndex = 	requests.map(function(e){
 										return e.fbid;
 									}).indexOf(userid);
+				var memberIndex = 	requests.map(function(e){
+										return e.fbid;
+									}).indexOf(userid);
+				if(memberIndex!==-1){
+					return res.json({error:"Already a member"});
+				}
+				if(requestIndex!== -1){
+					var request = requests[requestIndex];
+					organization.members.push(request);
+					organization.requests.splice(requestIndex,1);
+					organization.save(function(err){
+						if(err){
+							return res.json({error:"error saving membership",err:err});
+						}else{
+							return res.json({
+								success:true,
+								organization:organization
+							});
+						}
+					})
+				}else{
+					return res.json({error:"No request available from user",user: userid});
+				}
 			});
         });
 	

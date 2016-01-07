@@ -20,7 +20,6 @@ var userSchema = new mongoose.Schema({
 		userid: String,
 		fbid: String,
 		liid: String,
-		secret: String,
 		username: String,
 		email: String
 	}],
