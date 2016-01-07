@@ -10,6 +10,7 @@ var FacebookRatedByMe = require('../models/facebookRatedByMe');
 var Facebook = require("../models/facebook");
 var User = require("../models/user");
 var Comment = require("../models/comment");
+var OrgUser = require("../models/orgUser");
 
 module.exports = function (app, express) {
 
@@ -719,6 +720,45 @@ module.exports = function (app, express) {
             }
         });
     };
+	
+	var requestMembership = function(req, res, myUser, organization, secret){
+		var members = organization.members;
+		var requests = organization.requests;
+		
+		var request = {
+			userid: myUser._id,
+			secret: secret,
+			username: myUser.userDetails.local.firstname,
+			email: myUser.userDetails.local.email
+		}
+		
+		var hasRequested = 	requests.map(function(e){
+								return e.userid;
+							}).indexOf(myUser._id.toString());
+		var hasMembership =	members.map(function(e){
+								return e.userid;
+							}).indexOf(myUser._id.toString());
+		
+		if(hasRequested === -1){
+			if(hasMembership === -1){
+				requests.push(request);
+				organization.save(function(err){
+					if(err){
+						return res.json({error: "unexpected error adding request", err: err});
+					}
+					return res.json({
+						success: true,
+						user: myUser.userDetails,
+						organization: organization
+					});
+				});
+			}else{
+				return res.json({error: "Already a member: ", user: myUser.userDetails, org: organization});
+			}
+		}else{
+			return res.json({error: "Already requested membership: ", user: myUser.userDetails, org: organization});
+		}
+	}
 
     var setName = function (me, target) {
 
@@ -1036,6 +1076,69 @@ module.exports = function (app, express) {
             });
         });
 
+		
+		
+	/**
+     * @api {post} /rate/facebook/requestMembership Requests membership from an organization.
+     * @apiName RequestMembership
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} myid The Facebook User ID of the user who is requesting membership.
+     * @apiParam {String} targetid The Organizational User ID.
+     * @apiParam {String} secret (Optional) secret which may be known by the two parties.
+     *
+     */
+    rateRouter.route('/requestMembership')
+        .post(function (req, res) {
+			
+            var myid = req.body.myid;
+            var targetid = req.body.targetid;
+            var secret = req.body.secret;
+
+            if (!myid) {
+                return res.json({error: "Missing myid paramter"});
+            }
+            if (!targetid) {
+                return res.json({error: "Missing targetid paramter"});
+            }
+
+            Facebook.findOne({
+                uid: myid
+            }, function (err, me) {
+				if(err){
+					return res.json({error: "Unexpected error occured when getting target fb object: "+ err});
+				}
+                if (me) {
+                    User.findOne({
+						_id: me.user
+					}, function (err, myUser) {
+						if(err){
+							return res.json({error: "Unexpected error occured when getting user object: "+ err});
+						}
+						if(myUser){
+							OrgUser.findOne({
+								orgid:targetid
+							},function(err,organization){
+								if(err){
+									return res.json({error: "Unexpected error occured when getting user object: "+ err});
+								}
+								if(organization){
+									requestMembership(req, res, myUser, organization, secret);
+								}else{
+									return res.json({error: "Organization not found: "+ organization});
+								}
+							});
+						}else{
+							return res.json({error: "Unexpected error occured when getting user object: "+ err});
+						}
+					});
+				}else{
+					return res.json({error: "Facebook user with given id does not exist: "+ err});
+				}
+            });
+        });
+	
 	
     /**
      * @api {post} /rate/facebook/getRating Returns the ratings of a claim.
