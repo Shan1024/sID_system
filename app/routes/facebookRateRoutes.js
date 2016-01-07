@@ -725,14 +725,27 @@ module.exports = function (app, express) {
 		var members = organization.members;
 		var requests = organization.requests;
 		
-		var hasRequested = requests.indexOf(myUser._id);
-		var hasMembership = members.indexOf(myUser._id);
+		var request = {
+			userid: myUser._id,
+			secret: secret,
+			username: myUser.userDetails.local.firstname,
+			email: myUser.userDetails.local.email
+		}
+		
+		var hasRequested = 	requests.map(function(e){
+								return e.userid;
+							}).indexOf(myUser._id.toString());
+		var hasMembership =	members.map(function(e){
+								return e.userid;
+							}).indexOf(myUser._id.toString());
 		
 		if(hasRequested === -1){
 			if(hasMembership === -1){
-				hasMembership === -1)
-				requests.push(myUser);
+				requests.push(request);
 				organization.save(function(err){
+					if(err){
+						return res.json({error: "unexpected error adding request", err: err});
+					}
 					return res.json({
 						success: true,
 						user: myUser.userDetails,
@@ -740,10 +753,10 @@ module.exports = function (app, express) {
 					});
 				});
 			}else{
-				return res.json({error: "Already a member: "+ myUser.userDetails});
+				return res.json({error: "Already a member: ", user: myUser.userDetails, org: organization});
 			}
 		}else{
-			return res.json({error: "Already requested membership: "+ myUser.userDetails});
+			return res.json({error: "Already requested membership: ", user: myUser.userDetails, org: organization});
 		}
 	}
 

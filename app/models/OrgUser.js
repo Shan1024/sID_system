@@ -4,9 +4,7 @@ var bcrypt = require('bcrypt-nodejs');
 var chalk = require('chalk');
 var defaultValues = require("../../config/defaultValues");
 
-var User = require('./user');
-
-var userSchema = mongoose.Schema({
+var userSchema = new mongoose.Schema({
 	orgid: String,
     userDetails: {
 		organization: String,
@@ -19,12 +17,16 @@ var userSchema = mongoose.Schema({
         }
     },
 	members:[{
-		type: mongoose.Schema.Types.ObjectId,
-		ref:'User'
+		userid: String,
+		secret: String,
+		username: String,
+		email: String
 	}],
 	requests:[{
-		type: mongoose.Schema.Types.ObjectId,
-		ref:'User'
+		userid: String,
+		secret: String,
+		username: String,
+		email: String
 	}]
 });
 
