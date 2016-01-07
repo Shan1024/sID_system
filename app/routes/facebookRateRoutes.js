@@ -1168,9 +1168,9 @@ module.exports = function (app, express) {
 				orgid: orgid
 			},function(err,organization){
 				var requests = organization.requests;
-				var hasRequested = requests.map(function(e){
-					return e.fbid;
-				}).indexOf()
+				var hasRequested = 	requests.map(function(e){
+										return e.fbid;
+									}).indexOf(userid);
 			});
         });
 	
