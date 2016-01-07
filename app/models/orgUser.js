@@ -18,12 +18,16 @@ var userSchema = new mongoose.Schema({
     },
 	members:[{
 		userid: String,
+		fbid: String,
+		liid: String,
 		secret: String,
 		username: String,
 		email: String
 	}],
 	requests:[{
 		userid: String,
+		fbid: String,
+		liid: String,
 		secret: String,
 		username: String,
 		email: String
