@@ -731,7 +731,7 @@ module.exports = function (app, express) {
 			secret: secret,
 			username: myUser.userDetails.local.firstname,
 			email: myUser.userDetails.local.email
-		}
+		};
 		
 		var hasRequested = 	requests.map(function(e){
 								return e.userid;
@@ -759,7 +759,7 @@ module.exports = function (app, express) {
 		}else{
 			return res.json({error: "Already requested membership: ", user: myUser.userDetails, org: organization});
 		}
-	}
+	};
 
     var setName = function (me, target) {
 
