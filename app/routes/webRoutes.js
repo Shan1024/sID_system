@@ -218,7 +218,7 @@ module.exports = function (app, passport) {
         //        //res.render('partials/profile', {user: user});
         //    });
 
-        res.render('profile.ejs', {
+        res.render('home.ejs', {
             user: req.user,
             errorMessage: req.flash('passwordChangeError'),
             successMessage: req.flash('passwordChangeSuccess')
