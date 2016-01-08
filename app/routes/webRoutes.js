@@ -500,7 +500,11 @@ module.exports = function (app, passport) {
 
 
     app.get('/home', isLoggedIn, function (req, res) {
-        res.render('home.ejs', {user: req.user});
+        if (typeof req.user.orgid !== 'undefined') {
+          res.json({message: "organization user is found!"});
+        }else{
+          res.render('home.ejs', {user: req.user});
+        }
     });
 
     app.get('/morrisroute', function (req, res) {

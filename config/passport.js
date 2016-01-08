@@ -17,6 +17,8 @@ var LinkedIn = require("../app/models/linkedin");
 
 var controller = require('../app/controllers/controllers');
 
+var OrgUser = require("../app/models/orgUser");
+
 module.exports = function (passport) {
 
     // =========================================================================
@@ -50,7 +52,24 @@ module.exports = function (passport) {
                 if (user) {
                     done(error, user);
                 } else {
-                    done(error);
+                    // done(error);
+                    OrgUser.findOne({
+                            _id: id
+                        })
+                        // .populate('userDetails.facebook')
+                        // .populate('userDetails.linkedin')
+                        //.populate('facebook.ratedByMe')
+                        .exec(function (error, user) {
+                            console.log(JSON.stringify(user, null, "\t"));
+                            if (user) {
+                                done(error, user);
+                            } else {
+                                done(error);
+                            }
+
+
+                            //res.render('partials/profile', {user: user});
+                        });
                 }
 
 
@@ -68,26 +87,44 @@ module.exports = function (passport) {
             passReqToCallback: true // allows us to pass in the req from our route (lets us check if a user is logged in or not)
         },
         function (req, email, password, done) {
+            var tempUser;
             if (email) {
                 email = email.toLowerCase(); // Use lower-case e-mails to avoid case-sensitive e-mail matching
             }
             // asynchronous
             process.nextTick(function () {
-                User.findOne({'userDetails.local.email': email}, function (err, user) {
+                OrgUser.findOne({'userDetails.email': email}, function (err, user) {
                     // if there are any errors, return the error
                     if (err) {
                         return done(err);
                     }
                     // if no user is found, return the message
-                    if (!user) {
-                        return done(null, false, req.flash('loginMessage', 'No user found.'));
+                    if (user) {
+                        if (!user.validPassword(password)) {
+                            return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
+                        }// all is well, return user
+                        else {
+                            return done(null, user);
+                        }
                     }
-                    if (!user.validPassword(password)) {
-                        return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
-                    }
-                    // all is well, return user
                     else {
-                        return done(null, user);
+                      User.findOne({'userDetails.local.email': email}, function (err, user) {
+                          // if there are any errors, return the error
+                          if (err) {
+                              return done(err);
+                          }
+                          // if no user is found, return the message
+                          if (!user) {
+                              return done(null, false, req.flash('loginMessage', 'No user found.'));
+                          }
+                          if (!user.validPassword(password)) {
+                              return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
+                          }
+                          // all is well, return user
+                          else {
+                              return done(null, user);
+                          }
+                      });
                     }
                 });
             });
