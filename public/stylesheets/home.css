@@ -1,0 +1,44 @@
+body {
+  padding: 70px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  word-wrap: break-word;
+}
+
+.input-group span.twitter-typeahead .tt-hint {
+    height: 34px;
+}
+
+.panel.panel-header{
+  margin: 0px;
+}
+.panel-body {
+    padding-bottom: 0px;
+}
+
+.btn-group-justified {
+  padding: 5px;
+}
+
+.navbar-inverse {
+    background-color: #17232F;
+}
+
+#facebook_leftblank{
+  width: 100%;
+  height: 65px;
+}
+
+#homepage_fb_pic{
+  position: absolute;
+  height: 60px;
+  top: 7px;
+  left: 8px;
+}
+
+
+#homepage_linkedin_pic{
+  position: absolute;
+  height: 60px;
+  top: 200px;
+  left: 8px;
+}
