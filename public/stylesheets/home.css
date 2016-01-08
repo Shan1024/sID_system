@@ -6,6 +6,7 @@ body {
 
 .input-group span.twitter-typeahead .tt-hint {
     height: 34px;
+    border-radius: 4px;
 }
 
 .panel.panel-header{
