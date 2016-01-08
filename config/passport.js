@@ -155,7 +155,7 @@ module.exports = function (passport) {
                                 if (err) {
                                     return done(err);
                                 } else {
-                                    return done(null);
+                                    return done(null, newUser);
                                 }
                             });
                         }
@@ -258,7 +258,7 @@ module.exports = function (passport) {
                                 });
                             }
                         } else {
-                            return done(null);
+                            return done(null, false, req.flash('error', 'Facebook account is not linked to a Local account.'));
                         }
                     }
                 });
@@ -327,87 +327,184 @@ module.exports = function (passport) {
                 // user already exists and is logged in, we have to link accounts
                 var newUser = req.user; // pull the user out of the session
 
+                console.log("Looking for FB user");
+
                 Facebook.findOne({
                     id: profile.id
                 }, function (err, fbUser) {
-
-                    if (fbUser) {
-
-                        fbUser.token = token;
-
-                        fbUser.user = newUser._id;
-
-                        fbUser.save(function (err) {
-                            if (err) {
-                                return done(err);
-                            } else {
-                                newUser.userDetails.facebook = fbUser._id;
-
-                                newUser.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    } else {
-                                        //Content merging
-
-                                        //User.findOne({
-                                        //    _id: oldUserId
-                                        //}, function (err, oldUser) {
-                                        //    User.update(
-                                        //        {_id: newUser._id},
-                                        //        {$addToSet: {'facebook.ratedByMe': {$each: oldUserId.facebook.ratedByMe}}}
-                                        //    )
-                                        //    User.update(
-                                        //        {_id: newUser._id},
-                                        //        {$addToSet: {'facebook.ratedByOthers': {$each: oldUserId.facebook.ratedByOthers}}}
-                                        //    )
-                                        //});
-
-
-                                        return done(null, newUser);
-                                    }
-                                });
-                            }
-                        });
-
+                    if (err) {
+                        console.log("Error 152131");
+                        return done(err);
                     } else {
+                        if (fbUser) {
 
-                        var facebook = new Facebook();
+                            console.log("FB user found");
 
-                        facebook.id = profile.id;
-                        facebook.token = token;
-                        facebook.name = profile.displayName;
-                        if (profile.emails) {
-                            facebook.email = (profile.emails[0].value || '').toLowerCase();
-                        }
-                        facebook.user = newUser._id;
+                            newUser.userDetails.facebook = fbUser._id;
 
-                        console.log("++++++++++++++++++++++++++++++++++++++");
-                        console.log('getting user ID');
-
-                        //controller.getID(profile.id, function (error, uid) {
-                        //
-                        //    if (!error) {
-                        //        facebook.uid = uid;
-                        //        console.log("UID: " + uid);
-                        //    } else {
-                        //        console.log(error)
-                        //    }
-
-                        facebook.save(function (err) {
-                            if (err) {
-                                return done(err);
-                            } else {
-                                newUser.userDetails.facebook = facebook._id;
-
-                                newUser.save(function (err) {
-                                    if (err) {
-                                        return done(err);
-                                    }
-                                    return done(null, newUser);
-                                });
+                            fbUser.id = profile.id;
+                            fbUser.token = token;
+                            fbUser.name = profile.displayName;
+                            if (profile.emails) {
+                                fbUser.email = (profile.emails[0].value || '').toLowerCase();
                             }
-                        });
-                        //});
+                            fbUser.user = newUser._id;
+
+                            fbUser.save(function (err) {
+                                if (err) {
+                                    console.log("Error 51586");
+                                    return done(err);
+                                } else {
+                                    newUser.save(function (err) {
+                                        if (err) {
+                                            console.log("Error 894541");
+                                            return done(err);
+                                        } else {
+                                            return done(null, newUser);
+                                        }
+                                    });
+                                }
+                            });
+                            //if (fbUser.user == newUser._id) {
+                            //
+                            //    console.log("fbUser.user == newUser._id");
+                            //
+                            //    fbUser.token = token;
+                            //
+                            //    //fbUser.user = newUser._id;
+                            //
+                            //    fbUser.save(function (err) {
+                            //        if (err) {
+                            //            console.log("Error 64512");
+                            //            return done(err);
+                            //        } else {
+                            //            //newUser.userDetails.facebook = fbUser._id;
+                            //            //
+                            //            //newUser.save(function (err) {
+                            //            //    if (err) {
+                            //            //        return done(err);
+                            //            //    } else {
+                            //            //
+                            //            //        //Content merging
+                            //            //
+                            //            //        //User.findOne({
+                            //            //        //    _id: oldUserId
+                            //            //        //}, function (err, oldUser) {
+                            //            //        //    User.update(
+                            //            //        //        {_id: newUser._id},
+                            //            //        //        {$addToSet: {'facebook.ratedByMe': {$each: oldUserId.facebook.ratedByMe}}}
+                            //            //        //    )
+                            //            //        //    User.update(
+                            //            //        //        {_id: newUser._id},
+                            //            //        //        {$addToSet: {'facebook.ratedByOthers': {$each: oldUserId.facebook.ratedByOthers}}}
+                            //            //        //    )
+                            //            //        //});
+                            //            //
+                            //            return done(null, newUser);
+                            //            //    }
+                            //            //});
+                            //        }
+                            //    });
+                            //} else {
+                            //
+                            //    console.log("fbUser.user != newUser._id");
+                            //
+                            //    User.findOne({
+                            //        _id: fbUser.user
+                            //    }, function (err, user) {
+                            //        if (err) {
+                            //            console.log("Error 464561");
+                            //            return done(err);
+                            //        } else {
+                            //            if (user) {
+                            //
+                            //                console.log("OldUser found");
+                            //
+                            //                console.log(chalk.yellow("Old User: " + JSON.stringify(user, null, "\t")));
+                            //                console.log(chalk.yellow("New User: " + JSON.stringify(newUser, null, "\t")));
+                            //
+                            //                console.log("Adding data: old -> new");
+                            //
+                            //                newUser.facebook = user.facebook;
+                            //                newUser.linkedin = user.linkedin;
+                            //                newUser.userDetails.facebook = fbUser._id;
+                            //
+                            //                console.log(chalk.green("New User: " + JSON.stringify(newUser, null, "\t")));
+                            //
+                            //                newUser.save(function (err) {
+                            //                    if (err) {
+                            //                        console.log("Error 8451456");
+                            //                    } else {
+                            //                        User.findOneAndRemove({
+                            //                            _id: user._id
+                            //                        }, function (err) {
+                            //                            if (err) {
+                            //                                console.log("Error occurred: " + err);
+                            //                            } else {
+                            //                                console.log("No error")
+                            //                            }
+                            //                        });
+                            //                    }
+                            //                });
+                            //
+                            //                fbUser.user = newUser._id;
+                            //                fbUser.save(function (err) {
+                            //                    if (err) {
+                            //                        console.log("Error 8451456");
+                            //                    }
+                            //                });
+                            //
+                            //
+                            //                return done(null, newUser);
+                            //            } else {
+                            //                console.log(chalk.red("NO USER FOUND 984515"));
+                            //                return done(null, newUser);
+                            //            }
+                            //        }
+                            //    });
+                            //
+                            //}
+
+                        } else {
+
+                            var facebook = new Facebook();
+
+                            facebook.id = profile.id;
+                            facebook.token = token;
+                            facebook.name = profile.displayName;
+                            if (profile.emails) {
+                                facebook.email = (profile.emails[0].value || '').toLowerCase();
+                            }
+                            facebook.user = newUser._id;
+
+                            console.log("++++++++++++++++++++++++++++++++++++++");
+                            console.log('getting user ID');
+
+                            //controller.getID(profile.id, function (error, uid) {
+                            //
+                            //    if (!error) {
+                            //        facebook.uid = uid;
+                            //        console.log("UID: " + uid);
+                            //    } else {
+                            //        console.log(error)
+                            //    }
+
+                            facebook.save(function (err) {
+                                if (err) {
+                                    return done(err);
+                                } else {
+                                    newUser.userDetails.facebook = facebook._id;
+
+                                    newUser.save(function (err) {
+                                        if (err) {
+                                            return done(err);
+                                        }
+                                        return done(null, newUser);
+                                    });
+                                }
+                            });
+                            //});
+                        }
                     }
                 });
             }
@@ -515,7 +612,7 @@ module.exports = function (passport) {
                             });
                         } else {
                             console.log("No linkedin connected");
-                            return done(null);
+                            return done(null, false, req.flash('error', 'LinkedIn account is not linked to a Local account.'));
                         }
                     }
                 });
