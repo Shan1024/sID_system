@@ -35,10 +35,10 @@ module.exports = function (app, passport) {
         } else {
             res.render('index.ejs', {
                 user: req.user,
-                signUpVisible: true,
+                signUpVisible: false,
                 failureFlash: req.flash('error'),
                 successFlash: req.flash('success'),
-                message: req.flash('signupMessage')
+                message: req.flash('loginMessage')
             });
         }
 
@@ -261,7 +261,8 @@ module.exports = function (app, passport) {
         res.render('index.ejs', {
             signUpVisible: true,
             message: req.flash('signupMessage'),
-            failureFlash: req.flash('error')
+            failureFlash: req.flash('error'),
+            successFlash: req.flash('success')
         });
     });
 

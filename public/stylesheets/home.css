@@ -23,6 +23,18 @@ body {
     background-color: #17232F;
 }
 
+.navbar-inverse .navbar-brand {
+    color: #fff;
+}
+
+.navbar>.container-fluid .navbar-brand:hover {
+    color: #fff;
+}
+
+.navbar-inverse .navbar-nav>li>a {
+    color: #fff;
+}
+
 #facebook_leftblank{
   width: 100%;
   height: 65px;
