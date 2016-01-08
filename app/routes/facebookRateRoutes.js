@@ -1225,7 +1225,63 @@ module.exports = function (app, express) {
 				}
 			});
         });
-	
+		
+		
+	/**
+     * @api {post} /rate/facebook/getMyOrganizations Returns the array of organizations the user is a member of.
+     * @apiName getMyOrganizations
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} myid The Facebook ID of user.
+	 
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "organizations": ["org1","org2","org3"]
+     *    }
+     *
+     */	
+	rateRouter.route('/getMyOrganizations')
+		.post(function(req,res){
+			var myid = req.body.myid;
+			if(!myid){
+				return res.json({error: "missing myid parameter"});
+			}
+			
+			Facebook.findOne({
+				uid: myid
+			},function(err,fb){
+				if(err){
+					return res.json({error: "Unexpected error occurred",err: err});
+				}
+				if(fb){
+					User.findOne({
+						_id: fb.user
+					},function(err, user){
+						if(err){
+							return res.json({error:"Unexpected error getting user from fb id",err:err});
+						}
+						if(user){
+							var organizations = user.organizations;
+							if(organizations){
+								return res.json({
+									success: true,
+									organizations: organizations
+								});
+							}else{
+								return res.json({error:"No organizations found for user",user: user});
+							}
+						}else{
+							return res.json({error:"no user found associated with fb user",fb:fb});
+						}
+					});
+				}else{
+					return res.json({error:"no fb user found with given id",id:myid});
+				}
+			});
+		});
 	
     /**
      * @api {post} /rate/facebook/getRating Returns the ratings of a claim.
