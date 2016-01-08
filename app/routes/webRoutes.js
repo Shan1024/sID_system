@@ -501,7 +501,7 @@ module.exports = function (app, passport) {
 
     app.get('/home', isLoggedIn, function (req, res) {
         if (typeof req.user.orgid !== 'undefined') {
-          res.json({message: "organization user is found!"});
+          res.json({message: "organization user is found!", user: req.user});
         }else{
           res.render('home.ejs', {user: req.user});
         }
