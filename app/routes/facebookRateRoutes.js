@@ -1171,35 +1171,117 @@ module.exports = function (app, express) {
 					return res.json({error:"Unexpected error when getting organization",err:err});
 				}
 				var requests = organization.requests;
+				var members = organization.members;
+				
 				var requestIndex = 	requests.map(function(e){
 										return e.fbid;
 									}).indexOf(userid);
-				var memberIndex = 	requests.map(function(e){
+				var memberIndex = 	members.map(function(e){
 										return e.fbid;
 									}).indexOf(userid);
 				if(memberIndex!==-1){
-					return res.json({error:"Already a member"});
+					return res.json({error:"Already a member",index:memberIndex});
 				}
 				if(requestIndex!== -1){
 					var request = requests[requestIndex];
 					organization.members.push(request);
 					organization.requests.splice(requestIndex,1);
-					organization.save(function(err){
+					
+					Facebook.findOne({
+						uid:userid
+					},function(err,fb){
 						if(err){
-							return res.json({error:"error saving membership",err:err});
-						}else{
-							return res.json({
-								success:true,
-								organization:organization
-							});
+							return res.json({error:"error getting fb user",err:err});
 						}
-					})
+						User.findOne({
+							_id:fb.user
+						},function(err,user){
+							if(err){
+								return res.json({error:"error getting user from given fb user",err:err});
+							}
+							if(user.organizations.indexOf(orgid) === -1){
+								user.organizations.push(orgid);
+								user.save(function(err){
+									if(err){
+										return res.json({error:"error saving membership to user",err:err});
+									}
+									organization.save(function(err){
+										if(err){
+											return res.json({error:"error saving membership in organization",err:err});
+										}
+										return res.json({
+											success:true,
+											organization:organization
+										});
+									});
+								});
+							}else{
+								return res.json({error:"organization already in user list",user:user});
+							}
+						});
+					});	
 				}else{
 					return res.json({error:"No request available from user",user: userid});
 				}
 			});
         });
-	
+		
+		
+	/**
+     * @api {post} /rate/facebook/getMyOrganizations Returns the array of organizations the user is a member of.
+     * @apiName getMyOrganizations
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} myid The Facebook ID of user.
+	 
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "organizations": ["org1","org2","org3"]
+     *    }
+     *
+     */	
+	rateRouter.route('/getMyOrganizations')
+		.post(function(req,res){
+			var myid = req.body.myid;
+			if(!myid){
+				return res.json({error: "missing myid parameter"});
+			}
+			
+			Facebook.findOne({
+				uid: myid
+			},function(err,fb){
+				if(err){
+					return res.json({error: "Unexpected error occurred",err: err});
+				}
+				if(fb){
+					User.findOne({
+						_id: fb.user
+					},function(err, user){
+						if(err){
+							return res.json({error:"Unexpected error getting user from fb id",err:err});
+						}
+						if(user){
+							var organizations = user.organizations;
+							if(organizations){
+								return res.json({
+									success: true,
+									organizations: organizations
+								});
+							}else{
+								return res.json({error:"No organizations found for user",user: user});
+							}
+						}else{
+							return res.json({error:"no user found associated with fb user",fb:fb});
+						}
+					});
+				}else{
+					return res.json({error:"no fb user found with given id",id:myid});
+				}
+			});
+		});
 	
     /**
      * @api {post} /rate/facebook/getRating Returns the ratings of a claim.

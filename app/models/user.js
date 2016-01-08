@@ -78,7 +78,8 @@ var userSchema = mongoose.Schema({
             default: 0
         },
         overallRatingLevel: Number
-    }
+    },
+	organizations:[]
 });
 
 userSchema.methods.setOverallFacebookRating = function () {
