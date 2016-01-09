@@ -2221,9 +2221,9 @@ module.exports = function (app, express) {
                             })
                             .populate({
                                 path: 'targetid',
-                                select: 'name uid'
+                                select: 'name uid -_id'
                             })
-                            .select('targetid')
+                            .select('targetid -_id')
                             .exec(function (err, facebookRatedByMes) {
                                 console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
                                 return res.json({
@@ -2243,6 +2243,98 @@ module.exports = function (app, express) {
             });
 
         });
+
+
+    /**
+     * @api {post} /rate/facebook/getAllClaimsRatedByMeCount Returns the number of claims that the target user has rated.
+     * @apiName getAllClaimsRatedByMeCount
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *          "success": true,
+     *          "count": 6
+     *     }
+     *
+     */
+    rateRouter.route('/getAllClaimsRatedByMeCount')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: true,
+                            message: "No facebook account is linked"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "No user found in the session"
+                    });
+                }
+            }
+
+            Facebook.findOne({
+                uid: targetid
+            }, function (err, facebook) {
+
+                if (err) {
+                    return res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+
+                    if (facebook) {
+
+                        FacebookRatedByMe
+                            .find({
+                                myid: facebook._id
+                            })
+                            //.populate({
+                            //    path: 'targetid',
+                            //    select:'name uid'
+                            //})
+                            //.select('entries')
+                            .exec(function (err, facebookRatedByMes) {
+                                //console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
+                                var count = 0;
+
+                                for (var i = 0; i < facebookRatedByMes.length; i++) {
+                                    if (facebookRatedByMes[i].entries) {
+                                        count += facebookRatedByMes[i].entries.length;
+                                    }
+                                }
+                                return res.json({
+                                    success: true,
+                                    count: count
+                                });
+
+                            });
+
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No facebook account for the given id found"
+                        });
+                    }
+                }
+
+            });
+
+        });
+
+
 
     app.use('/rate/facebook', rateRouter);
 
