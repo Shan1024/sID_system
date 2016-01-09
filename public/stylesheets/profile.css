@@ -81,7 +81,6 @@ div.section-header{
 	background-color: #f8f8f8;
     height: 30px;
     border-radius: 3px;
-	width:inherit-36px;
 }
 
 
@@ -93,10 +92,29 @@ img.section-icon{
 }
 
 li.about-item{
+	display:block;
 	left:10px;
+	list-style-type: none;
+    padding-left: 40px;
+    padding-top: 12px;
+	border-radius: 3px;
+    padding-right: 16px;
+	padding-bottom: 12px;
+	border: 1px solid #fafafa;
 }
 
 div.section-body{
 	overflow: auto;
     height: 270px;
+}
+
+img.about-item{
+	position: absolute;
+    left: 10px;
+    height: 16px;
+}
+
+div.item-content{
+	position: relative;
+	top:0px;
 }
