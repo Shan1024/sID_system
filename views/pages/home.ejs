@@ -262,6 +262,7 @@
                   </div>
                   <div class="panel-body">
                      <div id="donut-facebook" style="height: 250px;"></div>
+                     <div id="facebook-ratedbyme"></div>
                   </div>
                </div>
             </div>
@@ -414,6 +415,14 @@
              ();
 
 
+      </script>
+      <script type="text/javascript">
+          $.post("/rate/facebook/getAllUsersRatedByMeCount",
+          function(data,status){
+            var $content = $('#facebook-ratedbyme');
+            $content.append("<div class='text-center'>" + data.count + " Facebook profiles are rated by me.</div>");
+            $content.append("<div class='text-center'><a href='/allFacebookUsersRatedByMe' class='btn btn-primary' role='button'>View All</a></div>");
+          });
       </script>
       <script type="text/javascript" src="scripts/typeahead.bundle.js"></script>
       <script type="text/javascript" src="scripts/bloodhound.js"></script>
