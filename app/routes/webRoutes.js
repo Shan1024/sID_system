@@ -558,7 +558,7 @@ module.exports = function (app, passport) {
 			}
 		});
     });
-	
+
     app.get('/rateafriend', isLoggedIn, function (req, res) {
 
         if (req.user.userDetails.facebook) {
@@ -585,6 +585,10 @@ module.exports = function (app, passport) {
                 user: req.user
             });
         }
+    });
+
+    app.get('/allFacebookUsersRatedByMe', isLoggedIn, function (req, res) {
+        res.render('allFacebookUsersRatedByMe.ejs', {user: req.user});
     });
 
     app.get('/usersummary', function (req, res) {
