@@ -836,6 +836,15 @@ module.exports = function (app, passport) {
                                                                 }
                                                             }
                                                         });
+                                                    }else{
+                                                        console.log("No linkedin account linked");
+
+                                                        res.render('usersummaryoverall.ejs', {
+                                                            user: req.user,
+                                                            name: name,
+                                                            facebook: facebookData,
+                                                            linkedin: linkedinData
+                                                        });
                                                     }
 
                                                 } else {
