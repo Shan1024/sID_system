@@ -14,7 +14,8 @@ var facebookSuggestions = new Bloodhound({
         url: "/other/getSuggestionsFacebook?text=%QUERY",
         filter: function (x) {
             return $.map(x.values, function (item) {
-                return {value: item.name, id: item.user, fbid: item.id};
+                console.log(item);
+                return {value: item.name, id: item.user, fbid: item.uid};
             });
         },
         wildcard: "%QUERY"
