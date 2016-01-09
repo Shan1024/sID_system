@@ -72,6 +72,31 @@ div.members-container{
     top: 280px;
 }
 
-div.about-header{
-	
+div.section-header{
+	font-family: elegence;
+    font-size: 17px;
+    padding-left: 36px;
+    padding-top: 6px;
+    color: #555;
+	background-color: #f8f8f8;
+    height: 30px;
+    border-radius: 3px;
+	width:inherit-36px;
+}
+
+
+img.section-icon{
+	height: 23px;
+    position: absolute;
+    left: 6px;
+    top: 6px;
+}
+
+li.about-item{
+	left:10px;
+}
+
+div.section-body{
+	overflow: auto;
+    height: 270px;
 }
