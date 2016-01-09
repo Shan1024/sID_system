@@ -1,5 +1,5 @@
 div.profile-container{
-	background-color:#999999;
+	background-color:#aaaaaa;
 	width: 60vw;
     height: 100vh;
     position: absolute;
@@ -34,4 +34,44 @@ img.sid-banner{
 	position: absolute;
     top: 0px;
     opacity: 0.6;
+}
+
+div.tag-container{
+	width: inherit;
+    height: 30px;
+    position: absolute;
+    top: 240px;
+    background-color: black;
+}
+
+span.tag-line{
+	color: white;
+    padding-top: 6px;
+    position: absolute;
+    padding-left: 163px;
+    font-family: georgia;
+}
+
+div.about-container{
+	width: 250px;
+    height: 310px;
+    background-color: #fefefe;
+    border-radius: 3px;
+    position: absolute;
+    left: 10px;
+    top: 280px;
+}
+
+div.members-container{
+	width: 540px;
+    height: 310px;
+    background-color: #fefefe;
+    border-radius: 3px;
+    position: absolute;
+    left: 270px;
+    top: 280px;
+}
+
+div.about-header{
+	
 }
