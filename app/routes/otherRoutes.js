@@ -137,7 +137,7 @@ module.exports = function (app, express) {
             Facebook.find({
                 name: new RegExp(text, "i")
             }).limit(defaultValues.suggestionsLimit)
-                .select("name user id")
+                .select("name user uid")
                 .exec(function (err, facebook) {
                     if (err) {
                         console.log("Error occurred 441512");
@@ -175,7 +175,7 @@ module.exports = function (app, express) {
             Facebook.find({
                 name: new RegExp(text, "i")
             }).limit(defaultValues.suggestionsLimit)
-                .select("name")
+                .select("name uid")
                 .exec(function (err, facebook) {
                     if (err) {
                         console.log("Error occurred 441512");
