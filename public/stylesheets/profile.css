@@ -4,7 +4,8 @@ div.profile-container{
     height: 100vh;
     position: absolute;
     margin-left: 20vw;
-    top: 0px;
+    top: -3px;
+	border: 3px solid #111;
 }
 
 img.logo{
@@ -13,6 +14,7 @@ img.logo{
     left: 20px;
     top: 140px;
     border: 5px solid #ffffff;
+	border-radius:3px;
 }
 
 span.profile-title{
@@ -54,7 +56,7 @@ span.tag-line{
 
 div.about-container{
 	width: 250px;
-    height: 310px;
+    height: 350px;
     background-color: #fefefe;
     border-radius: 3px;
     position: absolute;
@@ -64,7 +66,7 @@ div.about-container{
 
 div.members-container{
 	width: 540px;
-    height: 310px;
+    height: 350px;
     background-color: #fefefe;
     border-radius: 3px;
     position: absolute;
@@ -92,8 +94,7 @@ img.section-icon{
 }
 
 li.about-item{
-	display:block;
-	left:10px;
+	position: relative;
 	list-style-type: none;
     padding-left: 40px;
     padding-top: 12px;
@@ -105,7 +106,7 @@ li.about-item{
 
 div.section-body{
 	overflow: auto;
-    height: 270px;
+    height: 310px;
 }
 
 img.about-item{
@@ -117,4 +118,26 @@ img.about-item{
 div.item-content{
 	position: relative;
 	top:0px;
+	font-family: sans-serif;
+    font-size: 15px;
+}
+
+div.fb-profile{
+	height:40px;
+}
+
+img.fb-photo{
+	height: 43px;
+    left: 11px;
+    position: absolute;
+    border-radius: 12px;
+}
+
+span.fb-name{
+	left: 69px;
+    position: absolute;
+    font-size: 20px;
+    font-family: sans-serif;
+    padding-top: 8px;
+    color: #555;
 }
