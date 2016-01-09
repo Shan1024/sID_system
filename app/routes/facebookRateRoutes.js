@@ -2042,9 +2042,11 @@ module.exports = function (app, express) {
                     res.json({success: false, message: "Error occurred"});
                 } else {
                     if (facebook) {
-                        FacebookRatedByMe.find({
-                            myid: facebook._id
-                        }).populate({
+                        FacebookRatedByMe
+                            .find({
+                                myid: facebook._id
+                            })
+                            .populate({
                                 path: 'entries',
                                 populate: {path: 'targetid', model: "Facebook", select: 'uid name'}
                             })
@@ -2070,6 +2072,176 @@ module.exports = function (app, express) {
                     }
                 }
             });
+        });
+
+
+    /**
+     * @api {post} /rate/facebook/getAllUsersRatedByMeCount Returns the number of users rated by the given user.
+     * @apiName getAllUsersRatedByMeCount
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *          "success": true,
+     *          "count": 6
+     *     }
+     *
+     */
+    rateRouter.route('/getAllUsersRatedByMeCount')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: true,
+                            message: "No facebook account is linked"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "No user found in the session"
+                    });
+                }
+            }
+
+            Facebook.findOne({
+                uid: targetid
+            }, function (err, facebook) {
+
+                if (err) {
+                    return res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+
+                    if (facebook) {
+                        FacebookRatedByMe
+                            .find({
+                                myid: facebook._id
+                            })
+                            //.populate({
+                            //    path: 'targetid',
+                            //    select:'name uid'
+                            //})
+                            //.select('targetid')
+                            .exec(function (err, facebookRatedByMes) {
+                                console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
+                                return res.json({
+                                    success: true,
+                                    count: facebookRatedByMes.length
+                                });
+
+                            });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No facebook account for the given id found"
+                        });
+                    }
+                }
+
+            });
+
+        });
+
+    /**
+     * @api {post} /rate/facebook/getAllUsersRatedByMe Returns the users who are rated by the given user.
+     * @apiName getAllUsersRatedByMe
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *          "success": true,
+     *          "data": [
+     *              {
+     *                  "_id": "56893cf746360ad81347544a",
+     *                  "targetid": {
+     *                      "_id": "56893cf746360ad813475447",
+     *                      "uid": "100000211592969",
+     *                      "name": "Malith Shan Mahanama"
+     *                  }
+     *              },
+     *          ]
+     *     }
+     *
+     */
+    rateRouter.route('/getAllUsersRatedByMe')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: true,
+                            message: "No facebook account is linked"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "No user found in the session"
+                    });
+                }
+            }
+
+            Facebook.findOne({
+                uid: targetid
+            }, function (err, facebook) {
+
+                if (err) {
+                    return res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+
+                    if (facebook) {
+                        FacebookRatedByMe
+                            .find({
+                                myid: facebook._id
+                            })
+                            .populate({
+                                path: 'targetid',
+                                select: 'name uid'
+                            })
+                            .select('targetid')
+                            .exec(function (err, facebookRatedByMes) {
+                                console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
+                                return res.json({
+                                    success: true,
+                                    data: facebookRatedByMes
+                                });
+
+                            });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No facebook account for the given id found"
+                        });
+                    }
+                }
+
+            });
+
         });
 
     app.use('/rate/facebook', rateRouter);
