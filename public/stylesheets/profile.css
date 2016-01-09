@@ -6,3 +6,32 @@ div.profile-container{
     margin-left: 20vw;
     top: 0px;
 }
+
+img.logo{
+	width: 120px;
+    position: absolute;
+    left: 20px;
+    top: 140px;
+    border: 5px solid #ffffff;
+}
+
+span.profile-title{
+	font-family:elegence;
+	left: 160px;
+    position: absolute;
+    font-size: 32px;
+    top: 200px;
+    -webkit-text-stroke: 1px black;
+    color: #fefefe;
+}
+
+@font-face {
+    font-family: elegence;
+    src: url('elegence.ttf') format('truetype');
+}
+
+img.sid-banner{
+	position: absolute;
+    top: 0px;
+    opacity: 0.6;
+}
