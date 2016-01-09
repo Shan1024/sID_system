@@ -11,6 +11,7 @@ var Facebook = require('../models/facebook');
 var Entry = require("../models/entry");
 var Claim = require("../models/claim");
 var LinkedIn = require("../models/linkedin");
+var OrgUser = require("../models/orgUser");
 
 var controller = require('../controllers/controllers');
 
@@ -536,6 +537,28 @@ module.exports = function (app, passport) {
         res.render('history.ejs', {user: req.user});
     });
 
+	app.get('/organizations/:orgid', function (req, res) {
+		var orgid = req.params.orgid;
+		if(!orgid){
+			console.error("invalid organization id");
+			res.render('home.ejs', {user: req.user});
+		}
+		OrgUser.findOne({
+			orgid:orgid
+		},function(err,organization){
+			if(err){
+				console.log("Unexpected error while getting org user");
+				res.render('home.ejs', {user: req.user});
+			}
+			if(organization){
+				res.render('organization.ejs', {org: organization});
+			}else{
+				console.log("Cannot get organization from given id: "+ orgid);
+				res.render('home.ejs', {user: req.user});
+			}
+		});
+    });
+	
     app.get('/rateafriend', isLoggedIn, function (req, res) {
 
         if (req.user.userDetails.facebook) {
@@ -812,6 +835,15 @@ module.exports = function (app, passport) {
                                                                     });
                                                                 }
                                                             }
+                                                        });
+                                                    }else{
+                                                        console.log("No linkedin account linked");
+
+                                                        res.render('usersummaryoverall.ejs', {
+                                                            user: req.user,
+                                                            name: name,
+                                                            facebook: facebookData,
+                                                            linkedin: linkedinData
                                                         });
                                                     }
 

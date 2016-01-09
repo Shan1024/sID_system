@@ -408,7 +408,8 @@ module.exports = function (app, express) {
                                                     myid: targetid
                                                 }, function (err, myClaim) {
                                                     if (err) {
-
+                                                        console.log("Error 6484512");
+                                                        return res.json({success: false, message: "Error occurred"});
                                                     } else {
                                                         if (myClaim) {
 
@@ -435,6 +436,11 @@ module.exports = function (app, express) {
                                                                     return res.json({
                                                                         success: false,
                                                                         message: "Error occurred"
+                                                                    });
+                                                                } else {
+                                                                    return res.json({
+                                                                        success: true,
+                                                                        message: "Successful"
                                                                     });
                                                                 }
                                                             });
@@ -470,27 +476,27 @@ module.exports = function (app, express) {
                                                                         success: false,
                                                                         message: "Error occurred"
                                                                     });
-                                                                }
-                                                            });
-
-                                                            targetUser.facebook.claims.push(newClaim);
-                                                            targetUser.setOverallFacebookRating();
-                                                            targetUser.save(function (err) {
-                                                                if (err) {
-                                                                    console.log("User save error: " + err);
-                                                                    return res.json({
-                                                                        success: false,
-                                                                        message: "Error occurred"
-                                                                    });
                                                                 } else {
-                                                                    console.log("User saved successfully");
-                                                                    return res.json({
-                                                                        success: true,
-                                                                        myid: myid,
-                                                                        targetid: targetid,
-                                                                        claimid: claimid,
-                                                                        claim: claim,
-                                                                        rating: rating
+                                                                    targetUser.facebook.claims.push(newClaim);
+                                                                    targetUser.setOverallFacebookRating();
+                                                                    targetUser.save(function (err) {
+                                                                        if (err) {
+                                                                            console.log("User save error: " + err);
+                                                                            return res.json({
+                                                                                success: false,
+                                                                                message: "Error occurred"
+                                                                            });
+                                                                        } else {
+                                                                            console.log("User saved successfully");
+                                                                            return res.json({
+                                                                                success: true,
+                                                                                myid: myid,
+                                                                                targetid: targetid,
+                                                                                claimid: claimid,
+                                                                                claim: claim,
+                                                                                rating: rating
+                                                                            });
+                                                                        }
                                                                     });
                                                                 }
                                                             });
@@ -647,8 +653,8 @@ module.exports = function (app, express) {
             }
         });
     };
-	
-	var addComment = function (req, res, me, target, myUser, targetUser) {
+
+    var addComment = function (req, res, me, target, myUser, targetUser) {
 
         var myid = req.body.myid;
         var targetid = req.body.targetid;
@@ -667,27 +673,27 @@ module.exports = function (app, express) {
             } else {
                 if (comment) {
                     console.log(chalk.yellow('comment found'));
-					
-					comment.comment = commentData;
-					comment.lastUpdated = Date.now();
 
-					comment.save(function (err) {
-						if (err) {
-							console.log(chalk.red('Error occurred while saving the comment'));
-							return res.json({success: false, message: "Error occurred"});
-						}
-						else{
-							return res.json({
-								success: true, 
-								commentid: commentid,
-								mysid: myid,
-								myid: me._id,
-								targetsid: targetid,
-								targetid: target._id,
-								comment: commentData
-							});
-						}
-					});
+                    comment.comment = commentData;
+                    comment.lastUpdated = Date.now();
+
+                    comment.save(function (err) {
+                        if (err) {
+                            console.log(chalk.red('Error occurred while saving the comment'));
+                            return res.json({success: false, message: "Error occurred"});
+                        }
+                        else {
+                            return res.json({
+                                success: true,
+                                commentid: commentid,
+                                mysid: myid,
+                                myid: me._id,
+                                targetsid: targetid,
+                                targetid: target._id,
+                                comment: commentData
+                            });
+                        }
+                    });
                     //If no entry is found
                 } else {
 
@@ -699,67 +705,67 @@ module.exports = function (app, express) {
                         targetid: target._id,
                         comment: commentData
                     });
-					
-					newComment.save(function (err) {
-						if (err) {
-							console.log("Error: " + err);
-							return res.json({success: false, message: "Error occurred"});
-						} else {
-							return res.json({
-								success: true, 
-								commentid: commentid,
-								mysid: myid,
-								myid: me._id,
-								targetsid: targetid,
-								targetid: target._id,
-								comment: commentData
-							});
-						}
-					});
+
+                    newComment.save(function (err) {
+                        if (err) {
+                            console.log("Error: " + err);
+                            return res.json({success: false, message: "Error occurred"});
+                        } else {
+                            return res.json({
+                                success: true,
+                                commentid: commentid,
+                                mysid: myid,
+                                myid: me._id,
+                                targetsid: targetid,
+                                targetid: target._id,
+                                comment: commentData
+                            });
+                        }
+                    });
                 }
             }
         });
     };
-	
-	var requestMembership = function(req, res, myUser, organization, secret){
-		var members = organization.members;
-		var requests = organization.requests;
-		
-		var request = {
-			userid: myUser._id,
-			fbid: req.body.myid,
-			secret: secret,
-			username: myUser.userDetails.local.firstname,
-			email: myUser.userDetails.local.email
-		};
-		
-		var hasRequested = 	requests.map(function(e){
-								return e.userid;
-							}).indexOf(myUser._id.toString());
-		var hasMembership =	members.map(function(e){
-								return e.userid;
-							}).indexOf(myUser._id.toString());
-		
-		if(hasRequested === -1){
-			if(hasMembership === -1){
-				requests.push(request);
-				organization.save(function(err){
-					if(err){
-						return res.json({error: "unexpected error adding request", err: err});
-					}
-					return res.json({
-						success: true,
-						user: myUser.userDetails,
-						organization: organization
-					});
-				});
-			}else{
-				return res.json({error: "Already a member: ", user: myUser.userDetails, org: organization});
-			}
-		}else{
-			return res.json({error: "Already requested membership: ", user: myUser.userDetails, org: organization});
-		}
-	};
+
+    var requestMembership = function (req, res, myUser, organization, secret) {
+        var members = organization.members;
+        var requests = organization.requests;
+
+        var request = {
+            userid: myUser._id,
+            fbid: req.body.myid,
+            secret: secret,
+            username: myUser.userDetails.local.firstname,
+            email: myUser.userDetails.local.email
+        };
+
+        var hasRequested = requests.map(function (e) {
+            return e.userid;
+        }).indexOf(myUser._id.toString());
+        var hasMembership = members.map(function (e) {
+            return e.userid;
+        }).indexOf(myUser._id.toString());
+
+        if (hasRequested === -1) {
+            if (hasMembership === -1) {
+                requests.push(request);
+                organization.save(function (err) {
+                    if (err) {
+                        return res.json({error: "unexpected error adding request", err: err});
+                    }
+                    return res.json({
+                        success: true,
+                        user: myUser.userDetails,
+                        organization: organization
+                    });
+                });
+            } else {
+                return res.json({error: "Already a member: ", user: myUser.userDetails, org: organization});
+            }
+        } else {
+            return res.json({error: "Already requested membership: ", user: myUser.userDetails, org: organization});
+        }
+    };
 
     var setName = function (me, target) {
 
@@ -957,7 +963,7 @@ module.exports = function (app, express) {
         });
 
 
-	/**
+    /**
      * @api {post} /rate/facebook/addComment Adds a new Facebook comment or update an existing one.
      * @apiName AddComment
      * @apiGroup Facebook
@@ -993,35 +999,35 @@ module.exports = function (app, express) {
             Facebook.findOne({
                 uid: myid
             }, function (err, me) {
-				if(err){
-					return res.json({error: "Unexpected error occured when getting target fb object: "+ err});
-				}
+                if (err) {
+                    return res.json({error: "Unexpected error occured when getting target fb object: " + err});
+                }
                 if (me) {
                     console.log(chalk.yellow("User found: " + JSON.stringify(me, null, "\t")));
 
                     Facebook.findOne({
                         uid: targetid
                     }, function (err, target) {
-						if(err){
-							return res.json({error: "Unexpected error occured when getting my fb object: "+ err});
-						}
+                        if (err) {
+                            return res.json({error: "Unexpected error occured when getting my fb object: " + err});
+                        }
                         if (target) {
                             console.log(chalk.blue("Target found: " + JSON.stringify(target, null, "\t")));
                             User.findOne({
                                 _id: me.user
                             }, function (err, myUser) {
-								if(err){
-									return res.json({error: "Unexpected error occured when getting user object: "+ err});
-								}
+                                if (err) {
+                                    return res.json({error: "Unexpected error occured when getting user object: " + err});
+                                }
                                 User.findOne({
                                     _id: target.user
                                 }, function (err, targetUser) {
-									if(err){
-										return res.json({error: "Unexpected error occured when getting user object: "+ err});
-									}
+                                    if (err) {
+                                        return res.json({error: "Unexpected error occured when getting user object: " + err});
+                                    }
                                     addComment(req, res, me, target, myUser, targetUser);
-									setName(me, target);
-									
+                                    setName(me, target);
+
                                 });
                             });
 
@@ -1049,19 +1055,19 @@ module.exports = function (app, express) {
                                             User.findOne({
                                                 _id: me.user
                                             }, function (err, myUser) {
-												if(err){
-													return res.json({error: "Unexpected error occured when getting user object: "+ err});
-												}
+                                                if (err) {
+                                                    return res.json({error: "Unexpected error occured when getting user object: " + err});
+                                                }
                                                 User.findOne({
                                                     _id: facebook.user
                                                 }, function (err, targetUser) {
-													if(err){
-														return res.json({error: "Unexpected error occured when getting user object: "+ err});
-													}
+                                                    if (err) {
+                                                        return res.json({error: "Unexpected error occured when getting user object: " + err});
+                                                    }
                                                     addComment(req, res, me, facebook, myUser, targetUser);
-													if(facebook){
-														setName(me, facebook);
-													}
+                                                    if (facebook) {
+                                                        setName(me, facebook);
+                                                    }
                                                 });
                                             });
                                         }
@@ -1077,9 +1083,8 @@ module.exports = function (app, express) {
             });
         });
 
-		
-		
-	/**
+
+    /**
      * @api {post} /rate/facebook/requestMembership Requests membership from an organization.
      * @apiName RequestMembership
      * @apiGroup Facebook
@@ -1092,7 +1097,7 @@ module.exports = function (app, express) {
      */
     rateRouter.route('/requestMembership')
         .post(function (req, res) {
-			
+
             var myid = req.body.myid;
             var targetid = req.body.targetid;
             var secret = req.body.secret;
@@ -1107,41 +1112,41 @@ module.exports = function (app, express) {
             Facebook.findOne({
                 uid: myid
             }, function (err, me) {
-				if(err){
-					return res.json({error: "Unexpected error occured when getting target fb object: "+ err});
-				}
+                if (err) {
+                    return res.json({error: "Unexpected error occured when getting target fb object: " + err});
+                }
                 if (me) {
                     User.findOne({
-						_id: me.user
-					}, function (err, myUser) {
-						if(err){
-							return res.json({error: "Unexpected error occured when getting user object: "+ err});
-						}
-						if(myUser){
-							OrgUser.findOne({
-								orgid:targetid
-							},function(err,organization){
-								if(err){
-									return res.json({error: "Unexpected error occured when getting user object: "+ err});
-								}
-								if(organization){
-									requestMembership(req, res, myUser, organization, secret);
-								}else{
-									return res.json({error: "Organization not found: "+ organization});
-								}
-							});
-						}else{
-							return res.json({error: "Unexpected error occured when getting user object: "+ err});
-						}
-					});
-				}else{
-					return res.json({error: "Facebook user with given id does not exist: "+ err});
-				}
+                        _id: me.user
+                    }, function (err, myUser) {
+                        if (err) {
+                            return res.json({error: "Unexpected error occured when getting user object: " + err});
+                        }
+                        if (myUser) {
+                            OrgUser.findOne({
+                                orgid: targetid
+                            }, function (err, organization) {
+                                if (err) {
+                                    return res.json({error: "Unexpected error occured when getting user object: " + err});
+                                }
+                                if (organization) {
+                                    requestMembership(req, res, myUser, organization, secret);
+                                } else {
+                                    return res.json({error: "Organization not found: " + organization});
+                                }
+                            });
+                        } else {
+                            return res.json({error: "Unexpected error occured when getting user object: " + err});
+                        }
+                    });
+                } else {
+                    return res.json({error: "Facebook user with given id does not exist: " + err});
+                }
             });
         });
-	
-	
-	/**
+
+
+    /**
      * @api {post} /rate/facebook/grantMembership Grants membership to a request.
      * @apiName GrnatMembership
      * @apiGroup Facebook
@@ -1153,7 +1158,7 @@ module.exports = function (app, express) {
      */
     rateRouter.route('/grantMembership')
         .post(function (req, res) {
-			
+
             var userid = req.body.userid;
             var orgid = req.body.orgid;
 
@@ -1165,76 +1170,79 @@ module.exports = function (app, express) {
             }
 
             OrgUser.findOne({
-				orgid: orgid
-			},function(err,organization){
-				if(err){
-					return res.json({error:"Unexpected error when getting organization",err:err});
-				}
-				var requests = organization.requests;
-				var members = organization.members;
-				
-				var requestIndex = 	requests.map(function(e){
-										return e.fbid;
-									}).indexOf(userid);
-				var memberIndex = 	members.map(function(e){
-										return e.fbid;
-									}).indexOf(userid);
-				if(memberIndex!==-1){
-					return res.json({error:"Already a member",index:memberIndex});
-				}
-				if(requestIndex!== -1){
-					var request = requests[requestIndex];
-					organization.members.push(request);
-					organization.requests.splice(requestIndex,1);
-					
-					Facebook.findOne({
-						uid:userid
-					},function(err,fb){
-						if(err){
-							return res.json({error:"error getting fb user",err:err});
-						}
-						User.findOne({
-							_id:fb.user
-						},function(err,user){
-							if(err){
-								return res.json({error:"error getting user from given fb user",err:err});
-							}
-							if(user.organizations.indexOf(orgid) === -1){
-								user.organizations.push(orgid);
-								user.save(function(err){
-									if(err){
-										return res.json({error:"error saving membership to user",err:err});
-									}
-									organization.save(function(err){
-										if(err){
-											return res.json({error:"error saving membership in organization",err:err});
-										}
-										return res.json({
-											success:true,
-											organization:organization
-										});
-									});
-								});
-							}else{
-								return res.json({error:"organization already in user list",user:user});
-							}
-						});
-					});	
-				}else{
-					return res.json({error:"No request available from user",user: userid});
-				}
-			});
+                orgid: orgid
+            }, function (err, organization) {
+                if (err) {
+                    return res.json({error: "Unexpected error when getting organization", err: err});
+                }
+                var requests = organization.requests;
+                var members = organization.members;
+
+                var requestIndex = requests.map(function (e) {
+                    return e.fbid;
+                }).indexOf(userid);
+                var memberIndex = members.map(function (e) {
+                    return e.fbid;
+                }).indexOf(userid);
+                if (memberIndex !== -1) {
+                    return res.json({error: "Already a member", index: memberIndex});
+                }
+                if (requestIndex !== -1) {
+                    var request = requests[requestIndex];
+                    organization.members.push(request);
+                    organization.requests.splice(requestIndex, 1);
+
+                    Facebook.findOne({
+                        uid: userid
+                    }, function (err, fb) {
+                        if (err) {
+                            return res.json({error: "error getting fb user", err: err});
+                        }
+                        User.findOne({
+                            _id: fb.user
+                        }, function (err, user) {
+                            if (err) {
+                                return res.json({error: "error getting user from given fb user", err: err});
+                            }
+                            if (user.organizations.indexOf(orgid) === -1) {
+                                user.organizations.push(orgid);
+                                user.save(function (err) {
+                                    if (err) {
+                                        return res.json({error: "error saving membership to user", err: err});
+                                    }
+                                    organization.save(function (err) {
+                                        if (err) {
+                                            return res.json({
+                                                error: "error saving membership in organization",
+                                                err: err
+                                            });
+                                        }
+                                        return res.json({
+                                            success: true,
+                                            organization: organization
+                                        });
+                                    });
+                                });
+                            } else {
+                                return res.json({error: "organization already in user list", user: user});
+                            }
+                        });
+                    });
+                } else {
+                    return res.json({error: "No request available from user", user: userid});
+                }
+            });
         });
-		
-		
-	/**
+
+
+    /**
      * @api {post} /rate/facebook/getMyOrganizations Returns the array of organizations the user is a member of.
      * @apiName getMyOrganizations
      * @apiGroup Facebook
      * @apiVersion 0.1.0
      *
      * @apiParam {String} myid The Facebook ID of user.
-	 
+
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     {
@@ -1242,47 +1250,47 @@ module.exports = function (app, express) {
      *         "organizations": ["org1","org2","org3"]
      *    }
      *
-     */	
-	rateRouter.route('/getMyOrganizations')
-		.post(function(req,res){
-			var myid = req.body.myid;
-			if(!myid){
-				return res.json({error: "missing myid parameter"});
-			}
-			
-			Facebook.findOne({
-				uid: myid
-			},function(err,fb){
-				if(err){
-					return res.json({error: "Unexpected error occurred",err: err});
-				}
-				if(fb){
-					User.findOne({
-						_id: fb.user
-					},function(err, user){
-						if(err){
-							return res.json({error:"Unexpected error getting user from fb id",err:err});
-						}
-						if(user){
-							var organizations = user.organizations;
-							if(organizations){
-								return res.json({
-									success: true,
-									organizations: organizations
-								});
-							}else{
-								return res.json({error:"No organizations found for user",user: user});
-							}
-						}else{
-							return res.json({error:"no user found associated with fb user",fb:fb});
-						}
-					});
-				}else{
-					return res.json({error:"no fb user found with given id",id:myid});
-				}
-			});
-		});
-	
+     */
+    rateRouter.route('/getMyOrganizations')
+        .post(function (req, res) {
+            var myid = req.body.myid;
+            if (!myid) {
+                return res.json({error: "missing myid parameter"});
+            }
+
+            Facebook.findOne({
+                uid: myid
+            }, function (err, fb) {
+                if (err) {
+                    return res.json({error: "Unexpected error occurred", err: err});
+                }
+                if (fb) {
+                    User.findOne({
+                        _id: fb.user
+                    }, function (err, user) {
+                        if (err) {
+                            return res.json({error: "Unexpected error getting user from fb id", err: err});
+                        }
+                        if (user) {
+                            var organizations = user.organizations;
+                            if (organizations) {
+                                return res.json({
+                                    success: true,
+                                    organizations: organizations
+                                });
+                            } else {
+                                return res.json({error: "No organizations found for user", user: user});
+                            }
+                        } else {
+                            return res.json({error: "no user found associated with fb user", fb: fb});
+                        }
+                    });
+                } else {
+                    return res.json({error: "no fb user found with given id", id: myid});
+                }
+            });
+        });
+
     /**
      * @api {post} /rate/facebook/getRating Returns the ratings of a claim.
      * @apiName GetRating
@@ -1428,17 +1436,15 @@ module.exports = function (app, express) {
             });
         });
 
-		
-		
-		
-	/**
+
+    /**
      * @api {post} /rate/facebook/getComments Returns all the comments of a user.
      * @apiName GetComments
      * @apiGroup Facebook
      * @apiVersion 0.1.0
      *
      * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
-	 * @apiParam {String} [myid] The Facebook User ID of the logged in user.
+     * @apiParam {String} [myid] The Facebook User ID of the logged in user.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -1452,7 +1458,7 @@ module.exports = function (app, express) {
         .post(function (req, res) {
 
             var targetid = req.body.targetid;
-			var viewerid = req.body.myid;
+            var viewerid = req.body.myid;
 
             if (!targetid) {
                 if (req.user) {
@@ -1473,32 +1479,32 @@ module.exports = function (app, express) {
             }
 
             Comment.find({
-				targetsid: targetid
+                targetsid: targetid
             }, function (err, comments) {
                 if (err) {
-                    console.log(chalk.red("Error occurred 8975") + " " + commentid + " "+ targetid + " " + viewerid + err);
+                    console.log(chalk.red("Error occurred 8975") + " " + commentid + " " + targetid + " " + viewerid + err);
                     res.json({
                         success: false,
                         message: "Error occurred"
                     });
                 } else {
                     if (comments) {
-						return res.json({
-							success: true,
-							comments: comments
-						});
-					}else{
-						return res.json({
-							success: false,
-							message: "Unexpected error"
-						});
-					}
-                    
+                        return res.json({
+                            success: true,
+                            comments: comments
+                        });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Unexpected error"
+                        });
+                    }
+
                 }
             });
         });
-		
-	
+
+
     /**
      * @api {post} /rate/facebook/getAllRatingsCount Get sum of Yes, No, NotSure counts of all claims made by the target user.
      * @apiName GetAllRatingsCount
@@ -2036,9 +2042,11 @@ module.exports = function (app, express) {
                     res.json({success: false, message: "Error occurred"});
                 } else {
                     if (facebook) {
-                        FacebookRatedByMe.find({
-                            myid: facebook._id
-                        }).populate({
+                        FacebookRatedByMe
+                            .find({
+                                myid: facebook._id
+                            })
+                            .populate({
                                 path: 'entries',
                                 populate: {path: 'targetid', model: "Facebook", select: 'uid name'}
                             })
@@ -2050,6 +2058,7 @@ module.exports = function (app, express) {
                                 } else {
                                     if (facebookRatedByMe) {
                                         console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMe, null, "\t")));
+                                        console.log("test: " + facebookRatedByMe[0].entries);
                                         res.json({success: true, data: facebookRatedByMe});
                                     } else {
                                         console.log("facebookRatedByMe not found");
@@ -2064,6 +2073,268 @@ module.exports = function (app, express) {
                 }
             });
         });
+
+
+    /**
+     * @api {post} /rate/facebook/getAllUsersRatedByMeCount Returns the number of users rated by the given user.
+     * @apiName getAllUsersRatedByMeCount
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *          "success": true,
+     *          "count": 6
+     *     }
+     *
+     */
+    rateRouter.route('/getAllUsersRatedByMeCount')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: true,
+                            message: "No facebook account is linked"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "No user found in the session"
+                    });
+                }
+            }
+
+            Facebook.findOne({
+                uid: targetid
+            }, function (err, facebook) {
+
+                if (err) {
+                    return res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+
+                    if (facebook) {
+                        FacebookRatedByMe
+                            .find({
+                                myid: facebook._id
+                            })
+                            //.populate({
+                            //    path: 'targetid',
+                            //    select:'name uid'
+                            //})
+                            //.select('targetid')
+                            .exec(function (err, facebookRatedByMes) {
+                                console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
+                                return res.json({
+                                    success: true,
+                                    count: facebookRatedByMes.length
+                                });
+
+                            });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No facebook account for the given id found"
+                        });
+                    }
+                }
+
+            });
+
+        });
+
+    /**
+     * @api {post} /rate/facebook/getAllUsersRatedByMe Returns the users who are rated by the given user.
+     * @apiName getAllUsersRatedByMe
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *          "success": true,
+     *          "data": [
+     *              {
+     *                  "_id": "56893cf746360ad81347544a",
+     *                  "targetid": {
+     *                      "_id": "56893cf746360ad813475447",
+     *                      "uid": "100000211592969",
+     *                      "name": "Malith Shan Mahanama"
+     *                  }
+     *              },
+     *          ]
+     *     }
+     *
+     */
+    rateRouter.route('/getAllUsersRatedByMe')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: true,
+                            message: "No facebook account is linked"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "No user found in the session"
+                    });
+                }
+            }
+
+            Facebook.findOne({
+                uid: targetid
+            }, function (err, facebook) {
+
+                if (err) {
+                    return res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+
+                    if (facebook) {
+                        FacebookRatedByMe
+                            .find({
+                                myid: facebook._id
+                            })
+                            .populate({
+                                path: 'targetid',
+                                select: 'name uid -_id'
+                            })
+                            .select('targetid -_id')
+                            .exec(function (err, facebookRatedByMes) {
+                                console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
+                                return res.json({
+                                    success: true,
+                                    data: facebookRatedByMes
+                                });
+
+                            });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No facebook account for the given id found"
+                        });
+                    }
+                }
+
+            });
+
+        });
+
+
+    /**
+     * @api {post} /rate/facebook/getAllClaimsRatedByMeCount Returns the number of claims that the target user has rated.
+     * @apiName getAllClaimsRatedByMeCount
+     * @apiGroup Facebook
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *          "success": true,
+     *          "count": 6
+     *     }
+     *
+     */
+    rateRouter.route('/getAllClaimsRatedByMeCount')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: true,
+                            message: "No facebook account is linked"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "No user found in the session"
+                    });
+                }
+            }
+
+            Facebook.findOne({
+                uid: targetid
+            }, function (err, facebook) {
+
+                if (err) {
+                    return res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+
+                    if (facebook) {
+
+                        FacebookRatedByMe
+                            .find({
+                                myid: facebook._id
+                            })
+                            //.populate({
+                            //    path: 'targetid',
+                            //    select:'name uid'
+                            //})
+                            //.select('entries')
+                            .exec(function (err, facebookRatedByMes) {
+                                //console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
+                                var count = 0;
+
+                                for (var i = 0; i < facebookRatedByMes.length; i++) {
+                                    if (facebookRatedByMes[i].entries) {
+                                        count += facebookRatedByMes[i].entries.length;
+                                    }
+                                }
+                                return res.json({
+                                    success: true,
+                                    count: count
+                                });
+
+                            });
+
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No facebook account for the given id found"
+                        });
+                    }
+                }
+
+            });
+
+        });
+
+
 
     app.use('/rate/facebook', rateRouter);
 
