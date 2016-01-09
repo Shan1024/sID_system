@@ -150,38 +150,137 @@ module.exports = function (app, express) {
                 return res.json({error: "Missing uid parameter"});
             }
 
+            console.log("Finding the user");
+
             User.findOne({
                 'userDetails.local.email': email
             }).populate({
                 path: 'userDetails.facebook'
-            }).exec(function (err, user) {
-                if (err) {
-                    res.json({success: false, message: 'Error occurred'});
-                } else {
-                    if (user) {
-
-                        console.log(chalk.blue("User: " + JSON.stringify(user, null, "\t")));
-
-                        Facebook.findOne({
-                            user: user._id
-                        }, function (err, facebook) {
-                            facebook.uid = uid;
-
-                            console.log(chalk.blue("Facebook2: " + JSON.stringify(facebook, null, "\t")));
-
-                            facebook.save(function (err) {
-                                if (err) {
-                                    res.json({success: false, message: 'Error occurred'});
-                                } else {
-                                    res.json({success: true, message: 'Successfully updated'});
-                                }
-                            });
-                        });
+            }).exec(
+                function (err, newUser) {
+                    if (err) {
+                        res.json({success: false, message: 'Error occurred'});
                     } else {
-                        res.json({success: false, message: 'Email not found'});
+                        if (newUser) {
+
+                            var newFacebook = newUser.userDetails.facebook._id;
+
+                            console.log(chalk.blue("User found: " + JSON.stringify(newUser, null, "\t")));
+
+                            //Account merging
+                            if (!newUser.userDetails.facebook.uid) {
+
+                                console.log(chalk.yellow("Merging started"));
+
+                                Facebook.findOne({
+                                    uid: uid
+                                }, function (err, oldFacebook) {
+                                    if (err) {
+                                        console.log("Error 65646532");
+                                    } else {
+                                        if (oldFacebook) {
+
+                                            console.log(chalk.blue("oldFacebook: " + JSON.stringify(oldFacebook, null, "\t")));
+
+                                            //merge the accounts
+                                            User.findOne({
+                                                _id: oldFacebook.user
+                                            }, function (err, oldUser) {
+                                                if (err) {
+                                                    console.log("Error occurred 4984651");
+                                                } else {
+                                                    if (oldUser) {
+
+                                                        console.log(chalk.blue("oldUser: " + JSON.stringify(oldUser, null, "\t")));
+
+                                                        //transfer data
+                                                        newUser.facebook = oldUser.facebook;
+                                                        newUser.userDetails.facebook = oldFacebook._id;
+
+                                                        newUser.save(function (err) {
+                                                            if (err) {
+                                                                console.log("Error saving the user.");
+                                                            } else {
+                                                                console.log("newUser saved successfully");
+                                                            }
+                                                        });
+
+                                                        oldFacebook.id = newUser.userDetails.facebook.id;
+                                                        oldFacebook.name = newUser.userDetails.facebook.name;
+                                                        oldFacebook.username = newUser.userDetails.facebook.username;
+                                                        oldFacebook.email = newUser.userDetails.facebook.email;
+                                                        oldFacebook.token = newUser.userDetails.facebook.token;
+                                                        oldFacebook.user = newUser._id;
+
+                                                        oldFacebook.save(function (err) {
+                                                            if (err) {
+                                                                console.log("Error 4845123");
+                                                            } else {
+                                                                console.log("oldFacebook successfully saved");
+                                                            }
+                                                        });
+
+                                                        Facebook.findOneAndRemove({
+                                                            _id: newFacebook
+                                                        }, function (err) {
+                                                            if (err) {
+                                                                console.log("Error 464132131");
+                                                            } else {
+                                                                console.log("newFacebook successfully removed");
+                                                            }
+                                                        });
+
+                                                        oldUser.remove(function (err) {
+                                                            if (err) {
+                                                                console.log("Error 446848432");
+                                                            } else {
+                                                                console.log("oldUser successfully removed");
+                                                            }
+                                                        });
+
+                                                    } else {
+                                                        console.log("No old facebook account found.");
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            console.log("No older facebook account found. No need to merge.");
+                                        }
+                                    }
+                                });
+
+                                Facebook.findOne({
+                                    user: newUser._id
+                                }, function (err, facebook) {
+
+                                    if (err) {
+                                        console.log("Error 5648212313");
+                                        res.json({success: false, message: 'Error occurred'});
+                                    } else {
+                                        if (facebook) {
+
+                                            facebook.uid = uid;
+
+                                            console.log(chalk.blue("Facebook2: " + JSON.stringify(facebook, null, "\t")));
+
+                                            facebook.save(function (err) {
+                                                if (err) {
+                                                    res.json({success: false, message: 'Error occurred'});
+                                                } else {
+                                                    res.json({success: true, message: 'Successfully updated'});
+                                                }
+                                            });
+                                        } else {
+                                            console.log("No facebook account found 486512");
+                                        }
+                                    }
+                                });
+                            }
+                        } else {
+                            res.json({success: false, message: 'Email not found'});
+                        }
                     }
-                }
-            });
+                });
         });
 
     var addRating = function (req, res, me, target, myUser, targetUser) {
@@ -2333,7 +2432,6 @@ module.exports = function (app, express) {
             });
 
         });
-
 
 
     app.use('/rate/facebook', rateRouter);
