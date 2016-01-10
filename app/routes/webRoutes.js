@@ -539,25 +539,42 @@ module.exports = function (app, passport) {
 
 	app.get('/organizations/:orgid', function (req, res) {
 		var orgid = req.params.orgid;
-		console.log(orgid);
-		if(!orgid){
-			console.error("invalid organization id");
-			res.render('home.ejs', {user: req.user});
+		
+		if(req.user && req.user.orgid){
+			OrgUser.findOne({
+				orgid:orgid
+			},function(err,organization){
+				if(err){
+					console.log("Unexpected error while getting org user");
+					res.render('home.ejs', {user: req.user});
+				}
+				if(organization){
+					res.render('organizationEdit.ejs', {org: organization});
+				}else{
+					console.log("Cannot get organization from given id: "+ orgid);
+					res.render('home.ejs', {user: req.user});
+				}
+			});
+		}else{		
+			if(!orgid){
+				console.error("invalid organization id");
+				res.render('home.ejs', {user: req.user});
+			}
+			OrgUser.findOne({
+				orgid:orgid
+			},function(err,organization){
+				if(err){
+					console.log("Unexpected error while getting org user");
+					res.render('home.ejs', {user: req.user});
+				}
+				if(organization){
+					res.render('organization.ejs', {org: organization});
+				}else{
+					console.log("Cannot get organization from given id: "+ orgid);
+					res.render('home.ejs', {user: req.user});
+				}
+			});
 		}
-		OrgUser.findOne({
-			orgid:orgid
-		},function(err,organization){
-			if(err){
-				console.log("Unexpected error while getting org user");
-				res.render('home.ejs', {user: req.user});
-			}
-			if(organization){
-				res.render('organization.ejs', {org: organization});
-			}else{
-				console.log("Cannot get organization from given id: "+ orgid);
-				res.render('home.ejs', {user: req.user});
-			}
-		});
     });
 	
     app.get('/rateafriend', isLoggedIn, function (req, res) {
