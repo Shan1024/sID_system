@@ -85,9 +85,9 @@
             <div class="col-xs-12 col-sm-6 col-md-4">
                <div class="row">
                   <div class="panel panel-default">
-                     <div class="panel panel-header">
+                     <div class="panel panel-header" style="border-radius: 4px 4px 0px 0px">
                        <% if(user.userDetails.facebook && user.userDetails.facebook.token){ %>
-                         <img src="https://graph.facebook.com/v2.3/<%= user.userDetails.facebook.uid %>/picture"/ id="homepage_fb_pic">
+                         <img src="https://graph.facebook.com/v2.3/<%= user.userDetails.facebook.uid %>/picture" id="homepage_fb_pic">
                        <% } else { %>
 
                        <% } %>
@@ -106,8 +106,8 @@
                                   <div class="col-xs-12 col-sm-4"><a href="/linkedinmyratings" class="btn btn-primary">My Ratings</a></div>
                                   <div class="col-xs-12 col-sm-4"><a href="/linkedinratedByMe" class="btn btn-primary">Rated By Me</a></div> -->
                                   <div class="btn-group btn-group-justified">
-                                    <a href="/linkedinmyratings" class="btn btn-primary">My Ratings</a>
-                                    <a href="/linkedinratedByMe" class="btn btn-primary">Rated by me</a>
+                                    <a href="/facebookmyratings" class="btn btn-primary">My Ratings</a>
+                                    <a href="/facebookratedByMe" class="btn btn-primary">Rated by me</a>
                                     <a href="/unlink/facebook" class="btn btn-primary">Unlink</a>
                                   </div>
                               </div>
@@ -126,9 +126,9 @@
                </div>
                <div class="row">
                   <div class="panel panel-default">
-                     <div class="panel panel-header">
+                     <div class="panel panel-header" style="border-radius: 4px 4px 0px 0px">
                        <% if(user.userDetails.linkedin && user.userDetails.linkedin.token){ %>
-                         <img src="<%= user.userDetails.linkedin.photo %>"/ id="homepage_linkedin_pic">
+                         <img src="<%= user.userDetails.linkedin.photo %>" id="homepage_linkedin_pic">
                        <% } else { %>
 
                        <% } %>
@@ -415,19 +415,20 @@
              ();
 
 
-      </script>
-      <script type="text/javascript">
-          $.post("/rate/facebook/getAllUsersRatedByMeCount",
-          function(data,status){
-            var $content = $('#facebook-ratedbyme');
-            $content.append("<div class='text-center'>" + data.count + " Facebook profiles are rated by me.</div>");
-            if (data.count > 0) {
-              $content.append("<div class='text-center'><a href='/allFacebookUsersRatedByMe' class='btn btn-primary' role='button'>View All</a></div>");
-            }
-          });
-      </script>
-      <script type="text/javascript" src="scripts/typeahead.bundle.js"></script>
-      <script type="text/javascript" src="scripts/bloodhound.js"></script>
-      <script type="text/javascript" src="scripts/search.js"></script>
-   </body>
+</script>
+<script type="text/javascript">
+    var $content = $('#facebook-ratedbyme');
+    $.post("/rate/facebook/getAllUsersRatedByMeCount",
+            function (data, status) {
+                $content.append("<div class='text-center'> No of profiles rated: " + data.count + " <a href='/allFacebookUsersRatedByMe' class='btn' role='button'>(View All)</a></div>");
+            });
+    $.post("/rate/facebook/getAllClaimsRatedByMeCount",
+            function (data, status) {
+                $content.append("<div class='text-center'> No of claims rated: " + data.count + " <a href='/allFacebooklaimsRatedByMe' class='btn' role='button'>(View All)</a></div>");
+            });
+</script>
+<script type="text/javascript" src="scripts/typeahead.bundle.js"></script>
+<script type="text/javascript" src="scripts/bloodhound.js"></script>
+<script type="text/javascript" src="scripts/search.js"></script>
+</body>
 </html>
