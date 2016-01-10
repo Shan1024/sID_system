@@ -545,7 +545,7 @@ module.exports = function (passport) {
                             }
                             req.user.save(function (err) {
                                 if (err) {
-                                    console.log(chalk.red("Error 646156132 - req.user cannot save: " + err);
+                                    console.log(chalk.red("Error 646156132 - req.user cannot save: " + err));
                                 }
                             });
 
