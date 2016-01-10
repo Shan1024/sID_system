@@ -6,7 +6,7 @@
 <body style="background-image:url('/img/organizations/<%= org.orgid%>/bg.png')">
 	<div class = "profile-container">
 		<div class="tag-container">
-			<span class="tag-line">Educational Institute</span>
+			<span class="tag-line"><%= org.userDetails.tagline %></span>
 		</div>
 		<img class="profile-cover" src="/img/organizations/<%= org.orgid%>/cover.png">
 		<img class="sid-banner" src="/img/organizations/<%= org.orgid%>/banner.png">
@@ -21,7 +21,7 @@
 				<li class="about-item">
 					<img class="about-item" src="/img/organizations/<%= org.orgid%>/description.png">
 					<div class="item-content">
-						University of Moratuwa is the country's leading technological higher education institute excelling both locally and globally.
+						<%= org.userDetails.description %>
 					</div>
 				</li>
 				<li class="about-item">
@@ -39,7 +39,7 @@
 				<li class="about-item">
 					<img class="about-item" src="/img/organizations/<%= org.orgid%>/website.png">
 					<div class="item-content">
-						www.mrt.ac.lk
+						<%= org.userDetails.website %>
 					</div>
 				</li>
 			</div>
@@ -50,79 +50,14 @@
 				Members
 			</div>
 			<div class="section-body">
-				<li class="about-item">
-					<div class="fb-profile">
-						<img class="fb-photo" src="https://graph.facebook.com/v2.3/100000211592969/picture">
-						<span class="fb-name">Malith Shan Mahanama</span>
-					</div>
-				</li>
-				<li class="about-item">
-					<div class="fb-profile">
-						<img class="fb-photo" src="https://graph.facebook.com/v2.3/1199326144/picture">
-						<span class="fb-name">Pubudu Dodangoda</span>
-					</div>
-				</li>
-				<li class="about-item">
-					<div class="fb-profile">
-						<img class="fb-photo" src="https://graph.facebook.com/v2.3/100000211592969/picture">
-						<span class="fb-name">Malith Shan Mahanama</span>
-					</div>
-				</li>
-				<li class="about-item">
-					<div class="fb-profile">
-						<img class="fb-photo" src="https://graph.facebook.com/v2.3/1199326144/picture">
-						<span class="fb-name">Pubudu Dodangoda</span>
-					</div>
-				</li>
-				<li class="about-item">
-					<div class="fb-profile">
-						<img class="fb-photo" src="https://graph.facebook.com/v2.3/100000211592969/picture">
-						<span class="fb-name">Malith Shan Mahanama</span>
-					</div>
-				</li>
-				<li class="about-item">
-					<div class="fb-profile">
-						<img class="fb-photo" src="https://graph.facebook.com/v2.3/1199326144/picture">
-						<span class="fb-name">Pubudu Dodangoda</span>
-					</div>
-				</li>
-				<li class="about-item">
-					<div class="fb-profile">
-						<img class="fb-photo" src="https://graph.facebook.com/v2.3/100000211592969/picture">
-						<span class="fb-name">Malith Shan Mahanama</span>
-					</div>
-				</li>
-				<li class="about-item">
-					<div class="fb-profile">
-						<img class="fb-photo" src="https://graph.facebook.com/v2.3/1199326144/picture">
-						<span class="fb-name">Pubudu Dodangoda</span>
-					</div>
-				</li>
-				<li class="about-item">
-					<div class="fb-profile">
-						<img class="fb-photo" src="https://graph.facebook.com/v2.3/100000211592969/picture">
-						<span class="fb-name">Malith Shan Mahanama</span>
-					</div>
-				</li>
-				<li class="about-item">
-					<div class="fb-profile">
-						<img class="fb-photo" src="https://graph.facebook.com/v2.3/1199326144/picture">
-						<span class="fb-name">Pubudu Dodangoda</span>
-					</div>
-				</li>
-				<li class="about-item">
-					<div class="fb-profile">
-						<img class="fb-photo" src="https://graph.facebook.com/v2.3/100000211592969/picture">
-						<span class="fb-name">Malith Shan Mahanama</span>
-					</div>
-				</li>
-				<li class="about-item">
-					<div class="fb-profile">
-						<img class="fb-photo" src="https://graph.facebook.com/v2.3/1199326144/picture">
-						<span class="fb-name">Pubudu Dodangoda</span>
-					</div>
-				</li>
-				
+				<% for(var i = 0; i < org.members.length ; i += 1) { %>
+					<li class="about-item">
+						<div class="fb-profile">
+							<img class="fb-photo" src="https://graph.facebook.com/v2.3/100000211592969/picture">
+							<span class="fb-name"><%= org.members[i].fbid %> | <%= org.members[i].username %></span>
+						</div>
+					</li>
+				<% } %>
 			</div>
 		</div>
 	</div>
