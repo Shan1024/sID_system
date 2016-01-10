@@ -24,72 +24,74 @@
 				Organization Title Not Available
 			<%}%>
 		</span>
-		<div class="about-container">
-			<div class="section-header">
-				<img class="section-icon" src="/img/organizations/commons/about-icon.png">
-				About
+		<div class="data-container">
+			<div class="about-container">
+				<div class="section-header">
+					<img class="section-icon" src="/img/organizations/commons/about-icon.png">
+					About
+				</div>
+				<div class="section-body">
+					<li class="about-item">
+						<img class="about-item" src="/img/organizations/commons/description.png">
+						<div class="item-content">
+							<% if(org.userDetails.description){ %>
+								<%= org.userDetails.description %>
+							<%}else{%>
+								Organization description not available
+							<%}%>
+						</div>
+					</li>
+					<li class="about-item">
+						<img class="about-item" src="/img/organizations/commons/email.png">
+						<div class="item-content">
+							<%if(org.userDetails.email){%>
+								<%= org.userDetails.email %>
+							<%}else{%>
+								Organization email not available
+							<%}%>
+						</div>
+					</li>
+					<li class="about-item">
+						<img class="about-item" src="/img/organizations/commons/id.png">
+						<div class="item-content">
+							<%if(org.orgid){%>
+								<%= org.orgid %>
+							<%}else{%>
+								Organization Id not available
+							<%}%>
+						</div>
+					</li>
+					<li class="about-item">
+						<img class="about-item" src="/img/organizations/commons/website.png">
+						<div class="item-content">
+							<%if(org.userDetails.website){%>
+								<%= org.userDetails.website %>
+							<%}else{%>
+								Website info not available
+							<%}%>
+						</div>
+					</li>
+				</div>
 			</div>
-			<div class="section-body">
-				<li class="about-item">
-					<img class="about-item" src="/img/organizations/commons/description.png">
-					<div class="item-content">
-						<% if(org.userDetails.description){ %>
-							<%= org.userDetails.description %>
-						<%}else{%>
-							Organization description not available
-						<%}%>
-					</div>
-				</li>
-				<li class="about-item">
-					<img class="about-item" src="/img/organizations/commons/email.png">
-					<div class="item-content">
-						<%if(org.userDetails.email){%>
-							<%= org.userDetails.email %>
-						<%}else{%>
-							Organization email not available
-						<%}%>
-					</div>
-				</li>
-				<li class="about-item">
-					<img class="about-item" src="/img/organizations/commons/id.png">
-					<div class="item-content">
-						<%if(org.orgid){%>
-							<%= org.orgid %>
-						<%}else{%>
-							Organization Id not available
-						<%}%>
-					</div>
-				</li>
-				<li class="about-item">
-					<img class="about-item" src="/img/organizations/commons/website.png">
-					<div class="item-content">
-						<%if(org.userDetails.website){%>
-							<%= org.userDetails.website %>
-						<%}else{%>
-							Website info not available
-						<%}%>
-					</div>
-				</li>
-			</div>
-		</div>
-		<div class="members-container">
-			<div class="section-header">
-				<img class="section-icon" src="/img/organizations/commons/members-icon.png">
-				Members
-			</div>
-			<div class="section-body">
-				<%if(org.members){%>
-					<% for(var i = 0; i < org.members.length ; i += 1) { %>
-						<li class="about-item">
-							<div class="fb-profile">
-								<img class="fb-photo" src="https://graph.facebook.com/v2.3/<%= org.members[i].fbid %>/picture">
-								<span class="fb-name"><%= org.members[i].fbid %> | <%= org.members[i].username %></span>
-							</div>
-						</li>
-					<% } %>
-				<%}else{%>
-					<span>This organization does not have any members yet</span>
-				<%}%>
+			<div class="members-container">
+				<div class="section-header">
+					<img class="section-icon" src="/img/organizations/commons/members-icon.png">
+					Members
+				</div>
+				<div class="section-body">
+					<%if(org.members){%>
+						<% for(var i = 0; i < org.members.length ; i += 1) { %>
+							<li class="about-item">
+								<div class="fb-profile">
+									<img class="fb-photo" src="https://graph.facebook.com/v2.3/<%= org.members[i].fbid %>/picture">
+									<span class="fb-name"><%= org.members[i].fbid %> | <%= org.members[i].username %></span>
+								</div>
+							</li>
+						<% } %>
+					<%}else{%>
+						<span>This organization does not have any members yet</span>
+					<%}%>
+				</div>
 			</div>
 		</div>
 	</div>
