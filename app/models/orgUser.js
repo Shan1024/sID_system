@@ -14,7 +14,10 @@ var userSchema = new mongoose.Schema({
         created: {
             type: Date,
             default: Date.now
-        }
+        },
+		website: String,
+		description: String,
+		tagline:String
     },
 	members:[{
 		userid: String,
