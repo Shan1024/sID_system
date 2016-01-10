@@ -189,6 +189,10 @@ module.exports = function (app, express) {
                                             }, function (err, oldUser) {
                                                 if (err) {
                                                     console.log("Error occurred 4984651");
+                                                    return res.json({
+                                                        success: false,
+                                                        message: 'Error occurred 456123156'
+                                                    });
                                                 } else {
                                                     if (oldUser) {
 
@@ -213,65 +217,65 @@ module.exports = function (app, express) {
                                                         oldFacebook.save(function (err) {
                                                             if (err) {
                                                                 console.log("Error 4845123");
-                                                                res.json({
+                                                                return res.json({
                                                                     success: false,
                                                                     message: 'Error occurred'
                                                                 });
                                                             } else {
                                                                 console.log("oldFacebook successfully saved");
                                                                 console.log(chalk.cyan("oldFacebook after saving: " + JSON.stringify(oldFacebook, null, "\t")));
-                                                                //transfer data
-                                                                newUser.facebook = oldUser.facebook;
-                                                                newUser.userDetails.facebook = oldFacebook._id;
+                                                            }
+                                                        });
 
-                                                                console.log(chalk.magenta("newUser after updating: " + JSON.stringify(newUser, null, "\t")));
+                                                        //transfer data
+                                                        newUser.facebook = oldUser.facebook;
+                                                        newUser.userDetails.facebook = oldFacebook._id;
 
-                                                                newUser.save(function (err) {
-                                                                    if (err) {
-                                                                        console.log("Error saving the user.");
-                                                                        res.json({
-                                                                            success: false,
-                                                                            message: 'Error occurred'
-                                                                        });
-                                                                    } else {
+                                                        console.log(chalk.magenta("newUser after updating: " + JSON.stringify(newUser, null, "\t")));
 
-                                                                        console.log("newUser saved successfully");
-                                                                        console.log(chalk.blue("newUser after saving: " + JSON.stringify(newUser, null, "\t")));
+                                                        newUser.save(function (err) {
+                                                            if (err) {
+                                                                console.log("Error saving the user.");
+                                                                return res.json({
+                                                                    success: false,
+                                                                    message: 'Error occurred 45665'
+                                                                });
+                                                            } else {
+                                                                console.log("newUser saved successfully");
+                                                                console.log(chalk.blue("newUser after saving: " + JSON.stringify(newUser, null, "\t")));
+                                                            }
+                                                        });
 
-                                                                        Facebook.findOneAndRemove({
-                                                                            _id: newFacebook
-                                                                        }, function (err) {
-                                                                            if (err) {
-                                                                                console.log("Error 464132131");
-                                                                                res.json({
-                                                                                    success: false,
-                                                                                    message: 'Error occurred'
-                                                                                });
-                                                                            } else {
+                                                        Facebook.findOneAndRemove({
+                                                            _id: newFacebook
+                                                        }, function (err) {
+                                                            if (err) {
+                                                                console.log("Error 464132131");
+                                                                return res.json({
+                                                                    success: false,
+                                                                    message: 'Error occurred 489456123'
+                                                                });
+                                                            } else {
+                                                                console.log("newFacebook successfully removed");
+                                                            }
+                                                        });
 
-                                                                                console.log("newFacebook successfully removed");
-
-                                                                                oldUser.remove(function (err) {
-                                                                                    if (err) {
-                                                                                        console.log("Error 446848432");
-                                                                                        res.json({
-                                                                                            success: false,
-                                                                                            message: 'Error occurred'
-                                                                                        });
-                                                                                    } else {
-                                                                                        console.log("oldUser successfully removed");
-                                                                                        res.json({
-                                                                                            success: true,
-                                                                                            message: 'Successfully updated'
-                                                                                        });
-                                                                                    }
-                                                                                });
-                                                                            }
-                                                                        });
-                                                                    }
+                                                        oldUser.remove(function (err) {
+                                                            if (err) {
+                                                                console.log("Error 446848432");
+                                                                return res.json({
+                                                                    success: false,
+                                                                    message: 'Error occurred 46415611'
+                                                                });
+                                                            } else {
+                                                                console.log("oldUser successfully removed");
+                                                                return res.json({
+                                                                    success: true,
+                                                                    message: 'Successfully updated'
                                                                 });
                                                             }
                                                         });
+
                                                     } else {
                                                         console.log("No old facebook account found.");
                                                     }
@@ -286,7 +290,7 @@ module.exports = function (app, express) {
 
                                                 if (err) {
                                                     console.log("Error 5648212313");
-                                                    res.json({success: false, message: 'Error occurred'});
+                                                    return res.json({success: false, message: 'Error occurred'});
                                                 } else {
                                                     if (facebook) {
 
@@ -298,7 +302,7 @@ module.exports = function (app, express) {
                                                             if (err) {
                                                                 res.json({success: false, message: 'Error occurred'});
                                                             } else {
-                                                                res.json({
+                                                                return res.json({
                                                                     success: true,
                                                                     message: 'Successfully updated'
                                                                 });
