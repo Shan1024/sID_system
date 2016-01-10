@@ -281,7 +281,7 @@
             var $content = $('#facebook-ratedbymelist');
             if(data.data.length > 0){
               for(var i = 0; i < data.data.length; i++){
-                $content.append("<div class='text-center'>" + data.data.targetid.name + ".</div>");
+                $content.append("<div class='text-center'>" + data.data[i].targetid.name + ".</div>");
               }
             }else {
                 $content.append("<div class='text-center'> You have not rated any Facebook profiles.</div>");
