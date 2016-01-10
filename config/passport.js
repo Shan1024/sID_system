@@ -49,7 +49,7 @@ module.exports = function (passport) {
             //.populate('facebook.ratedByMe')
             .exec(function (error, user) {
                 console.log(JSON.stringify(user, null, "\t"));
-                if (err) {
+                if (error) {
                     done(error);
                     console.log("Error 1564512332131 ++++++++++++++++++++++++++++++++++++++");
                 } else {
@@ -64,7 +64,7 @@ module.exports = function (passport) {
                             // .populate('userDetails.linkedin')
                             //.populate('facebook.ratedByMe')
                             .exec(function (error, user) {
-                                if (err) {
+                                if (error) {
                                     done(error);
                                     console.log("Error 94516513132 +++++++++++++++++-----------------------");
                                 } else {
