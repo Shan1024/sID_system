@@ -6,12 +6,24 @@
 <body style="background-image:url('/img/organizations/<%= org.orgid%>/bg.png')">
 	<div class = "profile-container">
 		<div class="tag-container">
-			<span class="tag-line"><%= org.userDetails.tagline %></span>
+			<span class="tag-line">
+				<% if(org.userDetails.tagline){ %>
+					<%= org.userDetails.tagline %>
+				<%}else{%>
+					sID Verified Organization
+				<%}%>
+			</span>
 		</div>
 		<img class="profile-cover" src="/img/organizations/<%= org.orgid%>/cover.png">
 		<img class="sid-banner" src="/img/organizations/<%= org.orgid%>/banner.png">
 		<img class="logo" src="/img/organizations/<%= org.orgid%>/logo.png">
-		<span class="profile-title"><%= org.userDetails.organization %></span>
+		<span class="profile-title">
+			<% if(org.userDetails.organization){ %>
+				<%= org.userDetails.organization %>
+			<%}else{%>
+				Organization Title Not Available
+			<%}%>
+		</span>
 		<div class="about-container">
 			<div class="section-header">
 				<img class="section-icon" src="/img/organizations/<%= org.orgid%>/about-icon.png">
@@ -21,25 +33,41 @@
 				<li class="about-item">
 					<img class="about-item" src="/img/organizations/<%= org.orgid%>/description.png">
 					<div class="item-content">
-						<%= org.userDetails.description %>
+						<% if(org.userDetails.description){ %>
+							<%= org.userDetails.description %>
+						<%}else{%>
+							Organization description not available
+						<%}%>
 					</div>
 				</li>
 				<li class="about-item">
 					<img class="about-item" src="/img/organizations/<%= org.orgid%>/email.png">
 					<div class="item-content">
-						<%= org.userDetails.email %>
+						<%if(org.userDetails.email){%>
+							<%= org.userDetails.email %>
+						<%}else{%>
+							Organization email not available
+						<%}%>
 					</div>
 				</li>
 				<li class="about-item">
 					<img class="about-item" src="/img/organizations/<%= org.orgid%>/id.png">
 					<div class="item-content">
-						<%= org.orgid %>
+						<%if(org.orgid){%>
+							<%= org.orgid %>
+						<%}else{%>
+							Organization Id not available
+						<%}%>
 					</div>
 				</li>
 				<li class="about-item">
 					<img class="about-item" src="/img/organizations/<%= org.orgid%>/website.png">
 					<div class="item-content">
-						<%= org.userDetails.website %>
+						<%if(org.userDetails.website){%>
+							<%= org.userDetails.website %>
+						<%}else{%>
+							Website info not available
+						<%}%>
 					</div>
 				</li>
 			</div>
@@ -50,14 +78,18 @@
 				Members
 			</div>
 			<div class="section-body">
-				<% for(var i = 0; i < org.members.length ; i += 1) { %>
-					<li class="about-item">
-						<div class="fb-profile">
-							<img class="fb-photo" src="https://graph.facebook.com/v2.3/100000211592969/picture">
-							<span class="fb-name"><%= org.members[i].fbid %> | <%= org.members[i].username %></span>
-						</div>
-					</li>
-				<% } %>
+				<%if(org.members){%>
+					<% for(var i = 0; i < org.members.length ; i += 1) { %>
+						<li class="about-item">
+							<div class="fb-profile">
+								<img class="fb-photo" src="https://graph.facebook.com/v2.3/100000211592969/picture">
+								<span class="fb-name"><%= org.members[i].fbid %> | <%= org.members[i].username %></span>
+							</div>
+						</li>
+					<% } %>
+				<%}else{%>
+					<span>This organization does not have any members yet</span>
+				<%}%>
 			</div>
 		</div>
 	</div>
