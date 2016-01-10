@@ -164,7 +164,8 @@ module.exports = function (app, express) {
                         if (newUser) {
 
                             var newFacebook = newUser.userDetails.facebook._id;
-console.log(chalk.cyan("New facebook: "+newFacebook));
+
+                            console.log(chalk.cyan("New facebook: " + newFacebook));
                             console.log(chalk.magenta("User found: " + JSON.stringify(newUser, null, "\t")));
 
                             //Account merging
@@ -212,45 +213,65 @@ console.log(chalk.cyan("New facebook: "+newFacebook));
                                                         oldFacebook.save(function (err) {
                                                             if (err) {
                                                                 console.log("Error 4845123");
+                                                                res.json({
+                                                                    success: false,
+                                                                    message: 'Error occurred'
+                                                                });
                                                             } else {
                                                                 console.log("oldFacebook successfully saved");
                                                                 console.log(chalk.cyan("oldFacebook after saving: " + JSON.stringify(oldFacebook, null, "\t")));
+                                                                //transfer data
+                                                                newUser.facebook = oldUser.facebook;
+                                                                newUser.userDetails.facebook = oldFacebook._id;
+
+                                                                console.log(chalk.magenta("newUser after updating: " + JSON.stringify(newUser, null, "\t")));
+
+                                                                newUser.save(function (err) {
+                                                                    if (err) {
+                                                                        console.log("Error saving the user.");
+                                                                        res.json({
+                                                                            success: false,
+                                                                            message: 'Error occurred'
+                                                                        });
+                                                                    } else {
+
+                                                                        console.log("newUser saved successfully");
+                                                                        console.log(chalk.blue("newUser after saving: " + JSON.stringify(newUser, null, "\t")));
+
+                                                                        Facebook.findOneAndRemove({
+                                                                            _id: newFacebook
+                                                                        }, function (err) {
+                                                                            if (err) {
+                                                                                console.log("Error 464132131");
+                                                                                res.json({
+                                                                                    success: false,
+                                                                                    message: 'Error occurred'
+                                                                                });
+                                                                            } else {
+
+                                                                                console.log("newFacebook successfully removed");
+
+                                                                                oldUser.remove(function (err) {
+                                                                                    if (err) {
+                                                                                        console.log("Error 446848432");
+                                                                                        res.json({
+                                                                                            success: false,
+                                                                                            message: 'Error occurred'
+                                                                                        });
+                                                                                    } else {
+                                                                                        console.log("oldUser successfully removed");
+                                                                                        res.json({
+                                                                                            success: true,
+                                                                                            message: 'Successfully updated'
+                                                                                        });
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                });
                                                             }
                                                         });
-
-                                                        //transfer data
-                                                        newUser.facebook = oldUser.facebook;
-                                                        newUser.userDetails.facebook = oldFacebook._id;
-
-                                                        console.log(chalk.magenta("newUser after updating: " + JSON.stringify(newUser, null, "\t")));
-
-                                                        newUser.save(function (err) {
-                                                            if (err) {
-                                                                console.log("Error saving the user.");
-                                                            } else {
-                                                                console.log("newUser saved successfully");
-                                                                console.log(chalk.blue("newUser after saving: " + JSON.stringify(newUser, null, "\t")));
-                                                            }
-                                                        });
-
-                                                        Facebook.findOneAndRemove({
-                                                            _id: newFacebook
-                                                        }, function (err) {
-                                                            if (err) {
-                                                                console.log("Error 464132131");
-                                                            } else {
-                                                                console.log("newFacebook successfully removed");
-                                                            }
-                                                        });
-
-                                                        oldUser.remove(function (err) {
-                                                            if (err) {
-                                                                console.log("Error 446848432");
-                                                            } else {
-                                                                console.log("oldUser successfully removed");
-                                                            }
-                                                        });
-
                                                     } else {
                                                         console.log("No old facebook account found.");
                                                     }
