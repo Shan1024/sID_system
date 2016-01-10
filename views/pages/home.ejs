@@ -17,7 +17,7 @@
       <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
    </head>
 
-   <body style="padding-right:0px; padding-left:0px; background-color: #2c3e50">
+   <body style="padding-right:0px; padding-left:0px; background-color: #D1E5F9;">
      <!-- Navigation -->
      <!-- <nav class="navbar navbar-default navbar-fixed-top"> -->
      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="margin-bottom:0" id="landingnavbar">
@@ -91,7 +91,7 @@
                        <% } else { %>
 
                        <% } %>
-                        <img src="/img/homepage/facebook_leftblank.png" id="facebook_leftblank">
+                        <!-- <img src="/img/homepage/facebook_leftblank.png" id="facebook_leftblank"> -->
                      </div>
                      <div class="panel-body">
                               <!-- check if the user has this token (is the user authenticated with this social account) -->
@@ -132,7 +132,7 @@
                        <% } else { %>
 
                        <% } %>
-                        <img src="/img/homepage/linkedin_leftblank.png" id="facebook_leftblank">
+                        <!-- <img src="/img/homepage/linkedin_leftblank.png" id="facebook_leftblank"> -->
                      </div>
                      <div class="panel-body">
                               <!-- check if the user has this token (is the user authenticated with this social account) -->
@@ -154,14 +154,14 @@
                                   </div>
                               </div>
                               <% } else { %>
-                              <div align="center">
-                                 <a href="/connect/linkedin" class="btn btn-primary">Connect LinkedIn</a>
+                              <div class="btn-group btn-group-justified">
+                                <a href="/connect/linkedin" class="btn btn-primary">Connect LinkedIn</a>
                               </div>
                               <% } %>
                               <% } else { %>
-                              <div align="center">
-                                 <a href="/connect/linkedin" class="btn btn-primary">Connect LinkedIn</a>
-                              </div>
+                                <div class="btn-group btn-group-justified">
+                                  <a href="/connect/linkedin" class="btn btn-primary">Connect LinkedIn</a>
+                                </div>
                               <% } %>
                      </div>
                   </div>
@@ -421,7 +421,9 @@
           function(data,status){
             var $content = $('#facebook-ratedbyme');
             $content.append("<div class='text-center'>" + data.count + " Facebook profiles are rated by me.</div>");
-            $content.append("<div class='text-center'><a href='/allFacebookUsersRatedByMe' class='btn btn-primary' role='button'>View All</a></div>");
+            if (data.count > 0) {
+              $content.append("<div class='text-center'><a href='/allFacebookUsersRatedByMe' class='btn btn-primary' role='button'>View All</a></div>");
+            }
           });
       </script>
       <script type="text/javascript" src="scripts/typeahead.bundle.js"></script>
