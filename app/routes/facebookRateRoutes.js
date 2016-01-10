@@ -1020,12 +1020,10 @@ console.log(chalk.cyan("New facebook: "+newFacebook));
                             console.log(chalk.blue("Target found: " + JSON.stringify(target, null, "\t")));
 
                             User.findOne({
-                                _id: me.user,
-                                uid: {$ne: null}//uid != null
+                                _id: me.user
                             }, function (err, myUser) {
                                 User.findOne({
-                                    _id: target.user,
-                                    uid: {$ne: null}//uid != null
+                                    _id: target.user
                                 }, function (err, targetUser) {
                                     addRating(req, res, me, target, myUser, targetUser);
                                     if (target) {
