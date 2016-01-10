@@ -3,41 +3,41 @@
 <head>
 	<link rel="stylesheet" href="/stylesheets/profile.css">
 </head>
-<body style="background-image:url('/img/organizations/bg.png')">
+<body style="background-image:url('/img/organizations/<%= org.orgid%>/bg.png')">
 	<div class = "profile-container">
 		<div class="tag-container">
 			<span class="tag-line">Educational Institute</span>
 		</div>
-		<img class="profile-cover" src="/img/organizations/cover.png">
-		<img class="sid-banner" src="/img/organizations/banner.png">
-		<img class="logo" src="/img/organizations/logo.png">
+		<img class="profile-cover" src="/img/organizations/<%= org.orgid%>/cover.png">
+		<img class="sid-banner" src="/img/organizations/<%= org.orgid%>/banner.png">
+		<img class="logo" src="/img/organizations/<%= org.orgid%>/logo.png">
 		<span class="profile-title"><%= org.userDetails.organization %></span>
 		<div class="about-container">
 			<div class="section-header">
-				<img class="section-icon" src="/img/organizations/about-icon.png">
+				<img class="section-icon" src="/img/organizations/<%= org.orgid%>/about-icon.png">
 				About
 			</div>
 			<div class="section-body">
 				<li class="about-item">
-					<img class="about-item" src="/img/organizations/description.png">
+					<img class="about-item" src="/img/organizations/<%= org.orgid%>/description.png">
 					<div class="item-content">
 						University of Moratuwa is the country's leading technological higher education institute excelling both locally and globally.
 					</div>
 				</li>
 				<li class="about-item">
-					<img class="about-item" src="/img/organizations/email.png">
+					<img class="about-item" src="/img/organizations/<%= org.orgid%>/email.png">
 					<div class="item-content">
 						<%= org.userDetails.email %>
 					</div>
 				</li>
 				<li class="about-item">
-					<img class="about-item" src="/img/organizations/id.png">
+					<img class="about-item" src="/img/organizations/<%= org.orgid%>/id.png">
 					<div class="item-content">
 						<%= org.orgid %>
 					</div>
 				</li>
 				<li class="about-item">
-					<img class="about-item" src="/img/organizations/website.png">
+					<img class="about-item" src="/img/organizations/<%= org.orgid%>/website.png">
 					<div class="item-content">
 						www.mrt.ac.lk
 					</div>
@@ -46,7 +46,7 @@
 		</div>
 		<div class="members-container">
 			<div class="section-header">
-				<img class="section-icon" src="/img/organizations/members-icon.png">
+				<img class="section-icon" src="/img/organizations/<%= org.orgid%>/members-icon.png">
 				Members
 			</div>
 			<div class="section-body">
