@@ -150,7 +150,7 @@ module.exports = function (app, express) {
                 return res.json({error: "Missing uid parameter"});
             }
 
-            console.log("Finding the user");
+            console.log("Searching the user");
 
             User.findOne({
                 'userDetails.local.email': email
@@ -164,8 +164,8 @@ module.exports = function (app, express) {
                         if (newUser) {
 
                             var newFacebook = newUser.userDetails.facebook._id;
-
-                            console.log(chalk.blue("User found: " + JSON.stringify(newUser, null, "\t")));
+console.log(chalk.cyan("New facebook: "+newFacebook));
+                            console.log(chalk.magenta("User found: " + JSON.stringify(newUser, null, "\t")));
 
                             //Account merging
                             if (!newUser.userDetails.facebook.uid) {
@@ -180,7 +180,7 @@ module.exports = function (app, express) {
                                     } else {
                                         if (oldFacebook) {
 
-                                            console.log(chalk.blue("oldFacebook: " + JSON.stringify(oldFacebook, null, "\t")));
+                                            console.log(chalk.cyan("oldFacebook: " + JSON.stringify(oldFacebook, null, "\t")));
 
                                             //merge the accounts
                                             User.findOne({
@@ -191,19 +191,14 @@ module.exports = function (app, express) {
                                                 } else {
                                                     if (oldUser) {
 
-                                                        console.log(chalk.blue("oldUser: " + JSON.stringify(oldUser, null, "\t")));
+                                                        console.log(chalk.magenta("oldUser: " + JSON.stringify(oldUser, null, "\t")));
 
-                                                        //transfer data
-                                                        newUser.facebook = oldUser.facebook;
-                                                        newUser.userDetails.facebook = oldFacebook._id;
-
-                                                        newUser.save(function (err) {
-                                                            if (err) {
-                                                                console.log("Error saving the user.");
-                                                            } else {
-                                                                console.log("newUser saved successfully");
-                                                            }
-                                                        });
+                                                        console.log("newUser.userDetails.facebook.id: " + newUser.userDetails.facebook.id);
+                                                        console.log("newUser.userDetails.facebook.name: " + newUser.userDetails.facebook.name);
+                                                        console.log("newUser.userDetails.facebook.username: " + newUser.userDetails.facebook.username);
+                                                        console.log("newUser.userDetails.facebook.email: " + newUser.userDetails.facebook.email);
+                                                        console.log("newUser.userDetails.facebook.token: " + newUser.userDetails.facebook.token);
+                                                        console.log("newUser._id: " + newUser._id);
 
                                                         oldFacebook.id = newUser.userDetails.facebook.id;
                                                         oldFacebook.name = newUser.userDetails.facebook.name;
@@ -212,11 +207,29 @@ module.exports = function (app, express) {
                                                         oldFacebook.token = newUser.userDetails.facebook.token;
                                                         oldFacebook.user = newUser._id;
 
+                                                        console.log(chalk.blue("oldFacebook after updating: " + JSON.stringify(oldFacebook, null, "\t")));
+
                                                         oldFacebook.save(function (err) {
                                                             if (err) {
                                                                 console.log("Error 4845123");
                                                             } else {
                                                                 console.log("oldFacebook successfully saved");
+                                                                console.log(chalk.cyan("oldFacebook after saving: " + JSON.stringify(oldFacebook, null, "\t")));
+                                                            }
+                                                        });
+
+                                                        //transfer data
+                                                        newUser.facebook = oldUser.facebook;
+                                                        newUser.userDetails.facebook = oldFacebook._id;
+
+                                                        console.log(chalk.magenta("newUser after updating: " + JSON.stringify(newUser, null, "\t")));
+
+                                                        newUser.save(function (err) {
+                                                            if (err) {
+                                                                console.log("Error saving the user.");
+                                                            } else {
+                                                                console.log("newUser saved successfully");
+                                                                console.log(chalk.blue("newUser after saving: " + JSON.stringify(newUser, null, "\t")));
                                                             }
                                                         });
 
@@ -245,33 +258,37 @@ module.exports = function (app, express) {
                                             });
                                         } else {
                                             console.log("No older facebook account found. No need to merge.");
-                                        }
-                                    }
-                                });
 
-                                Facebook.findOne({
-                                    user: newUser._id
-                                }, function (err, facebook) {
+                                            Facebook.findOne({
+                                                user: newUser._id
+                                            }, function (err, facebook) {
 
-                                    if (err) {
-                                        console.log("Error 5648212313");
-                                        res.json({success: false, message: 'Error occurred'});
-                                    } else {
-                                        if (facebook) {
-
-                                            facebook.uid = uid;
-
-                                            console.log(chalk.blue("Facebook2: " + JSON.stringify(facebook, null, "\t")));
-
-                                            facebook.save(function (err) {
                                                 if (err) {
+                                                    console.log("Error 5648212313");
                                                     res.json({success: false, message: 'Error occurred'});
                                                 } else {
-                                                    res.json({success: true, message: 'Successfully updated'});
+                                                    if (facebook) {
+
+                                                        facebook.uid = uid;
+
+                                                        console.log(chalk.blue("Facebook2: " + JSON.stringify(facebook, null, "\t")));
+
+                                                        facebook.save(function (err) {
+                                                            if (err) {
+                                                                res.json({success: false, message: 'Error occurred'});
+                                                            } else {
+                                                                res.json({
+                                                                    success: true,
+                                                                    message: 'Successfully updated'
+                                                                });
+                                                            }
+                                                        });
+                                                    } else {
+                                                        console.log("No facebook account found 486512");
+                                                    }
                                                 }
                                             });
-                                        } else {
-                                            console.log("No facebook account found 486512");
+
                                         }
                                     }
                                 });
@@ -1003,10 +1020,12 @@ module.exports = function (app, express) {
                             console.log(chalk.blue("Target found: " + JSON.stringify(target, null, "\t")));
 
                             User.findOne({
-                                _id: me.user
+                                _id: me.user,
+                                uid: {$ne: null}//uid != null
                             }, function (err, myUser) {
                                 User.findOne({
-                                    _id: target.user
+                                    _id: target.user,
+                                    uid: {$ne: null}//uid != null
                                 }, function (err, targetUser) {
                                     addRating(req, res, me, target, myUser, targetUser);
                                     if (target) {
