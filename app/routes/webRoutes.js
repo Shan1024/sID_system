@@ -539,6 +539,7 @@ module.exports = function (app, passport) {
 
 	app.get('/organizations/:orgid', function (req, res) {
 		var orgid = req.params.orgid;
+		console.log(orgid);
 		if(!orgid){
 			console.error("invalid organization id");
 			res.render('home.ejs', {user: req.user});
