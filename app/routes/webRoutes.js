@@ -576,7 +576,7 @@ module.exports = function (app, passport) {
 			});
 		}
     });
-	
+
     app.get('/rateafriend', isLoggedIn, function (req, res) {
 
         if (req.user.userDetails.facebook) {
@@ -603,6 +603,10 @@ module.exports = function (app, passport) {
                 user: req.user
             });
         }
+    });
+
+    app.get('/allFacebookUsersRatedByMe', isLoggedIn, function (req, res) {
+        res.render('allFacebookUsersRatedByMe.ejs', {user: req.user});
     });
 
     app.get('/usersummary', function (req, res) {
@@ -853,6 +857,15 @@ module.exports = function (app, passport) {
                                                                     });
                                                                 }
                                                             }
+                                                        });
+                                                    }else{
+                                                        console.log("No linkedin account linked");
+
+                                                        res.render('usersummaryoverall.ejs', {
+                                                            user: req.user,
+                                                            name: name,
+                                                            facebook: facebookData,
+                                                            linkedin: linkedinData
                                                         });
                                                     }
 
