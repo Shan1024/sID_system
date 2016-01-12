@@ -154,9 +154,15 @@ module.exports = function (app, passport) {
                                         console.log(chalk.blue("Facebook: " + JSON.stringify(facebook, null, "\t")));
 
                                         // return the information including token as JSON
+                                        var linked = false;
+
+                                        if (facebook.token) {
+                                            linked = true;
+                                        }
+
                                         return res.json({
                                             success: true,
-                                            linked: true,
+                                            linked: linked,
                                             fbappid: facebook.id,
                                             fbid: facebook.uid,
                                             token: token
@@ -170,9 +176,7 @@ module.exports = function (app, passport) {
                                 }
                             });
                         }
-
                     }
-
                 });
             } else {
                 console.log(chalk.red('Authentication failed. Password required.'));
@@ -181,7 +185,6 @@ module.exports = function (app, passport) {
                     message: 'Authentication failed. Password required.'
                 });
             }
-
         } else {
             res.status(400).json({
                 success: false,
@@ -502,9 +505,9 @@ module.exports = function (app, passport) {
 
     app.get('/home', isLoggedIn, function (req, res) {
         if (typeof req.user.orgid !== 'undefined') {
-          res.json({message: "organization user is found!", user: req.user});
-        }else{
-          res.render('home.ejs', {user: req.user});
+            res.json({message: "organization user is found!", user: req.user});
+        } else {
+            res.render('home.ejs', {user: req.user});
         }
     });
 
@@ -537,44 +540,44 @@ module.exports = function (app, passport) {
         res.render('history.ejs', {user: req.user});
     });
 
-	app.get('/organizations/:orgid', function (req, res) {
-		var orgid = req.params.orgid;
-		
-		if(req.user && req.user.orgid){
-			OrgUser.findOne({
-				orgid:orgid
-			},function(err,organization){
-				if(err){
-					console.log("Unexpected error while getting org user");
-					res.render('home.ejs', {user: req.user});
-				}
-				if(organization){
-					res.render('organizationEdit.ejs', {org: organization});
-				}else{
-					console.log("Cannot get organization from given id: "+ orgid);
-					res.render('home.ejs', {user: req.user});
-				}
-			});
-		}else{		
-			if(!orgid){
-				console.error("invalid organization id");
-				res.render('home.ejs', {user: req.user});
-			}
-			OrgUser.findOne({
-				orgid:orgid
-			},function(err,organization){
-				if(err){
-					console.log("Unexpected error while getting org user");
-					res.render('home.ejs', {user: req.user});
-				}
-				if(organization){
-					res.render('organization.ejs', {org: organization});
-				}else{
-					console.log("Cannot get organization from given id: "+ orgid);
-					res.render('home.ejs', {user: req.user});
-				}
-			});
-		}
+    app.get('/organizations/:orgid', function (req, res) {
+        var orgid = req.params.orgid;
+
+        if (req.user && req.user.orgid) {
+            OrgUser.findOne({
+                orgid: orgid
+            }, function (err, organization) {
+                if (err) {
+                    console.log("Unexpected error while getting org user");
+                    res.render('home.ejs', {user: req.user});
+                }
+                if (organization) {
+                    res.render('organizationEdit.ejs', {org: organization});
+                } else {
+                    console.log("Cannot get organization from given id: " + orgid);
+                    res.render('home.ejs', {user: req.user});
+                }
+            });
+        } else {
+            if (!orgid) {
+                console.error("invalid organization id");
+                res.render('home.ejs', {user: req.user});
+            }
+            OrgUser.findOne({
+                orgid: orgid
+            }, function (err, organization) {
+                if (err) {
+                    console.log("Unexpected error while getting org user");
+                    res.render('home.ejs', {user: req.user});
+                }
+                if (organization) {
+                    res.render('organization.ejs', {org: organization});
+                } else {
+                    console.log("Cannot get organization from given id: " + orgid);
+                    res.render('home.ejs', {user: req.user});
+                }
+            });
+        }
     });
 
     app.get('/rateafriend', isLoggedIn, function (req, res) {
@@ -858,7 +861,7 @@ module.exports = function (app, passport) {
                                                                 }
                                                             }
                                                         });
-                                                    }else{
+                                                    } else {
                                                         console.log("No linkedin account linked");
 
                                                         res.render('usersummaryoverall.ejs', {
