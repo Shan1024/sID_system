@@ -3,7 +3,8 @@ var mongoose = require('mongoose');
 //Entry schema
 var entrySchema = mongoose.Schema({
     claimid: String,
-    mysid: String, myid: {
+    mysid: String,
+    myid: {
         type: mongoose.Schema.Types.ObjectId
     },
     targetsid: String,

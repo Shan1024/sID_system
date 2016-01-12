@@ -49,31 +49,35 @@ module.exports = function (passport) {
             //.populate('facebook.ratedByMe')
             .exec(function (error, user) {
                 console.log(JSON.stringify(user, null, "\t"));
-                if (user) {
-                    done(error, user);
+                if (error) {
+                    done(error);
+                    console.log("Error 1564512332131 ++++++++++++++++++++++++++++++++++++++");
                 } else {
-                    // done(error);
-                    OrgUser.findOne({
-                            _id: id
-                        })
-                        // .populate('userDetails.facebook')
-                        // .populate('userDetails.linkedin')
-                        //.populate('facebook.ratedByMe')
-                        .exec(function (error, user) {
-                            console.log(JSON.stringify(user, null, "\t"));
-                            if (user) {
-                                done(error, user);
-                            } else {
-                                done(error);
-                            }
-
-
-                            //res.render('partials/profile', {user: user});
-                        });
+                    if (user) {
+                        done(error, user);
+                    } else {
+                        // done(error);
+                        OrgUser.findOne({
+                                _id: id
+                            })
+                            // .populate('userDetails.facebook')
+                            // .populate('userDetails.linkedin')
+                            //.populate('facebook.ratedByMe')
+                            .exec(function (error, user) {
+                                if (error) {
+                                    done(error);
+                                    console.log("Error 94516513132 +++++++++++++++++-----------------------");
+                                } else {
+                                    console.log(JSON.stringify(user, null, "\t"));
+                                    if (user) {
+                                        done(error, user);
+                                    } else {
+                                        done(null, false);
+                                    }
+                                }
+                            });
+                    }
                 }
-
-
-                //res.render('partials/profile', {user: user});
             });
     });
 
@@ -108,23 +112,23 @@ module.exports = function (passport) {
                         }
                     }
                     else {
-                      User.findOne({'userDetails.local.email': email}, function (err, user) {
-                          // if there are any errors, return the error
-                          if (err) {
-                              return done(err);
-                          }
-                          // if no user is found, return the message
-                          if (!user) {
-                              return done(null, false, req.flash('loginMessage', 'No user found.'));
-                          }
-                          if (!user.validPassword(password)) {
-                              return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
-                          }
-                          // all is well, return user
-                          else {
-                              return done(null, user);
-                          }
-                      });
+                        User.findOne({'userDetails.local.email': email}, function (err, user) {
+                            // if there are any errors, return the error
+                            if (err) {
+                                return done(err);
+                            }
+                            // if no user is found, return the message
+                            if (!user) {
+                                return done(null, false, req.flash('loginMessage', 'No user found.'));
+                            }
+                            if (!user.validPassword(password)) {
+                                return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.'));
+                            }
+                            // all is well, return user
+                            else {
+                                return done(null, user);
+                            }
+                        });
                     }
                 });
             });
@@ -366,6 +370,14 @@ module.exports = function (passport) {
 
                 console.log("Looking for FB user");
 
+                //var userID;
+                //
+                //if (req.user.userDetails.facebook && req.user.userDetails.facebook.id) {
+                //    userID = req.user.userDetails.facebook.id;
+                //} else {
+                //    userID = profile.id;
+                //}
+
                 Facebook.findOne({
                     id: profile.id
                 }, function (err, fbUser) {
@@ -504,6 +516,8 @@ module.exports = function (passport) {
 
                         } else {
 
+                            var newFBUser = new User();
+
                             var facebook = new Facebook();
 
                             facebook.id = profile.id;
@@ -512,7 +526,28 @@ module.exports = function (passport) {
                             if (profile.emails) {
                                 facebook.email = (profile.emails[0].value || '').toLowerCase();
                             }
-                            facebook.user = newUser._id;
+
+                            //facebook.user = newUser._id;
+
+                            facebook.user = newFBUser._id;
+
+                            newFBUser.userDetails.facebook = facebook._id;
+                            newFBUser.userDetails.local = req.user.userDetails.local;
+                            req.user.userDetails.local = null;
+                            if (req.user.userDetails.linkedin) {
+                                newFBUser.userDetails.linkedin = req.user.userDetails.linkedin;
+                                req.user.userDetails.linkedin = null;
+                            }
+
+                            if (req.user.linkedin) {
+                                newFBUser.linkedin = req.user.linkedin;
+                                req.user.linkedin = null;
+                            }
+                            req.user.save(function (err) {
+                                if (err) {
+                                    console.log(chalk.red("Error 646156132 - req.user cannot save: " + err));
+                                }
+                            });
 
                             console.log("++++++++++++++++++++++++++++++++++++++");
                             console.log('getting user ID');
@@ -530,13 +565,21 @@ module.exports = function (passport) {
                                 if (err) {
                                     return done(err);
                                 } else {
-                                    newUser.userDetails.facebook = facebook._id;
+                                    //newUser.userDetails.facebook = facebook._id;
+                                    //
+                                    //newUser.save(function (err) {
+                                    //    if (err) {
+                                    //        return done(err);
+                                    //    }
+                                    //    return done(null, newUser);
+                                    //});
 
-                                    newUser.save(function (err) {
+                                    newFBUser.save(function (err) {
                                         if (err) {
                                             return done(err);
+                                        } else {
+                                            return done(null, newFBUser);
                                         }
-                                        return done(null, newUser);
                                     });
                                 }
                             });

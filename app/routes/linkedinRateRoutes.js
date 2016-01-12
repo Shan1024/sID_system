@@ -650,7 +650,7 @@ module.exports = function (app, express) {
      *
      * @apiParam {String} targetid The LinkedIn User ID of the target user.
      * @apiParam {String} claimid The LinkedIn Claim ID.
-	 * @apiParam {String} [myid] The LinkedIn User ID of the logged in user.
+     * @apiParam {String} [myid] The LinkedIn User ID of the logged in user.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -670,7 +670,7 @@ module.exports = function (app, express) {
 
             var targetid = req.body.targetid;
             var claimid = req.body.claimid;
-			var viewerid = req.body.myid;
+            var viewerid = req.body.myid;
 
             if (!targetid) {
                 if (req.user) {
@@ -732,37 +732,37 @@ module.exports = function (app, express) {
                             character = "C";
                         }
 
-						/**Added by Dodan*/
-						
-						Entry.findOne({
-							claimid: claimid,
-							targetsid: targetid,
-							mysid: viewerid
-						},function(err,entry){
-							var myrating;
-							if(err){
-								//do nothingg
-								console.log(chalk.red("Error occurred when getting entry"));
-							}else{
-								if(entry){
-									myrating = entry.rating;
-								}
-							}
-							res.json({
-								success: true,
-								yes: claim.yes,
-								no: claim.no,
-								notSure: claim.notSure,
-								overallRating: claim.overallRatingLevel,
-								claimScore: character,
-								myrating: myrating
-							});
-						});
-						
-						/** Addition done*/
-						/*** Commented by Dodan
-						
-                        res.json({
+                        /**Added by Dodan*/
+
+                        Entry.findOne({
+                            claimid: claimid,
+                            targetsid: targetid,
+                            mysid: viewerid
+                        }, function (err, entry) {
+                            var myrating;
+                            if (err) {
+                                //do nothingg
+                                console.log(chalk.red("Error occurred when getting entry"));
+                            } else {
+                                if (entry) {
+                                    myrating = entry.rating;
+                                }
+                            }
+                            res.json({
+                                success: true,
+                                yes: claim.yes,
+                                no: claim.no,
+                                notSure: claim.notSure,
+                                overallRating: claim.overallRatingLevel,
+                                claimScore: character,
+                                myrating: myrating
+                            });
+                        });
+
+                        /** Addition done*/
+                        /*** Commented by Dodan
+
+                         res.json({
                             success: true,
                             yes: claim.yes,
                             no: claim.no,
@@ -1307,7 +1307,10 @@ module.exports = function (app, express) {
                     return res.json({success: false, message: "Error occurred"});
                 } else {
                     if (user) {
-                        var url = user.userDetails.linkedin.url;
+                        var url;
+                        if (user.userDetails.linkedin) {
+                            url = user.userDetails.linkedin.url;
+                        }
                         return res.json({success: true, url: url});
                     } else {
 

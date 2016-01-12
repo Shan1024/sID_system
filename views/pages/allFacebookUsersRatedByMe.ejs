@@ -17,7 +17,7 @@
       <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
    </head>
 
-   <body style="padding-right:0px; padding-left:0px; background-color: #2c3e50">
+   <body style="padding-right:0px; padding-left:0px; background-color: #D1E5F9">
      <!-- Navigation -->
      <!-- <nav class="navbar navbar-default navbar-fixed-top"> -->
      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="margin-bottom:0" id="landingnavbar">
@@ -91,7 +91,7 @@
                        <% } else { %>
 
                        <% } %>
-                        <img src="/img/homepage/facebook_leftblank.png" id="facebook_leftblank">
+                        <!-- <img src="/img/homepage/facebook_leftblank.png" id="facebook_leftblank"> -->
                      </div>
                      <div class="panel-body">
                               <!-- check if the user has this token (is the user authenticated with this social account) -->
@@ -132,7 +132,7 @@
                        <% } else { %>
 
                        <% } %>
-                        <img src="/img/homepage/linkedin_leftblank.png" id="facebook_leftblank">
+                        <!-- <img src="/img/homepage/linkedin_leftblank.png" id="facebook_leftblank"> -->
                      </div>
                      <div class="panel-body">
                               <!-- check if the user has this token (is the user authenticated with this social account) -->
@@ -257,7 +257,7 @@
             </div>
             <div class="col-xs-12 col-sm-6 col-md-8">
                <div class="panel panel-default">
-                  <div class="panel-heading">
+                  <div class="panel-heading text-center">
                      <h3><span class="fa fa-facebook"></span> Facebook Profiles Rated By Me </h3>
                   </div>
                   <div class="panel-body">
@@ -281,7 +281,8 @@
             var $content = $('#facebook-ratedbymelist');
             if(data.data.length > 0){
               for(var i = 0; i < data.data.length; i++){
-                $content.append("<div class='text-center'>" + data.data.targetid.name + ".</div>");
+                var profileLink = 'https://www.facebook.com/' + data.data[i].targetid.uid;
+                $content.append("<a href=" + profileLink + " target='_blank'>" + data.data[i].targetid.name + "</a><br>");
               }
             }else {
                 $content.append("<div class='text-center'> You have not rated any Facebook profiles.</div>");
