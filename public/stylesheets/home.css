@@ -14,6 +14,19 @@ body {
   background-color: #0084B4;
   height: 65px;
 }
+
+.overall-rating-panel-super{
+  padding: 2px;
+}
+
+.overall-rating-container{
+  padding: 0px
+}
+
+.overall-rating-panel{
+  margin-bottom: 0px;
+}
+
 .panel-body {
     padding-bottom: 0px;
 }
@@ -49,6 +62,11 @@ body {
     color: #fff;
 }
 
+.container {
+     padding-right: 0px;
+     padding-left: 0px;
+}
+
 #facebook_leftblank{
   width: 100%;
   height: 65px;
@@ -57,8 +75,11 @@ body {
 #homepage_fb_pic{
   position: absolute;
   height: 60px;
-  top: 8px;
+  top: 16px;
   left: 8px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: #fff;
 }
 
 
@@ -67,4 +88,11 @@ body {
   height: 60px;
   top: 200px;
   left: 8px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: #fff;
+}
+
+p{
+  font-size: 12px;
 }
