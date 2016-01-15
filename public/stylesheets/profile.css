@@ -1,10 +1,10 @@
 div.profile-container{
 	background-color:#aaaaaa;
 	width: 60vw;
-    height: 100vh;
+    min-height: 99.5vh;
     position: absolute;
     margin-left: 20vw;
-    top: -3px;
+    margin-top: -11px;
 	border: 3px solid #111;
 }
 
@@ -59,9 +59,9 @@ div.about-container{
     height: 350px;
     background-color: #fefefe;
     border-radius: 3px;
-    position: absolute;
-    left: 10px;
-    top: 280px;
+    margin-left: 10px;
+    margin-top: 37px;
+	margin-bottom: 10px;
 }
 
 div.members-container{
@@ -69,9 +69,8 @@ div.members-container{
     height: 350px;
     background-color: #fefefe;
     border-radius: 3px;
-    position: absolute;
-    left: 270px;
-    top: 280px;
+    margin-left: 270px;
+    margin-top: -360px;
 }
 
 div.section-header{
@@ -88,8 +87,7 @@ div.section-header{
 
 img.section-icon{
 	height: 23px;
-    position: absolute;
-    left: 6px;
+    margin-left: -28px;
     top: 6px;
 }
 

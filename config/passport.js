@@ -72,7 +72,7 @@ module.exports = function (passport) {
                                     if (user) {
                                         done(error, user);
                                     } else {
-                                        done(error);
+                                        done(null, false);
                                     }
                                 }
                             });
@@ -370,6 +370,14 @@ module.exports = function (passport) {
 
                 console.log("Looking for FB user");
 
+                //var userID;
+                //
+                //if (req.user.userDetails.facebook && req.user.userDetails.facebook.id) {
+                //    userID = req.user.userDetails.facebook.id;
+                //} else {
+                //    userID = profile.id;
+                //}
+
                 Facebook.findOne({
                     id: profile.id
                 }, function (err, fbUser) {
@@ -508,6 +516,8 @@ module.exports = function (passport) {
 
                         } else {
 
+                            var newFBUser = new User();
+
                             var facebook = new Facebook();
 
                             facebook.id = profile.id;
@@ -516,7 +526,28 @@ module.exports = function (passport) {
                             if (profile.emails) {
                                 facebook.email = (profile.emails[0].value || '').toLowerCase();
                             }
-                            facebook.user = newUser._id;
+
+                            //facebook.user = newUser._id;
+
+                            facebook.user = newFBUser._id;
+
+                            newFBUser.userDetails.facebook = facebook._id;
+                            newFBUser.userDetails.local = req.user.userDetails.local;
+                            req.user.userDetails.local = null;
+                            if (req.user.userDetails.linkedin) {
+                                newFBUser.userDetails.linkedin = req.user.userDetails.linkedin;
+                                req.user.userDetails.linkedin = null;
+                            }
+
+                            if (req.user.linkedin) {
+                                newFBUser.linkedin = req.user.linkedin;
+                                req.user.linkedin = null;
+                            }
+                            req.user.save(function (err) {
+                                if (err) {
+                                    console.log(chalk.red("Error 646156132 - req.user cannot save: " + err));
+                                }
+                            });
 
                             console.log("++++++++++++++++++++++++++++++++++++++");
                             console.log('getting user ID');
@@ -534,13 +565,21 @@ module.exports = function (passport) {
                                 if (err) {
                                     return done(err);
                                 } else {
-                                    newUser.userDetails.facebook = facebook._id;
+                                    //newUser.userDetails.facebook = facebook._id;
+                                    //
+                                    //newUser.save(function (err) {
+                                    //    if (err) {
+                                    //        return done(err);
+                                    //    }
+                                    //    return done(null, newUser);
+                                    //});
 
-                                    newUser.save(function (err) {
+                                    newFBUser.save(function (err) {
                                         if (err) {
                                             return done(err);
+                                        } else {
+                                            return done(null, newFBUser);
                                         }
-                                        return done(null, newUser);
                                     });
                                 }
                             });
