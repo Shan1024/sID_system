@@ -2,6 +2,7 @@ body {
   padding: 70px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   word-wrap: break-word;
+  background-color: #F5F8FA;
 }
 
 .input-group span.twitter-typeahead .tt-hint {
