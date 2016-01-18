@@ -343,6 +343,10 @@ $(function(){
 
       if (response) {
 
+        if(response.data.length == 0){
+          $('.myratings-contentarea').append('<div class="panel panel-default"> <div class="panel-body" style="padding: 15px;">Sorry, You have not rated any Facebook profiles. </div></div>');
+        }
+
         var theTemplateScript = $("#ratedbyme-template").html();
 
         var theTemplate = Handlebars.compile(theTemplateScript);
