@@ -320,7 +320,7 @@ $(function(){
   var settings = {
       "async": true,
       "crossDomain": true,
-      "url": "http://sid.projects.mrt.ac.lk/rate/facebook/getAllRatingsByUser",
+      "url": "/rate/facebook/getAllRatingsByUser",
       "method": "POST",
       "headers": {
           "cache-control": "no-cache",
@@ -328,8 +328,7 @@ $(function(){
       },
       "data": {
           "limit": "10",
-          "order": "-1",
-          "targetid": "100000211592969"
+          "order": "-1"
       }
   }
 
