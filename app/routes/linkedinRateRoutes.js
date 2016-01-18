@@ -1232,8 +1232,12 @@ module.exports = function (app, express) {
                         LinkedInRatedByMe.find({
                             myid: linkedin._id
                         }).populate({
-                                path: 'entries',
-                                populate: {path: 'targetid', model: "LinkedIn", select: 'uid name url'}
+                            path: 'entries',
+                            select: '-claimid -myid -targetid'
+                            //populate: {path: 'targetid', model: "LinkedIn", select: 'uid name url photo'}
+                        }).populate({
+                                path: 'targetid',
+                                select: 'uid name url photo'
                             })
                             //.select('entries')
                             .exec(function (err, linkedinRatedByMe) {

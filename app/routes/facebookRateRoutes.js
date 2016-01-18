@@ -2188,8 +2188,18 @@ module.exports = function (app, express) {
                                 myid: facebook._id
                             })
                             .populate({
-                                path: 'entries',
-                                populate: {path: 'targetid', model: "Facebook", select: 'uid name'}
+                                    path: 'entries',
+                                    select: '-claimid -myid -targetid'
+                                    //populate: {path: 'targetid', model: "Facebook", select: 'uid name'}
+                                }
+                                //,
+                                //{
+                                //    path: "targetid",
+                                //    model: "Facebook"
+                                //}
+                            ).populate({
+                                path: 'targetid',
+                                select: 'uid name'
                             })
                             //.select('entries')
                             .exec(function (err, facebookRatedByMe) {
@@ -2438,30 +2448,44 @@ module.exports = function (app, express) {
 
                     if (facebook) {
 
-                        FacebookRatedByMe
-                            .find({
-                                myid: facebook._id
-                            })
-                            //.populate({
-                            //    path: 'targetid',
-                            //    select:'name uid'
-                            //})
-                            //.select('entries')
-                            .exec(function (err, facebookRatedByMes) {
-                                //console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
-                                var count = 0;
+                        Facebook.findOne({
+                            uid: targetid
+                        }, function (err, facebook) {
 
-                                for (var i = 0; i < facebookRatedByMes.length; i++) {
-                                    if (facebookRatedByMes[i].entries) {
-                                        count += facebookRatedByMes[i].entries.length;
-                                    }
-                                }
+                            if (err) {
                                 return res.json({
-                                    success: true,
-                                    count: count
+                                    success: false,
+                                    message: "Error occurred"
                                 });
+                            } else {
 
-                            });
+                                if (facebook) {
+                                    FacebookRatedByMe
+                                        .find({
+                                            myid: facebook._id
+                                        })
+                                        .populate({
+                                            path: 'targetid',
+                                            select: 'name uid -_id'
+                                        })
+                                        .select('targetid -_id')
+                                        .exec(function (err, facebookRatedByMes) {
+                                            console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
+                                            return res.json({
+                                                success: true,
+                                                data: facebookRatedByMes
+                                            });
+
+                                        });
+                                } else {
+                                    return res.json({
+                                        success: false,
+                                        message: "No facebook account for the given id found"
+                                    });
+                                }
+                            }
+
+                        });
 
                     } else {
                         return res.json({
@@ -2474,7 +2498,6 @@ module.exports = function (app, express) {
             });
 
         });
-
 
     app.use('/rate/facebook', rateRouter);
 
