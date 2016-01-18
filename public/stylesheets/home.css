@@ -41,10 +41,16 @@ body {
 }
 
 .btn-primary {
-    color: #337ab7;
+    color: #0084B4;
     background-color: #fff;
-    border-color: #2e6da4;
+    border-color: #0084B4;
     transition: 0.3s;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #0084B4;
+    border-color: #0084B4;
 }
 
 .navbar-inverse {
@@ -68,13 +74,22 @@ body {
      padding-left: 0px;
 }
 
+.facebook-ratedbyme-list-pic{
+    position: relative;
+    left: 8px;
+    top: 16px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #fff;
+}
+
 #facebook_leftblank{
   width: 100%;
   height: 65px;
 }
 
 #homepage_fb_pic{
-  position: absolute;
+  position: relative;;
   height: 60px;
   top: 16px;
   left: 8px;
@@ -85,9 +100,9 @@ body {
 
 
 #homepage_linkedin_pic{
-  position: absolute;
+  position: relative;;
   height: 60px;
-  top: 200px;
+  top: 16px;
   left: 8px;
   border-style: solid;
   border-width: 2px;

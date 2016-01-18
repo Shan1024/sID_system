@@ -1,46 +1,370 @@
 <!doctype html>
 <html>
 <head>
-    <% include ../partials/head %>
-    <link rel="stylesheet" href="/stylesheets/sb-admin.css">
+    <title>sID Social Identity</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <link rel="shortcut icon" href="/icons/logo.ico"/>
+    <link rel="stylesheet" href="/stylesheets/home.css">
+    <link rel="stylesheet" href="/stylesheets/search.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <script src="https://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
 </head>
-<body style="padding: 0px;">
-<% include ../partials/nav-side-bar %>
-<div id="wrapper">
-    <div id="page-wrapper">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-12">
-                    <% include ../partials/message %>
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="col-lg-12">
-                    <!-- <div class="panel panel-default"> -->
-                    <!-- <div class="col-sm-10 col-sm-offset-2 col-md-10 col-md-offset-2 main"> -->
-
-                    <div class="page-header text-center">
-                        <h1><span class="fa fa-anchor"></span> Claims Rated By Me</h1>
-                    </div>
-
-                    <!-- </div> -->
-                    <!-- </div> -->
-                </div>
-            </div>
-
-            <div class="contentArea">
-
-            </div>
-
-            <% include ../partials/footer %>
+<body style="padding-right:0px; padding-left:0px;">
+<!-- Navigation -->
+<!-- <nav class="navbar navbar-default navbar-fixed-top"> -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="margin-bottom:0" id="landingnavbar">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header"
+             style="background-color: rgba(255,255,255,.15); color: rgba(255,255,255,.15); background: transparent; margin-top: 10px;">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand page-scroll" href="/">sID Social Identity</a>
         </div>
-        <!-- /#page-wrapper -->
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="hidden">
+                    <a href="#home"></a>
+                </li>
+                <!-- <li>
+                <a class="page-scroll" href="#home" style="padding: 7px 20px;">Home</a>
+                </li> -->
+                <!--<li>-->
+                <!--<a class="page-scroll" href="#platforms">Platforms</a>-->
+                <!--</li>-->
+                <!--<li>-->
+                <!--<a class="page-scroll" href="#progress">Progress</a>-->
+                <!--</li>-->
+                <!--<li>-->
+                <!--<a class="page-scroll" href="#contactus">Contact</a>-->
+                <!--</li>-->
+                <!-- <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li> -->
+                <li style="margin-right: 20px; margin-top: 10px; ">
+                    <a class="page-scroll" href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a>
+                </li>
+
+
+            </ul>
+            <div class="col-xs-12 col-sm-5 col-md-5 pull-left" style="margin-top: 10px;">
+                <form class="navbar-form" role="search" action="/overview" method="post" id="sidusersearchform">
+                    <div class="input-group" style="width: 100%;">
+                        <input type="text" class="form-control" name="name" placeholder="Search sID" id="sidusersearch">
+
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- <div id="sidusersearch">
+                  <input class="typeahead" type="text" placeholder="Search sID">
+                </div> -->
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel panel-header" style="border-radius: 4px 4px 0px 0px">
+                        <% if(user.userDetails.facebook && user.userDetails.facebook.token){ %>
+                        <img src="https://graph.facebook.com/v2.3/<%= user.userDetails.facebook.uid %>/picture"
+                             id="homepage_fb_pic">
+                        <% } else { %>
+
+                        <% } %>
+                        <!-- <img src="/img/homepage/facebook_leftblank.png" id="facebook_leftblank"> -->
+                    </div>
+                    <div class="panel-body">
+                        <!-- check if the user has this token (is the user authenticated with this social account) -->
+                        <% if (user.userDetails.facebook) { %>
+                        <% if (user.userDetails.facebook.token) { %>
+                        <p>
+                          <strong><%= user.userDetails.facebook.name %></strong><br>
+                          <%= user.userDetails.facebook.email %><br>
+                        </p>
+
+                        <div class="row">
+                            <!-- <div class="col-xs-12 col-sm-4"><a href="/unlink/facebook" class="btn btn-primary">Unlink Profile</a></div>
+                            <div class="col-xs-12 col-sm-4"><a href="/linkedinmyratings" class="btn btn-primary">My Ratings</a></div>
+                            <div class="col-xs-12 col-sm-4"><a href="/linkedinratedByMe" class="btn btn-primary">Rated By Me</a></div> -->
+                            <div class="btn-group btn-group-justified">
+                                <a href="/facebookmyratings" class="btn btn-primary">My Ratings</a>
+                                <a href="/facebookratedByMe" class="btn btn-primary">Rated by me</a>
+                                <a href="/unlink/facebook" class="btn btn-primary">Unlink</a>
+                            </div>
+                        </div>
+                        <% } else { %>
+                        <div align="center">
+                            <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                        </div>
+                        <% } %>
+                        <% } else { %>
+                        <div align="center">
+                            <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel panel-header" style="border-radius: 4px 4px 0px 0px">
+                        <% if(user.userDetails.linkedin && user.userDetails.linkedin.token){ %>
+                        <img src="<%= user.userDetails.linkedin.photo %>" id="homepage_linkedin_pic">
+                        <% } else { %>
+
+                        <% } %>
+                        <!-- <img src="/img/homepage/linkedin_leftblank.png" id="facebook_leftblank"> -->
+                    </div>
+                    <div class="panel-body">
+                        <!-- check if the user has this token (is the user authenticated with this social account) -->
+                        <% if (user.userDetails.linkedin) { %>
+                        <% if (user.userDetails.linkedin.token) { %>
+                        <p>
+                            <strong><%= user.userDetails.linkedin.name %></strong><br>
+                            <%= user.userDetails.linkedin.email %><br>
+                        </p>
+
+                        <div class="row">
+                            <!-- <div class="col-xs-12 col-sm-4"><a href="/unlink/facebook" class="btn btn-primary">Unlink Profile</a></div>
+                            <div class="col-xs-12 col-sm-4"><a href="/linkedinmyratings" class="btn btn-primary">My Ratings</a></div>
+                            <div class="col-xs-12 col-sm-4"><a href="/linkedinratedByMe" class="btn btn-primary">Rated By Me</a></div> -->
+                            <div class="btn-group btn-group-justified">
+                                <a href="/linkedinmyratings" class="btn btn-primary">My Ratings</a>
+                                <a href="/linkedinratedByMe" class="btn btn-primary">Rated by me</a>
+                                <a href="/unlink/linkedin" class="btn btn-primary">Unlink</a>
+
+                            </div>
+                        </div>
+                        <% } else { %>
+                        <div class="btn-group btn-group-justified">
+                            <a href="/connect/linkedin" class="btn btn-primary">Connect LinkedIn</a>
+                        </div>
+                        <% } %>
+                        <% } else { %>
+                        <div class="btn-group btn-group-justified">
+                            <a href="/connect/linkedin" class="btn btn-primary">Connect LinkedIn</a>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <h3><span class="fa fa-user"></span> sID Account</h3>
+                        <% if (user.userDetails.local.email) { %>
+                        <p>
+                            <strong><%= user.userDetails.local.firstname %> <%= user.userDetails.local.lastname %></strong>
+                            <br>
+                            <%= user.userDetails.local.email %>
+                            <br>
+                            Member Since: <%= user.userDetails.created %><br>
+                        </p>
+                        <!-- Trigger the modal with a button -->
+                        <!-- <div align="center">
+                           <button type="button" class="btn btn-default col-xs-12" data-toggle="modal" data-target="#myModal">
+                           Change Password
+                           </button>
+                        </div> -->
+                        <div class="btn-group btn-group-justified">
+                            <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Change
+                                Password</a>
+                        </div>
+                        <!-- Modal -->
+                        <div id="myModal" class="modal fade bs-example-modal-xs" tabindex="-1" role="dialog">
+                            <div class="modal-dialog modal-xs">
+                                <!-- Modal content-->
+                                <div class="modal-content" style="padding: 10px;">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Change Password</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- LOGIN FORM -->
+                                        <div ng-app="angular-validator-demo" ng-controller="DemoCtrl">
+                                            <form action="/changepassword" method="post" name="myForm"
+                                                  class="form-horizontal"
+                                                  novalidate angular-validator>
+                                                <div class="form-group">
+                                                    <label>Old Password</label>
+                                                    <input type="password"
+                                                           name="oldpassword"
+                                                           class="form-control"
+                                                           ng-model="form.oldpassword"
+                                                           invalid-message="passwordValidator(form.password)"
+                                                           validate-on="dirty"
+                                                           required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Password</label>
+                                                    <input type="password"
+                                                           name="password"
+                                                           class="form-control"
+                                                           ng-model="form.password"
+                                                           invalid-message="passwordValidator(form.password)"
+                                                           validate-on="dirty"
+                                                           required>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Confirm Password</label>
+                                                    <input type="password"
+                                                           name="confirmPassword"
+                                                           class="form-control"
+                                                           ng-model="form.confirmPassword"
+                                                           validator="form.password === form.confirmPassword"
+                                                           validate-on="dirty"
+                                                           invalid-message="'Passwords do not match!'"
+                                                           required>
+                                                </div>
+                                                <br>
+
+                                                <div class="form-group">
+                                                    <div align="center">
+                                                      <button type="submit" class="btn btn-primary" ng-disabled="myForm.$invalid" style="color: #fff; background-color: #0084B4;">Submit</button>
+                                                      <button type="button" ng-click="myForm.reset()"
+                                                                class="btn btn-danger">
+                                                            Reset
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--<a href="/unlink/local" class="btn btn-default">Unlink</a>-->
+                        <% } else { %>
+                        <!--<a href="/connect/local" class="btn btn-default">Connect Local</a>-->
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-9">
+          <div class="ratedbyme-contentarea"></div>
+        </div>
+    </div>
+    <div class="row">
+    </div>
+    <div class="row">
     </div>
 </div>
-<!-- /#wrapper -->
-<script src="/scripts/setheights.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.0/mustache.min.js"></script>
-<script src="/scripts/facebookratedByMe.js"></script>
+
+<script id="ratedbyme-template" type="x-handlebars-template">
+  {{#data}}
+    <div class="panel panel-default">
+      <div class="panel panel-header" style="border-radius: 4px 4px 0px 0px">
+        <img src="https://graph.facebook.com/v2.3/{{targetid.uid}}/picture" class="facebook-ratedbyme-list-pic">
+      </div>
+      <div class="panel-body">
+      <p>
+        <a href="https://facebook.com/{{targetid.uid}}"><strong>{{targetid.name}}</strong></a><br>
+      </p>
+      <ul>
+        {{#entries}}
+          <li>{{{claim}}}
+          {{#ifCond rating 1}}
+              <img src="/icons/claimT.png" style="height: 20px;">
+          {{else}}
+            {{#ifCond rating 0}}
+                <img src="/icons/claimC.png" style="height: 20px;">
+            {{else}}
+                <img src="/icons/claimR.png" style="height: 20px;">
+            {{/ifCond}}
+          {{/ifCond}}
+          </li>
+        {{/entries}}
+      </ul>
+      </div>
+    </div>
+  {{/data}}
+</script>
+
+<script type="text/javascript">
+  Handlebars.registerHelper('ifCond', function(v1, v2, options) {
+  if(v1 === v2) {
+    return options.fn(this);
+  }
+  return options.inverse(this);
+  });
+</script>
+
+<script type="text/javascript">
+$(function(){
+
+  var settings = {
+      "async": true,
+      "crossDomain": true,
+      "url": "/rate/facebook/getAllRatingsByUser",
+      "method": "POST",
+      "headers": {
+          "cache-control": "no-cache",
+          "content-type": "application/x-www-form-urlencoded"
+      },
+      "data": {
+          "limit": "10",
+          "order": "-1"
+      }
+  }
+
+  $.ajax(settings).done(function (response) {
+      console.log(JSON.stringify(response, null, "\t"));
+
+      // for (var i = 0; i < response.data.length; i++) {
+      //     for (var j = 0; j < response.data[i].entries.length; j++) {
+      //         console.log(response.data[i].entries[j].targetid.uid);
+      //     }
+      // }
+
+      if (response) {
+
+        if(response.data.length == 0){
+          $('.myratings-contentarea').append('<div class="panel panel-default"> <div class="panel-body" style="padding: 15px;">Sorry, You have not rated any Facebook profiles. </div></div>');
+        }
+
+        var theTemplateScript = $("#ratedbyme-template").html();
+
+        var theTemplate = Handlebars.compile(theTemplateScript);
+
+        $(".ratedbyme-contentarea").append(theTemplate(response));
+
+      }
+  });
+})
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.js'></script>
+<script src="/scripts/angular-validator-app.js"></script>
+<script src="/scripts/angular-validator.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="scripts/typeahead.bundle.js"></script>
+<script type="text/javascript" src="scripts/bloodhound.js"></script>
+<script type="text/javascript" src="scripts/search.js"></script>
 </body>
 </html>
