@@ -2448,44 +2448,30 @@ module.exports = function (app, express) {
 
                     if (facebook) {
 
-                        Facebook.findOne({
-                            uid: targetid
-                        }, function (err, facebook) {
+                        FacebookRatedByMe
+                            .find({
+                                myid: facebook._id
+                            })
+                            //.populate({
+                            //    path: 'targetid',
+                            //    select:'name uid'
+                            //})
+                            //.select('entries')
+                            .exec(function (err, facebookRatedByMes) {
+                                //console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
+                                var count = 0;
 
-                            if (err) {
-                                return res.json({
-                                    success: false,
-                                    message: "Error occurred"
-                                });
-                            } else {
-
-                                if (facebook) {
-                                    FacebookRatedByMe
-                                        .find({
-                                            myid: facebook._id
-                                        })
-                                        .populate({
-                                            path: 'targetid',
-                                            select: 'name uid -_id'
-                                        })
-                                        .select('targetid -_id')
-                                        .exec(function (err, facebookRatedByMes) {
-                                            console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
-                                            return res.json({
-                                                success: true,
-                                                data: facebookRatedByMes
-                                            });
-
-                                        });
-                                } else {
-                                    return res.json({
-                                        success: false,
-                                        message: "No facebook account for the given id found"
-                                    });
+                                for (var i = 0; i < facebookRatedByMes.length; i++) {
+                                    if (facebookRatedByMes[i].entries) {
+                                        count += facebookRatedByMes[i].entries.length;
+                                    }
                                 }
-                            }
+                                return res.json({
+                                    success: true,
+                                    count: count
+                                });
 
-                        });
+                            });
 
                     } else {
                         return res.json({
