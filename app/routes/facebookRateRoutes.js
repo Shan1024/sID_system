@@ -1085,8 +1085,8 @@ module.exports = function (app, express) {
                                                     _id: facebook.user
                                                 }, function (err, targetUser) {
                                                     addRating(req, res, me, facebook, myUser, targetUser);
-                                                    if (target) {
-                                                        setName(me, target);
+                                                    if (facebook) {
+                                                        setName(me, facebook);
                                                     }
                                                 });
                                             });
@@ -2137,17 +2137,25 @@ module.exports = function (app, express) {
      *     {
      *         "success": true,
      *         "data": [
-     *           {
-     *             "_id": "5671b59e6993ff982e1cd811",
-     *             "claimid": {CLAIM_ID},
-     *             "myid": "5671a265ebe27c396108ea77",
-     *             "targetid": "5671a1dcebe27c396108ea74",
-     *             "data": {CLAIM},
-     *             "rating": 1,
-     *             "weight": 2,
-     *             "__v": 0,
-     *             "lastUpdated": "2015-12-16T21:04:54.439Z"
-     *           },
+     *               "_id": "569dcce93317079e5a39f790",
+     *               "myid": "56924c209980c72f3a52d0ff",
+     *               "targetid": {
+     *                 "_id": "569dcce93317079e5a39f78d",
+     *                 "uid": {ID},
+     *                 "name": {NAME}
+     *               },
+     *               "entries": [
+     *                     {
+     *                          "_id": "569dcce93317079e5a39f78f",
+     *                          "mysid": "{ID}",
+     *                          "targetsid": "{ID}",
+     *                          "claim": {CLAIM},
+     *                          "rating": 1,
+     *                          "weight": 2,
+     *                          "__v": 0,
+     *                          "lastUpdated": "2016-01-19T05:43:05.665Z"
+     *                     },
+     *               ]
      *         ]
      *     }
      *
@@ -2210,7 +2218,7 @@ module.exports = function (app, express) {
                                     if (facebookRatedByMe) {
                                         console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMe, null, "\t")));
                                         console.log("test: " + facebookRatedByMe[0].entries);
-                                        res.json({success: true, data: facebookRatedByMe});
+                                        res.json({success: true, data: facebookRatedByMe.reverse()});
                                     } else {
                                         console.log("facebookRatedByMe not found");
                                         res.json({success: false, message: "facebookRatedByMe not found"});
@@ -2448,44 +2456,30 @@ module.exports = function (app, express) {
 
                     if (facebook) {
 
-                        Facebook.findOne({
-                            uid: targetid
-                        }, function (err, facebook) {
+                        FacebookRatedByMe
+                            .find({
+                                myid: facebook._id
+                            })
+                            //.populate({
+                            //    path: 'targetid',
+                            //    select:'name uid'
+                            //})
+                            //.select('entries')
+                            .exec(function (err, facebookRatedByMes) {
+                                //console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
+                                var count = 0;
 
-                            if (err) {
-                                return res.json({
-                                    success: false,
-                                    message: "Error occurred"
-                                });
-                            } else {
-
-                                if (facebook) {
-                                    FacebookRatedByMe
-                                        .find({
-                                            myid: facebook._id
-                                        })
-                                        .populate({
-                                            path: 'targetid',
-                                            select: 'name uid -_id'
-                                        })
-                                        .select('targetid -_id')
-                                        .exec(function (err, facebookRatedByMes) {
-                                            console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMes, null, "\t")));
-                                            return res.json({
-                                                success: true,
-                                                data: facebookRatedByMes
-                                            });
-
-                                        });
-                                } else {
-                                    return res.json({
-                                        success: false,
-                                        message: "No facebook account for the given id found"
-                                    });
+                                for (var i = 0; i < facebookRatedByMes.length; i++) {
+                                    if (facebookRatedByMes[i].entries) {
+                                        count += facebookRatedByMes[i].entries.length;
+                                    }
                                 }
-                            }
+                                return res.json({
+                                    success: true,
+                                    count: count
+                                });
 
-                        });
+                            });
 
                     } else {
                         return res.json({
