@@ -1085,8 +1085,8 @@ module.exports = function (app, express) {
                                                     _id: facebook.user
                                                 }, function (err, targetUser) {
                                                     addRating(req, res, me, facebook, myUser, targetUser);
-                                                    if (target) {
-                                                        setName(me, target);
+                                                    if (facebook) {
+                                                        setName(me, facebook);
                                                     }
                                                 });
                                             });
@@ -2137,17 +2137,25 @@ module.exports = function (app, express) {
      *     {
      *         "success": true,
      *         "data": [
-     *           {
-     *             "_id": "5671b59e6993ff982e1cd811",
-     *             "claimid": {CLAIM_ID},
-     *             "myid": "5671a265ebe27c396108ea77",
-     *             "targetid": "5671a1dcebe27c396108ea74",
-     *             "data": {CLAIM},
-     *             "rating": 1,
-     *             "weight": 2,
-     *             "__v": 0,
-     *             "lastUpdated": "2015-12-16T21:04:54.439Z"
-     *           },
+     *               "_id": "569dcce93317079e5a39f790",
+     *               "myid": "56924c209980c72f3a52d0ff",
+     *               "targetid": {
+     *                 "_id": "569dcce93317079e5a39f78d",
+     *                 "uid": {ID},
+     *                 "name": {NAME}
+     *               },
+     *               "entries": [
+     *                     {
+     *                          "_id": "569dcce93317079e5a39f78f",
+     *                          "mysid": "{ID}",
+     *                          "targetsid": "{ID}",
+     *                          "claim": {CLAIM},
+     *                          "rating": 1,
+     *                          "weight": 2,
+     *                          "__v": 0,
+     *                          "lastUpdated": "2016-01-19T05:43:05.665Z"
+     *                     },
+     *               ]
      *         ]
      *     }
      *
