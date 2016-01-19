@@ -441,6 +441,17 @@
                 $content.append("<div class='text-center'> No of claims rated: " + data.count + " <a href='/facebookratedByMe' class='btn' role='button'>(View All)</a></div>");
             });
 </script>
+<script type="text/javascript">
+    var $content = $('#linkedin-ratedbyme');
+    $.post("/rate/linkedin/getAllUsersRatedByMeCount",
+            function (data, status) {
+                $content.append("<div class='text-center'> No of profiles rated: " + data.count + " <a href='/allFacebookUsersRatedByMe' class='btn' role='button'>(View All)</a></div>");
+            });
+    $.post("/rate/linkedin/getAllClaimsRatedByMeCount",
+            function (data, status) {
+                $content.append("<div class='text-center'> No of claims rated: " + data.count + " <a href='/facebookratedByMe' class='btn' role='button'>(View All)</a></div>");
+            });
+</script>
 <script type="text/javascript" src="scripts/typeahead.bundle.js"></script>
 <script type="text/javascript" src="scripts/bloodhound.js"></script>
 <script type="text/javascript" src="scripts/search.js"></script>
