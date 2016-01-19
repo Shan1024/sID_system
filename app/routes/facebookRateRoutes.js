@@ -2210,7 +2210,7 @@ module.exports = function (app, express) {
                                     if (facebookRatedByMe) {
                                         console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMe, null, "\t")));
                                         console.log("test: " + facebookRatedByMe[0].entries);
-                                        res.json({success: true, data: facebookRatedByMe});
+                                        res.json({success: true, data: facebookRatedByMe.reverse()});
                                     } else {
                                         console.log("facebookRatedByMe not found");
                                         res.json({success: false, message: "facebookRatedByMe not found"});
