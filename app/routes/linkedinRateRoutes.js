@@ -793,7 +793,18 @@ module.exports = function (app, express) {
      * @apiGroup LinkedIn
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The LinkedIn User ID of the target user.
+     * @apiParam {String} [targetid] The LinkedIn User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "id": {ID},
+     *         "claimsCount": 3,
+     *         "yes": 2,
+     *         "notSure": 2,
+     *         "no": 0
+     *     }
      *
      */
     rateRouter.route('/getAllRatingsCount')
@@ -886,6 +897,12 @@ module.exports = function (app, express) {
      *
      * @apiParam {String} targetid The LinkedIn User ID of the target user.
      *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         success: true,
+     *         ratingLevel: "N"
+     *     }
      */
     rateRouter.route('/getOverallProfileRating')
         .post(function (req, res) {
@@ -980,6 +997,26 @@ module.exports = function (app, express) {
      *
      * @apiParam {String} targetid The LinkedIn User ID of the target user.
      *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "data": [
+     *           {
+     *             "_id": "5671b384be3b91a821ae16c4",
+     *             "claimid": {CLAIM_ID},
+     *             "claim": {CLAIM},
+     *             "myid": {ID},
+     *             "__v": 0,
+     *             "overallRating": 0,
+     *             "score": 2,
+     *             "notSure": 1,
+     *             "no": 0,
+     *             "yes": 0,
+     *             "lastUpdated": "2015-12-16T20:18:45.734Z"
+     *          },
+     *        ]
+     *     }
      */
     rateRouter.route('/getAllRatedClaims')
         .post(function (req, res) {
@@ -1033,9 +1070,30 @@ module.exports = function (app, express) {
      * @apiGroup LinkedIn
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The LinkedIn User ID of the target user.
+     * @apiParam {String} [targetid] The LinkedIn User ID of the target user. If this is not provided, targetid will be set to current User ID.
      * @apiParam {Number} limit The number of results needed. If the value is invalid, default value will be used.
      * @apiParam {Number} order -1 for descending order and 1 for ascending order. Default value is -1.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "data": [
+     *           {
+     *             "_id": "5671b59e6993ff982e1cd811",
+     *             "claimid": {CLAIM_ID},
+     *             "claim": {CLAIM},
+     *             "myid": {ID},
+     *             "__v": 0,
+     *             "overallRating": 0,
+     *             "score": 10,
+     *             "notSure": 1,
+     *             "no": 0,
+     *             "yes": 1,
+     *             "lastUpdated": "2015-12-16T21:04:54.439Z"
+     *           },
+     *         ]
+     *     }
      *
      */
     rateRouter.route('/getLastRatedClaims')
@@ -1109,9 +1167,24 @@ module.exports = function (app, express) {
      * @apiGroup LinkedIn
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The LinkedIn User ID of the target user.
+     * @apiParam {String} [targetid] The LinkedIn User ID of the target user. If this is not provided, targetid will be set to current User ID.
      * @apiParam {Number} limit The number of results needed. If the value is invalid, default value will be used.
      * @apiParam {Number} order -1 for descending order and 1 for ascending order. Default value is -1.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "data": [
+     *           {
+     *             "_id": "5671b59e6993ff982e1cd811",
+     *             "id": {CLAIM_ID},
+     *             "data": {CLAIM},
+     *             "rating": 1,
+     *             "lastUpdated": "2015-12-16T21:04:54.439Z"
+     *           },
+     *         ]
+     *     }
      *
      */
     rateRouter.route('/getLastRatedEntries')
@@ -1139,18 +1212,20 @@ module.exports = function (app, express) {
                     });
                 }
             }
-            if (!limit) {
-                return res.json({error: "Missing limit paramter"});
-            }
+
             if (limit <= 0) {
                 limit = defaultValues.entriesLimit;
             }
-
-            if (!order) {
-                return res.json({error: "Missing order paramter"});
+            if (!limit) {
+                return res.json({error: "Missing limit paramter"});
             }
+
+
             if (!(order == 1 || order == -1)) {
                 order = defaultValues.defaultOrder;
+            }
+            if (!order) {
+                return res.json({error: "Missing order paramter"});
             }
 
             LinkedIn.findOne({
@@ -1195,7 +1270,34 @@ module.exports = function (app, express) {
      * @apiGroup LinkedIn
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The LinkedIn User ID of the target user.
+     * @apiParam {String} [targetid] The LinkedIn User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "data": [
+     *               "_id": "569dcce93317079e5a39f790",
+     *               "myid": "56924c209980c72f3a52d0ff",
+     *               "targetid": {
+     *                 "_id": "569dcce93317079e5a39f78d",
+     *                 "uid": {ID},
+     *                 "name": {NAME}
+     *               },
+     *               "entries": [
+     *                     {
+     *                          "_id": "569dcce93317079e5a39f78f",
+     *                          "mysid": "{ID}",
+     *                          "targetsid": "{ID}",
+     *                          "claim": {CLAIM},
+     *                          "rating": 1,
+     *                          "weight": 2,
+     *                          "__v": 0,
+     *                          "lastUpdated": "2016-01-19T05:43:05.665Z"
+     *                     },
+     *               ]
+     *         ]
+     *     }
      *
      */
     rateRouter.route('/getAllRatingsByUser')
@@ -1229,13 +1331,21 @@ module.exports = function (app, express) {
                     res.json({success: false, message: "Error occurred"});
                 } else {
                     if (linkedin) {
-                        LinkedInRatedByMe.find({
-                            myid: linkedin._id
-                        }).populate({
-                            path: 'entries',
-                            select: '-claimid -myid -targetid'
-                            //populate: {path: 'targetid', model: "LinkedIn", select: 'uid name url photo'}
-                        }).populate({
+                        LinkedInRatedByMe
+                            .find({
+                                myid: linkedin._id
+                            })
+                            .populate({
+                                    path: 'entries',
+                                    select: '-claimid -myid -targetid'
+                                    //populate: {path: 'targetid', model: "LinkedIn", select: 'uid name'}
+                                }
+                                //,
+                                //{
+                                //    path: "targetid",
+                                //    model: "LinkedIn"
+                                //}
+                            ).populate({
                                 path: 'targetid',
                                 select: 'uid name url photo'
                             })
@@ -1247,7 +1357,8 @@ module.exports = function (app, express) {
                                 } else {
                                     if (linkedinRatedByMe) {
                                         console.log(chalk.blue("linkedinRatedByMe found: " + JSON.stringify(linkedinRatedByMe, null, "\t")));
-                                        res.json({success: true, data: linkedinRatedByMe});
+                                        console.log("test: " + linkedinRatedByMe[0].entries);
+                                        res.json({success: true, data: linkedinRatedByMe.reverse()});
                                     } else {
                                         console.log("linkedinRatedByMe not found");
                                         res.json({success: false, message: "linkedinRatedByMe not found"});
@@ -1262,9 +1373,267 @@ module.exports = function (app, express) {
             });
         });
 
+    /**
+     * @api {post} /rate/linkedin/getAllUsersRatedByMeCount Returns the number of users rated by the given user.
+     * @apiName getAllUsersRatedByMeCount
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [targetid] The LinkedIn User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *          "success": true,
+     *          "count": 6
+     *     }
+     *
+     */
+    rateRouter.route('/getAllUsersRatedByMeCount')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.linkedin) {
+                        targetid = req.user.userDetails.linkedin.uid;
+                    } else {
+                        return res.json({
+                            success: true,
+                            message: "No linkedin account is linked"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "No user found in the session"
+                    });
+                }
+            }
+
+            LinkedIn.findOne({
+                uid: targetid
+            }, function (err, linkedin) {
+
+                if (err) {
+                    return res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+
+                    if (linkedin) {
+                        LinkedInRatedByMe
+                            .find({
+                                myid: linkedin._id
+                            })
+                            //.populate({
+                            //    path: 'targetid',
+                            //    select:'name uid'
+                            //})
+                            //.select('targetid')
+                            .exec(function (err, linkedinRatedByMes) {
+                                console.log(chalk.blue("linkedinRatedByMes found: " + JSON.stringify(linkedinRatedByMes, null, "\t")));
+                                return res.json({
+                                    success: true,
+                                    count: linkedinRatedByMes.length
+                                });
+
+                            });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No linkedin account for the given id found"
+                        });
+                    }
+                }
+
+            });
+
+        });
 
     /**
+     * @api {post} /rate/linkedin/getAllUsersRatedByMe Returns the users who are rated by the given user.
+     * @apiName getAllUsersRatedByMe
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [targetid] The LinkedIn User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *          "success": true,
+     *          "data": [
+     *              {
+     *                  "_id": "56893cf746360ad81347544a",
+     *                  "targetid": {
+     *                      "_id": "56893cf746360ad813475447",
+     *                      "uid": "100000211592969",
+     *                      "name": "Malith Shan Mahanama"
+     *                  }
+     *              },
+     *          ]
+     *     }
+     *
+     */
+    rateRouter.route('/getAllUsersRatedByMe')
+        .post(function (req, res) {
 
+            var targetid = req.body.targetid;
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.linkedin) {
+                        targetid = req.user.userDetails.linkedin.uid;
+                    } else {
+                        return res.json({
+                            success: true,
+                            message: "No linkedin account is linked"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "No user found in the session"
+                    });
+                }
+            }
+
+            LinkedIn.findOne({
+                uid: targetid
+            }, function (err, linkedin) {
+
+                if (err) {
+                    return res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+
+                    if (linkedin) {
+                        LinkedINRatedByMe
+                            .find({
+                                myid: linkedin._id
+                            })
+                            .populate({
+                                path: 'targetid',
+                                select: 'name uid -_id'
+                            })
+                            .select('targetid -_id')
+                            .exec(function (err, linkedinRatedByMes) {
+                                console.log(chalk.blue("linkedinRatedByMes found: " + JSON.stringify(linkedinRatedByMes, null, "\t")));
+                                return res.json({
+                                    success: true,
+                                    data: linkedinRatedByMes
+                                });
+
+                            });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No linkedin account for the given id found"
+                        });
+                    }
+                }
+
+            });
+
+        });
+
+
+    /**
+     * @api {post} /rate/linkedin/getAllClaimsRatedByMeCount Returns the number of claims that the target user has rated.
+     * @apiName getAllClaimsRatedByMeCount
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [targetid] The LinkedIn User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *          "success": true,
+     *          "count": 6
+     *     }
+     *
+     */
+    rateRouter.route('/getAllClaimsRatedByMeCount')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.linkedin) {
+                        targetid = req.user.userDetails.linkedin.uid;
+                    } else {
+                        return res.json({
+                            success: true,
+                            message: "No linkedin account is linked"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "No user found in the session"
+                    });
+                }
+            }
+
+            LinkedIn.findOne({
+                uid: targetid
+            }, function (err, linkedin) {
+
+                if (err) {
+                    return res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+
+                    if (linkedin) {
+
+                        LinkedIn
+                            .find({
+                                myid: linkedin._id
+                            })
+                            //.populate({
+                            //    path: 'targetid',
+                            //    select:'name uid'
+                            //})
+                            //.select('entries')
+                            .exec(function (err, linkedinRatedByMes) {
+                                //console.log(chalk.blue("linkedinRatedByMes found: " + JSON.stringify(linkedinRatedByMes, null, "\t")));
+                                var count = 0;
+
+                                for (var i = 0; i < linkedinRatedByMes.length; i++) {
+                                    if (linkedinRatedByMes[i].entries) {
+                                        count += linkedinRatedByMes[i].entries.length;
+                                    }
+                                }
+                                return res.json({
+                                    success: true,
+                                    count: count
+                                });
+
+                            });
+
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No linkedin account for the given id found"
+                        });
+                    }
+                }
+
+            });
+
+        });
+
+
+    /**
      * Written By Dodan, Delete route if problems arise
      * @api {post} /rate/linkedin/getUrl Returns the linkedin url given the email address.
      * @apiName getUrl
