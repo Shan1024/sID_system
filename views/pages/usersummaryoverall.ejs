@@ -53,13 +53,18 @@
                 <!--<a class="page-scroll" href="#contactus">Contact</a>-->
                 <!--</li>-->
                 <!-- <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li> -->
-                <li style="margin-right: 20px; margin-top: 10px; ">
-                    <a class="page-scroll" href="/signup"><span class="glyphicon glyphicon-log-in"></span> Sign Up </a>
-                </li>
-                <li style="margin-right: 20px; margin-top: 10px; ">
-                    <a class="page-scroll" href="/login"><span class="glyphicon glyphicon-log-in"></span> Sign In </a>
-                </li>
-
+                <% if (user) { %>
+                  <li style="margin-right: 20px; margin-top: 10px; ">
+                      <a class="page-scroll" href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a>
+                  </li>
+                <% } else { %>
+                  <li style="margin-right: 20px; margin-top: 10px; ">
+                      <a class="page-scroll" href="/signup"><span class="glyphicon glyphicon-log-in"></span> Sign Up </a>
+                  </li>
+                  <li style="margin-right: 20px; margin-top: 10px; ">
+                      <a class="page-scroll" href="/login"><span class="glyphicon glyphicon-log-in"></span> Sign In </a>
+                  </li>
+                <% } %>
 
             </ul>
             <div class="col-xs-12 col-sm-5 col-md-5 pull-left" style="margin-top: 10px;">
@@ -88,7 +93,7 @@
     <div class="row">
       <div class="col-xs-12 col-md-8 col-md-offset-2">
           <div class="panel panel-default">
-            <div class="panel-heading text-center" id="overallratingstitle">
+            <div class="panel-heading text-center" id="overallratingstitle" style="font-size: 20px;">
               Overall Profile Rating for : <%= name %>
             </div>
             <div class="panel-body overall-rating-container">
@@ -160,7 +165,7 @@
 
     } else {
         var $content = $('#overallratingstitle');
-        $content.replaceWith("<div class='text-center'> <h3>Sorry! No rating data is available for <%= name %>.</h3></div>");
+        $content.replaceWith("<div class='text-center'> <h3>Sorry! No Facebook rating data is available for <%= name %>.</h3></div>");
     }
 
 </script>
