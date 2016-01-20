@@ -8,7 +8,7 @@ var logger = new winston.Logger({
             filename: './logs/all-logs.log',
             handleExceptions: false,
             json: true,
-            maxsize: 5242880, //5MB
+            //maxsize: 5242880*2, //5MB
             colorize: false
         }),
         new winston.transports.Console({
