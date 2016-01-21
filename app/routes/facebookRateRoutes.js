@@ -801,6 +801,74 @@ module.exports = function (app, express) {
         var targetid = req.body.targetid;
         var commentid = req.body.commentid;
         var commentData = req.body.comment;
+		var claimid = req.body.claimid;
+		
+		if(commentid){
+			Comment.findOne({
+				mysid:myid,
+				targetsid:targetid,
+				claimid: claimid
+			},function(err,comment){
+				if(err){
+					return res.json({success: false, message: "Error occurred"});
+				}
+				if(comment){
+					comment.comment = commentData;
+					comment.lastUpdated = Date.now();
+					comment.save(function (err) {
+						if (err) {
+							return res.json({success: false, message: "Error occurred"});
+						}
+						else {
+							return res.json({
+								success: true,
+								commentid: commentid,
+								claimid: claimid,
+								mysid: myid,
+								myid: me._id,
+								targetsid: targetid,
+								targetid: target._id,
+								comment: commentData
+							});
+						}
+					});
+				}else{
+					var newComment = new Comment({
+                        commentid: commentid,
+						claimid: claimid,
+                        mysid: myid,
+                        myid: me._id,
+                        targetsid: targetid,
+                        targetid: target._id,
+                        comment: commentData
+                    });
+
+                    newComment.save(function (err) {
+                        if (err) {
+                            console.log("Error: " + err);
+                            return res.json({success: false, message: "Error occurred"});
+                        } else {
+                            return res.json({
+                                success: true,
+                                commentid: commentid,
+								claimid: claimid,
+                                mysid: myid,
+                                myid: me._id,
+                                targetsid: targetid,
+                                targetid: target._id,
+                                comment: commentData
+                            });
+                        }
+                    });
+				}
+			});
+			return res.json({
+				success: false, 
+				message: "Reached end of condition without a response",
+				claimid: claimid,
+				comment: commentData
+			});
+		}
 
         //If an enty already exists
         Comment.findOne({
@@ -813,8 +881,6 @@ module.exports = function (app, express) {
                 return res.json({success: false, message: "Error occurred"});
             } else {
                 if (comment) {
-                    console.log(chalk.yellow('comment found'));
-
                     comment.comment = commentData;
                     comment.lastUpdated = Date.now();
 
@@ -1168,7 +1234,6 @@ module.exports = function (app, express) {
                                     }
                                     addComment(req, res, me, target, myUser, targetUser);
                                     setName(me, target);
-
                                 });
                             });
 
