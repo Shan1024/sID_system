@@ -1151,8 +1151,8 @@ module.exports = function (app, express) {
                                                     _id: facebook.user
                                                 }, function (err, targetUser) {
                                                     addRating(req, res, me, facebook, myUser, targetUser);
-                                                    if (target) {
-                                                        setName(me, target);
+                                                    if (facebook) {
+                                                        setName(me, facebook);
                                                     }
                                                 });
                                             });
@@ -2202,17 +2202,25 @@ module.exports = function (app, express) {
      *     {
      *         "success": true,
      *         "data": [
-     *           {
-     *             "_id": "5671b59e6993ff982e1cd811",
-     *             "claimid": {CLAIM_ID},
-     *             "myid": "5671a265ebe27c396108ea77",
-     *             "targetid": "5671a1dcebe27c396108ea74",
-     *             "data": {CLAIM},
-     *             "rating": 1,
-     *             "weight": 2,
-     *             "__v": 0,
-     *             "lastUpdated": "2015-12-16T21:04:54.439Z"
-     *           },
+     *               "_id": "569dcce93317079e5a39f790",
+     *               "myid": "56924c209980c72f3a52d0ff",
+     *               "targetid": {
+     *                 "_id": "569dcce93317079e5a39f78d",
+     *                 "uid": {ID},
+     *                 "name": {NAME}
+     *               },
+     *               "entries": [
+     *                     {
+     *                          "_id": "569dcce93317079e5a39f78f",
+     *                          "mysid": "{ID}",
+     *                          "targetsid": "{ID}",
+     *                          "claim": {CLAIM},
+     *                          "rating": 1,
+     *                          "weight": 2,
+     *                          "__v": 0,
+     *                          "lastUpdated": "2016-01-19T05:43:05.665Z"
+     *                     },
+     *               ]
      *         ]
      *     }
      *
@@ -2253,8 +2261,18 @@ module.exports = function (app, express) {
                                 myid: facebook._id
                             })
                             .populate({
-                                path: 'entries',
-                                populate: {path: 'targetid', model: "Facebook", select: 'uid name'}
+                                    path: 'entries',
+                                    select: '-claimid -myid -targetid'
+                                    //populate: {path: 'targetid', model: "Facebook", select: 'uid name'}
+                                }
+                                //,
+                                //{
+                                //    path: "targetid",
+                                //    model: "Facebook"
+                                //}
+                            ).populate({
+                                path: 'targetid',
+                                select: 'uid name'
                             })
                             //.select('entries')
                             .exec(function (err, facebookRatedByMe) {
@@ -2265,7 +2283,7 @@ module.exports = function (app, express) {
                                     if (facebookRatedByMe) {
                                         console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMe, null, "\t")));
                                         console.log("test: " + facebookRatedByMe[0].entries);
-                                        res.json({success: true, data: facebookRatedByMe});
+                                        res.json({success: true, data: facebookRatedByMe.reverse()});
                                     } else {
                                         console.log("facebookRatedByMe not found");
                                         res.json({success: false, message: "facebookRatedByMe not found"});
@@ -2539,7 +2557,6 @@ module.exports = function (app, express) {
             });
 
         });
-
 
     app.use('/rate/facebook', rateRouter);
 

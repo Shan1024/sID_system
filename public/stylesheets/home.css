@@ -2,6 +2,7 @@ body {
   padding: 70px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   word-wrap: break-word;
+  background-color: #F5F8FA;
 }
 
 .input-group span.twitter-typeahead .tt-hint {
@@ -14,6 +15,19 @@ body {
   background-color: #0084B4;
   height: 65px;
 }
+
+.overall-rating-panel-super{
+  padding: 2px;
+}
+
+.overall-rating-container{
+  padding: 0px
+}
+
+.overall-rating-panel{
+  margin-bottom: 0px;
+}
+
 .panel-body {
     padding-bottom: 0px;
 }
@@ -27,10 +41,16 @@ body {
 }
 
 .btn-primary {
-    color: #337ab7;
+    color: #0084B4;
     background-color: #fff;
-    border-color: #2e6da4;
+    border-color: #0084B4;
     transition: 0.3s;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #0084B4;
+    border-color: #0084B4;
 }
 
 .navbar-inverse {
@@ -49,22 +69,46 @@ body {
     color: #fff;
 }
 
+.container {
+     padding-right: 0px;
+     padding-left: 0px;
+}
+
+.facebook-ratedbyme-list-pic{
+    position: relative;
+    left: 8px;
+    top: 16px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #fff;
+}
+
 #facebook_leftblank{
   width: 100%;
   height: 65px;
 }
 
 #homepage_fb_pic{
-  position: absolute;
+  position: relative;;
   height: 60px;
-  top: 8px;
+  top: 16px;
   left: 8px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: #fff;
 }
 
 
 #homepage_linkedin_pic{
-  position: absolute;
+  position: relative;;
   height: 60px;
-  top: 200px;
+  top: 16px;
   left: 8px;
+  border-style: solid;
+  border-width: 2px;
+  border-color: #fff;
+}
+
+p{
+  font-size: 12px;
 }

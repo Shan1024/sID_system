@@ -87,7 +87,7 @@
                   <div class="panel panel-default">
                      <div class="panel panel-header">
                        <% if(user.userDetails.facebook && user.userDetails.facebook.token){ %>
-                         <img src="https://graph.facebook.com/v2.3/<%= user.userDetails.facebook.uid %>/picture"/ id="homepage_fb_pic">
+                         <img src="https://graph.facebook.com/v2.3/<%= user.userDetails.facebook.uid %>/picture" id="homepage_fb_pic">
                        <% } else { %>
 
                        <% } %>
@@ -128,7 +128,7 @@
                   <div class="panel panel-default">
                      <div class="panel panel-header">
                        <% if(user.userDetails.linkedin && user.userDetails.linkedin.token){ %>
-                         <img src="<%= user.userDetails.linkedin.photo %>"/ id="homepage_linkedin_pic">
+                         <img src="<%= user.userDetails.linkedin.photo %>" id="homepage_linkedin_pic">
                        <% } else { %>
 
                        <% } %>
@@ -175,7 +175,7 @@
                                  <strong>Name</strong>: <%= user.userDetails.local.firstname %> <%= user.userDetails.local.lastname %>
                                  <br>
                                  <strong>Email</strong>: <%= user.userDetails.local.email %><br>
-                                 <strong>Member Since</strong>: <%= user.userDetails.lastUpdated %><br>
+                                 <strong>Member Since</strong>: <%= user.userDetails.created %><br>
                               </p>
                               <!-- Trigger the modal with a button -->
                               <!-- <div align="center">

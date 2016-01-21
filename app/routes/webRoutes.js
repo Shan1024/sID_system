@@ -724,8 +724,16 @@ module.exports = function (app, passport) {
 
                         console.log("User found");
 
-                        var facebookData = [];
-                        var linkedinData = [];
+                        var facebookData = [
+                            {"label": "Yes", "value": 0},
+                            {"label": "No", "value": 0},
+                            {"label": "Not Sure", "value": 0}
+                        ];
+                        var linkedinData = [
+                            {"label": "Yes", "value": 0},
+                            {"label": "No", "value": 0},
+                            {"label": "Not Sure", "value": 0}
+                        ];
 
                         if (user.userDetails.facebook) {
                             console.log("Facebook found");
@@ -772,7 +780,8 @@ module.exports = function (app, passport) {
                                                         {label: "No", value: no},
                                                         {label: "Not Sure", value: notSure}
                                                     ];
-                                                    console.log("facebookData: " + facebookData);
+
+                                                    console.log(chalk.blue("facebookData: " + JSON.stringify(facebookData, null, "\t")));
 
                                                     if (user.userDetails.linkedin) {
                                                         console.log("Linkedin found");
@@ -830,7 +839,8 @@ module.exports = function (app, passport) {
                                                                                         value: notSure
                                                                                     }
                                                                                 ];
-                                                                                console.log("linkedinData: " + linkedinData);
+
+                                                                                console.log(chalk.blue("linkedinData: " + JSON.stringify(linkedinData, null, "\t")));
 
                                                                                 res.render('usersummaryoverall.ejs', {
                                                                                     user: req.user,
@@ -863,6 +873,8 @@ module.exports = function (app, passport) {
                                                         });
                                                     } else {
                                                         console.log("No linkedin account linked");
+
+                                                        console.log(chalk.blue("facebookData: " + JSON.stringify(facebookData, null, "\t")));
 
                                                         res.render('usersummaryoverall.ejs', {
                                                             user: req.user,

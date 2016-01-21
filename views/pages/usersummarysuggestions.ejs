@@ -23,7 +23,7 @@
                 <div class="row">
                     <% if (suggestions.facebook && suggestions.facebook.length > 0) { %>
                     <% for(var i = 0; i < suggestions.facebook.length ; i++) { %>
-                    <% var fbid = suggestions.facebook[i]._id %>
+                    <% var fbid = suggestions.facebook[i].user %>
                     <% var fbname = suggestions.facebook[i].name %>
                     <div class="row">
                         <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
@@ -40,7 +40,7 @@
                 <div class="row">
                     <% if (suggestions.linkedin && suggestions.linkedin.length > 0) { %>
                     <% for(var i = 0; i < suggestions.linkedin.length ; i++) { %>
-                    <% var linkid = suggestions.linkedin[i]._id %>
+                    <% var linkid = suggestions.linkedin[i].user %>
                     <% var linkname = suggestions.linkedin[i].name %>
                     <div class="row">
                         <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
