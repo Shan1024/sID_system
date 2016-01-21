@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 //Entry schema
 var commentSchema = mongoose.Schema({
     commentid: String,
+	claimid: String,
     mysid: String, 
 	myid: {
         type: mongoose.Schema.Types.ObjectId
