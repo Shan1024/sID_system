@@ -1685,7 +1685,8 @@ module.exports = function (app, express) {
             }
 
             Comment.find({
-                targetsid: targetid
+                targetsid: targetid,
+				claimid: null
             }, function (err, comments) {
                 if (err) {
                     console.log(chalk.red("Error occurred 8975") + " " + commentid + " " + targetid + " " + viewerid + err);
