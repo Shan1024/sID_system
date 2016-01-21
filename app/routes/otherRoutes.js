@@ -268,6 +268,15 @@ module.exports = function (app, express) {
                 });
         });
 
+        otherRoutes.post("/contactus", function(req, res){
+          console.log(req.body.name);
+          console.log(req.body.email);
+          console.log(req.body.phone);
+          console.log(req.body.message);
+          res.redirect('/');
+        });
+
+
     app.use('/other', otherRoutes);
 
 };
