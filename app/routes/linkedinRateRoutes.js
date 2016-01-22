@@ -1357,7 +1357,7 @@ module.exports = function (app, express) {
                                 } else {
                                     if (linkedinRatedByMe) {
                                         console.log(chalk.blue("linkedinRatedByMe found: " + JSON.stringify(linkedinRatedByMe, null, "\t")));
-                                        console.log("test: " + linkedinRatedByMe[0].entries);
+                                        //console.log("test: " + linkedinRatedByMe[0].entries);
                                         res.json({success: true, data: linkedinRatedByMe.reverse()});
                                     } else {
                                         console.log("linkedinRatedByMe not found");
