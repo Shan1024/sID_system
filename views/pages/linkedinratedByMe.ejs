@@ -269,7 +269,13 @@
             </div>
         </div>
         <div class="col-xs-12 col-sm-6 col-md-9">
+
+            <div id="spinner" align="center" style="margin-top:50px; font-size:xx-large;"><i
+                        class="fa fa-circle-o-notch fa-spin"></i> Loading
+            </div>
+
             <div class="ratedbyme-contentarea"></div>
+
         </div>
     </div>
     <div class="row">
@@ -350,8 +356,10 @@
 
             if (response) {
 
+                $('#spinner').hide(100);
+
                 if (response.data.length == 0) {
-                    $('.myratings-contentarea').append('<div class="panel panel-default"> <div class="panel-body" style="padding: 15px;">Sorry, You have not rated any LinkedIn profiles. </div></div>');
+                    $('.ratedbyme-contentarea').append('<div class="panel panel-default"> <div class="panel-body" style="padding: 15px;">Sorry, You have not rated any LinkedIn profiles. </div></div>');
                 }
 
                 var theTemplateScript = $("#ratedbyme-template").html();

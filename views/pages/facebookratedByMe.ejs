@@ -270,7 +270,9 @@
         </div>
         <div class="col-xs-12 col-sm-6 col-md-9">
 
-            <div id="spinner" align="center" style="margin-top:50px; font-size:xx-large;"><i class="fa fa-circle-o-notch fa-spin"></i>      Loading</div>
+            <div id="spinner" align="center" style="margin-top:50px; font-size:xx-large;"><i
+                        class="fa fa-circle-o-notch fa-spin"></i> Loading
+            </div>
 
             <div class="ratedbyme-contentarea"></div>
 
@@ -290,7 +292,8 @@
             <img src="https://graph.facebook.com/v2.3/{{targetid.uid}}/picture?width=100&height=100"
                  class="facebook-ratedbyme-list-pic" height="100px" width="100px">
 
-            <a href="https://facebook.com/{{targetid.uid}}" style="color: white; margin-left: 40px; font-size: x-large;"><strong>{{targetid.name}}</strong></a><br>
+            <a href="https://facebook.com/{{targetid.uid}}"
+               style="color: white; margin-left: 40px; font-size: x-large;"><strong>{{targetid.name}}</strong></a><br>
 
         </div>
 
@@ -357,7 +360,7 @@
                 $('#spinner').hide(100);
 
                 if (response.data.length == 0) {
-                    $('.myratings-contentarea').append('<div class="panel panel-default"> <div class="panel-body" style="padding: 15px;">Sorry, You have not rated any Facebook profiles. </div></div>');
+                    $('.ratedbyme-contentarea').append('<div class="panel panel-default"> <div class="panel-body" style="padding: 15px;">Sorry, You have not rated any Facebook profiles. </div></div>');
                 }
 
                 var theTemplateScript = $("#ratedbyme-template").html();
