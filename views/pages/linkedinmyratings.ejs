@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="shortcut icon" href="/icons/logo.ico"/>
     <link rel="stylesheet" href="/stylesheets/home.css">
     <link rel="stylesheet" href="/stylesheets/search.css">
@@ -102,8 +102,8 @@
                         <% if (user.userDetails.facebook) { %>
                         <% if (user.userDetails.facebook.token) { %>
                         <p>
-                          <strong><%= user.userDetails.facebook.name %></strong><br>
-                          <%= user.userDetails.facebook.email %><br>
+                            <strong><%= user.userDetails.facebook.name %></strong><br>
+                            <%= user.userDetails.facebook.email %><br>
                         </p>
 
                         <div class="row">
@@ -244,7 +244,10 @@
 
                                                 <div class="form-group">
                                                     <div align="center">
-                                                        <button type="submit" class="btn btn-primary" ng-disabled="myForm.$invalid" style="color: #fff; background-color: #0084B4;">Submit</button>
+                                                        <button type="submit" class="btn btn-primary"
+                                                                ng-disabled="myForm.$invalid"
+                                                                style="color: #fff; background-color: #0084B4;">Submit
+                                                        </button>
                                                         <button type="button" ng-click="myForm.reset()"
                                                                 class="btn btn-danger">
                                                             Reset
@@ -266,7 +269,13 @@
             </div>
         </div>
         <div class="col-xs-12 col-sm-6 col-md-9">
-          <div class="myratings-contentarea"></div>
+
+            <div id="spinner" align="center" style="margin-top:50px; font-size:xx-large;"><i
+                        class="fa fa-circle-o-notch fa-spin"></i> Loading
+            </div>
+
+            <div class="myratings-contentarea"></div>
+
         </div>
     </div>
     <div class="row">
@@ -276,115 +285,117 @@
 </div>
 
 <script id="myratings-template" type="x-handlebars-template">
-  {{#each this}}
-  <div class="panel panel-default">
-    <div class="panel-heading">{{{claim}}}</div>
-    <div class="panel-body">
-      <div id={{claimid}} style="min-width: 310px; max-width: 800px; height: 200px; margin: 0"></div>
+    {{#each this}}
+    <div class="panel panel-default">
+        <div class="panel-heading">{{{claim}}}</div>
+        <div class="panel-body">
+            <div id={{claimid}} style="min-width: 310px; max-width: 800px; height: 200px; margin: 0"></div>
+        </div>
     </div>
-  </div>
-  {{/each}}
+    {{/each}}
 </script>
 
 <script type="text/javascript">
-$(function(){
+    $(function () {
 
-  var settings = {
-      "async": true,
-      "crossDomain": true,
-      "url": "/rate/linkedin/getAllRatedClaims",
-      "method": "POST",
-      "headers": {
-          "cache-control": "no-cache",
-          "content-type": "application/x-www-form-urlencoded"
-      },
-      "data": {
-          "limit": "10",
-          "order": "-1"
-      }
-  }
-
-  $.ajax(settings).done(function (response) {
-      console.log(response);
-
-      if (response) {
-
-        if(response.data.length == 0){
-          $('.myratings-contentarea').append('<div class="panel panel-default"> <div class="panel-body" style="padding: 15px;">Sorry, No LinkedIn rating data is available for your profile. </div></div>');
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "/rate/linkedin/getAllRatedClaims",
+            "method": "POST",
+            "headers": {
+                "cache-control": "no-cache",
+                "content-type": "application/x-www-form-urlencoded"
+            },
+            "data": {
+                "limit": "10",
+                "order": "-1"
+            }
         }
 
-        var theTemplateScript = $("#myratings-template").html();
+        $.ajax(settings).done(function (response) {
+            console.log(response);
 
-        var theTemplate = Handlebars.compile(theTemplateScript);
+            if (response) {
 
-        $(".myratings-contentarea").append(theTemplate(response.data));
+                $('#spinner').hide(100);
 
-        for (var i = 0; i < response.data.length; i++) {
-          // var json = [{label: "Yes", value: response.data[i].yes},
-          //     {label: "No", value: response.data[i].no},
-          //     {label: "Not Sure", value: response.data[i].notSure}];
-          //
-          //     Morris.Donut({
-          //         element: response.data[i].claimid,
-          //         data: json,
-          //         colors: [
-          //             '#33cc33',
-          //             '#ff0000',
-          //             '#ffff00'
-          //         ]
-          //     });
-
-          var element = '#' + response.data[i].claimid;
-          var totalRatings = response.data[i].yes + response.data[i].notSure + response.data[i].no;
-          var xAxisLabel = 'Percentage out of ' + totalRatings + ' Ratings'
-          $(element).highcharts({
-            chart: {
-            type: 'bar'
-            },
-            title: {
-                text: ''
-            },
-            credits: {
-                enabled: false
-            },
-            exporting: {
-                enabled: false
-            },
-            xAxis: {
-                categories: ['Claim']
-            },
-            yAxis: {
-                min: 0,
-                title: {
-                    text: xAxisLabel
+                if (response.data.length == 0) {
+                    $('.myratings-contentarea').append('<div class="panel panel-default"> <div class="panel-body" style="padding: 15px;">Sorry, No LinkedIn rating data is available for your profile. </div></div>');
                 }
-            },
-            legend: {
-                reversed: true
-            },
-            plotOptions: {
-                series: {
-                    stacking: 'percent'
+
+                var theTemplateScript = $("#myratings-template").html();
+
+                var theTemplate = Handlebars.compile(theTemplateScript);
+
+                $(".myratings-contentarea").append(theTemplate(response.data));
+
+                for (var i = 0; i < response.data.length; i++) {
+                    // var json = [{label: "Yes", value: response.data[i].yes},
+                    //     {label: "No", value: response.data[i].no},
+                    //     {label: "Not Sure", value: response.data[i].notSure}];
+                    //
+                    //     Morris.Donut({
+                    //         element: response.data[i].claimid,
+                    //         data: json,
+                    //         colors: [
+                    //             '#33cc33',
+                    //             '#ff0000',
+                    //             '#ffff00'
+                    //         ]
+                    //     });
+
+                    var element = '#' + response.data[i].claimid;
+                    var totalRatings = response.data[i].yes + response.data[i].notSure + response.data[i].no;
+                    var xAxisLabel = 'Percentage out of ' + totalRatings + ' Ratings'
+                    $(element).highcharts({
+                        chart: {
+                            type: 'bar'
+                        },
+                        title: {
+                            text: ''
+                        },
+                        credits: {
+                            enabled: false
+                        },
+                        exporting: {
+                            enabled: false
+                        },
+                        xAxis: {
+                            categories: ['Claim']
+                        },
+                        yAxis: {
+                            min: 0,
+                            title: {
+                                text: xAxisLabel
+                            }
+                        },
+                        legend: {
+                            reversed: true
+                        },
+                        plotOptions: {
+                            series: {
+                                stacking: 'percent'
+                            }
+                        },
+                        series: [{
+                            name: 'Yes',
+                            data: [response.data[i].yes],
+                            color: '#33cc33'
+                        }, {
+                            name: 'Not Sure',
+                            data: [response.data[i].notSure],
+                            color: '#ffff00'
+                        }, {
+                            name: 'No',
+                            data: [response.data[i].no],
+                            color: '#ff0000'
+                        }]
+                    });
                 }
-            },
-            series: [{
-                name: 'Yes',
-                data: [response.data[i].yes],
-                color: '#33cc33'
-            }, {
-                name: 'Not Sure',
-                data: [response.data[i].notSure],
-                color: '#ffff00'
-            }, {
-                name: 'No',
-                data: [response.data[i].no],
-                color: '#ff0000'
-            }]
-          });
-        }
-      }
-  });
-})
+            }
+        });
+    })
 </script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
