@@ -1691,6 +1691,62 @@ module.exports = function (app, express) {
                 }
             });
         });
+	
+	
+	/**
+     * Written By Dodan, Delete route if problems arise
+     * @api {post} /rate/linkedin/getId Returns the linkedin id given the email address.
+     * @apiName getId
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} email The LinkedIn sid user email of the user.
+     *
+     */
+    rateRouter.route('/getId')
+        .post(function (req, res) {
+            var email = req.body.email;
+            if (!email) {
+                if (req.user) {
+                    if (req.user.userDetails.linkedin) {
+                        email = req.user.userDetails.linkedin.email;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No linkedin account is linked"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "No user found in the session"
+                    });
+                }
+            }
+
+            User.findOne({
+                'userDetails.local.email': email
+            }).populate({
+                path: 'userDetails.linkedin'
+            }).exec(function (err, user) {
+
+                console.log(chalk.blue("User: " + JSON.stringify(user, null, "\t")));
+
+                if (err) {
+                    return res.json({success: false, message: "Error occurred"});
+                } else {
+                    if (user) {
+                        var uid;
+                        if (user.userDetails.linkedin) {
+                            uid = user.userDetails.linkedin.uid;
+                        }
+                        return res.json({success: true, uid: uid});
+                    } else {
+
+                    }
+                }
+            });
+        });
 
     app.use('/rate/linkedin', rateRouter);
 
