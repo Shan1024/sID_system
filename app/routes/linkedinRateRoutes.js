@@ -641,7 +641,124 @@ module.exports = function (app, express) {
                 }
             });
         });
-		
+	/**
+     * @api {post} /rate/linkedin/addComment Adds a new LinkedIn comment or update an existing one.
+     * @apiName AddComment
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} myid The LinkedIn User ID of the user who is commenting.
+     * @apiParam {String} targetid The LinkedIn User ID of the user who is getting commented.
+     * @apiParam {String} commentid The comment ID.
+     * @apiParam {String} comment The comment details.
+     *
+     */
+    rateRouter.route('/addComment')
+        .post(function (req, res) {
+
+            var myid = req.body.myid;
+            var targetid = req.body.targetid;
+            var commentid = req.body.commentid;
+            var comment = req.body.comment;
+
+            if (!myid) {
+                return res.json({error: "Missing myid paramter"});
+            }
+            if (!targetid) {
+                return res.json({error: "Missing targetid paramter"});
+            }
+            if (!commentid) {
+                return res.json({error: "Missing commentid paramter"});
+            }
+            if (!comment) {
+                return res.json({error: "Missing comment paramter"});
+            }
+
+            LinkedIn.findOne({
+                uid: myid
+            }, function (err, me) {
+                if (err) {
+                    return res.json({error: "Unexpected error occured when getting target fb object: " + err});
+                }
+                if (me) {
+                    console.log(chalk.yellow("User found: " + JSON.stringify(me, null, "\t")));
+
+                    LinkedIn.findOne({
+                        uid: targetid
+                    }, function (err, target) {
+                        if (err) {
+                            return res.json({error: "Unexpected error occured when getting my fb object: " + err});
+                        }
+                        if (target) {
+                            console.log(chalk.blue("Target found: " + JSON.stringify(target, null, "\t")));
+                            User.findOne({
+                                _id: me.user
+                            }, function (err, myUser) {
+                                if (err) {
+                                    return res.json({error: "Unexpected error occured when getting user object: " + err});
+                                }
+                                User.findOne({
+                                    _id: target.user
+                                }, function (err, targetUser) {
+                                    if (err) {
+                                        return res.json({error: "Unexpected error occured when getting user object: " + err});
+                                    }
+                                    addComment(req, res, me, target, myUser, targetUser);
+                                    setName(me, target);
+                                });
+                            });
+
+                        } else {
+
+                            console.log(chalk.red("Target not found. Creating a new LinkedIn account."));
+
+                            var linkedin = new LinkedIn();
+                            var newUser = new User();
+
+                            linkedin.uid = targetid;
+                            linkedin.user = newUser._id;
+
+                            linkedin.save(function (err) {
+                                if (err) {
+                                    return res.json({message: "Target with uid=" + targetid + " not found and linkedin cannot be created"});
+                                } else {
+
+                                    newUser.userDetails.linkedin = linkedin._id;
+
+                                    newUser.save(function (err) {
+                                        if (err) {
+                                            return res.json({message: "Target with uid=" + targetid + " not found and User cannot be created"});
+                                        } else {
+                                            User.findOne({
+                                                _id: me.user
+                                            }, function (err, myUser) {
+                                                if (err) {
+                                                    return res.json({error: "Unexpected error occured when getting user object: " + err});
+                                                }
+                                                User.findOne({
+                                                    _id: linkedin.user
+                                                }, function (err, targetUser) {
+                                                    if (err) {
+                                                        return res.json({error: "Unexpected error occured when getting user object: " + err});
+                                                    }
+                                                    addComment(req, res, me, linkedin, myUser, targetUser);
+                                                    if (linkedin) {
+                                                        setName(me, linkedin);
+                                                    }
+                                                });
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    console.log(chalk.red("Me not found"));
+                    return res.json({message: "User with uid=" + myid + " not found"});
+                }
+            });
+        });	
 	
 	/**
      * @api {post} /rate/linkedin/getComments Returns all the comments of a user.
