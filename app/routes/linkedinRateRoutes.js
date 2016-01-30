@@ -641,6 +641,81 @@ module.exports = function (app, express) {
                 }
             });
         });
+		
+	
+	/**
+     * @api {post} /rate/linkedin/getComments Returns all the comments of a user.
+     * @apiName GetComments
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [targetid] The Linked in User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     * @apiParam {String} [myid] The Linkedin User ID of the logged in user.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "comments": ["this is a comment",...]
+     *    }
+     *
+     */
+    rateRouter.route('/getComments')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+            var viewerid = req.body.myid;
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.linkedin) {
+                        targetid = req.user.userDetails.linkedin.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Comments not found"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "Comments not found"
+                    });
+                }
+            }
+
+            Comment.find({
+                targetsid: targetid,
+				claimid: null
+            }, function (err, comments) {
+                if (err) {
+                    console.log(chalk.red("Error occurred 8975") + " " + commentid + " " + targetid + " " + viewerid + err);
+                    res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+                    if (comments) {
+                        return res.json({
+                            success: true,
+                            comments: comments
+                        });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Unexpected error"
+                        });
+                    }
+
+                }
+            });
+        });
+
+		
+	
+
+
+	
 
     /**
      * @api {post} /rate/linkedin/getRating Returns the ratings of a claim.
