@@ -711,7 +711,79 @@ module.exports = function (app, express) {
             });
         });
 
-		
+	/**
+     * @api {post} /rate/linkedin/getClaimComments Returns all the comments of a users claims.
+     * @apiName GetClaimComments
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [targetid] The LinkedIn User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     * @apiParam {String} [myid] The LinkedIn User ID of the logged in user.
+	 * @apiParam {String} [claimid] The LinkedIn claim ID of the associated claim.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "comments": ["this is a comment",...]
+     *    }
+     *
+     */
+    rateRouter.route('/getClaimComments')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+            var viewerid = req.body.myid;
+			var claimid = req.body.claimid;
+			
+			if(!claimid){
+				return res.json({success: false, message: "claim id not defined"});
+			}
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.linkedin) {
+                        targetid = req.user.userDetails.linkedin.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Comments not found"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "Comments not found"
+                    });
+                }
+            }
+
+            Comment.find({
+                targetsid: targetid,
+				claimid: claimid
+            }, function (err, comments) {
+                if (err) {
+                    console.log(chalk.red("Error occurred 8975") + " " + commentid + " " + targetid + " " + viewerid + err);
+                    res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+                    if (comments) {
+                        return res.json({
+                            success: true,
+                            comments: comments
+                        });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Unexpected error"
+                        });
+                    }
+
+                }
+            });
+        });	
 	
 
 
