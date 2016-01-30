@@ -7,6 +7,7 @@ var Claim = require('../models/claim');
 var LinkedInRatedByMe = require('../models/linkedinRatedByMe');
 var LinkedIn = require("../models/linkedin");
 var User = require("../models/user");
+var Comment = require("../models/comment");
 
 module.exports = function (app, express) {
 
@@ -841,7 +842,7 @@ module.exports = function (app, express) {
                                         return res.json({error: "Unexpected error occured when getting user object: " + err});
                                     }
                                     addComment(req, res, me, target, myUser, targetUser);
-                                    setName(me, target);
+                                    //setName(me, target);
                                 });
                             });
 
@@ -880,7 +881,7 @@ module.exports = function (app, express) {
                                                     }
                                                     addComment(req, res, me, linkedin, myUser, targetUser);
                                                     if (linkedin) {
-                                                        setName(me, linkedin);
+                                                       // setName(me, linkedin);
                                                     }
                                                 });
                                             });
