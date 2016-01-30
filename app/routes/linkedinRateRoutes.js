@@ -531,7 +531,8 @@ module.exports = function (app, express) {
             }
         });
     };
-
+	
+	
 
     /**
      * @api {post} /rate/linkedin/addRating Adds a new LinkedIn rating or update an existing one.
@@ -641,6 +642,142 @@ module.exports = function (app, express) {
                 }
             });
         });
+	
+	var addComment = function (req, res, me, target, myUser, targetUser) {
+
+        var myid = req.body.myid;
+        var targetid = req.body.targetid;
+        var commentid = req.body.commentid;
+        var commentData = req.body.comment;
+		var claimid = req.body.claimid;
+		
+		if(commentid){
+			Comment.findOne({
+				mysid:myid,
+				targetsid:targetid,
+				claimid: claimid
+			},function(err,comment){
+				if(err){
+					return res.json({success: false, message: "Error occurred"});
+				}
+				if(comment){
+					comment.comment = commentData;
+					comment.lastUpdated = Date.now();
+					comment.save(function (err) {
+						if (err) {
+							return res.json({success: false, message: "Error occurred"});
+						}
+						else {
+							return res.json({
+								success: true,
+								commentid: commentid,
+								claimid: claimid,
+								mysid: myid,
+								myid: me._id,
+								targetsid: targetid,
+								targetid: target._id,
+								comment: commentData
+							});
+						}
+					});
+				}else{
+					var newComment = new Comment({
+                        commentid: commentid,
+						claimid: claimid,
+                        mysid: myid,
+                        myid: me._id,
+                        targetsid: targetid,
+                        targetid: target._id,
+                        comment: commentData
+                    });
+
+                    newComment.save(function (err) {
+                        if (err) {
+                            console.log("Error: " + err);
+                            return res.json({success: false, message: "Error occurred"});
+                        } else {
+                            return res.json({
+                                success: true,
+                                commentid: commentid,
+								claimid: claimid,
+                                mysid: myid,
+                                myid: me._id,
+                                targetsid: targetid,
+                                targetid: target._id,
+                                comment: commentData
+                            });
+                        }
+                    });
+				}
+			});
+		}else{
+			Comment.findOne({
+				mysid: myid,
+				targetsid: targetid
+			}, function (err, comment) {
+
+				if (err) {
+					console.log(chalk.red('Error occurred 9446151'));
+					return res.json({success: false, message: "Error occurred"});
+				} else {
+					if (comment) {
+						comment.comment = commentData;
+						comment.lastUpdated = Date.now();
+
+						comment.save(function (err) {
+							if (err) {
+								console.log(chalk.red('Error occurred while saving the comment'));
+								return res.json({success: false, message: "Error occurred"});
+							}
+							else {
+								return res.json({
+									success: true,
+									commentid: commentid,
+									mysid: myid,
+									myid: me._id,
+									targetsid: targetid,
+									targetid: target._id,
+									comment: commentData
+								});
+							}
+						});
+						//If no entry is found
+					} else {
+
+						var newComment = new Comment({
+							commentid: commentid,
+							mysid: myid,
+							myid: me._id,
+							targetsid: targetid,
+							targetid: target._id,
+							comment: commentData
+						});
+
+						newComment.save(function (err) {
+							if (err) {
+								console.log("Error: " + err);
+								return res.json({success: false, message: "Error occurred"});
+							} else {
+								return res.json({
+									success: true,
+									commentid: commentid,
+									mysid: myid,
+									myid: me._id,
+									targetsid: targetid,
+									targetid: target._id,
+									comment: commentData
+								});
+							}
+						});
+					}
+				}
+			});
+		}
+    };
+
+
+	
+		
 	/**
      * @api {post} /rate/linkedin/addComment Adds a new LinkedIn comment or update an existing one.
      * @apiName AddComment
