@@ -862,76 +862,69 @@ module.exports = function (app, express) {
                     });
 				}
 			});
-			return res.json({
-				success: false, 
-				message: "Reached end of condition without a response",
-				claimid: claimid,
-				comment: commentData
+		}else{
+			Comment.findOne({
+				mysid: myid,
+				targetsid: targetid
+			}, function (err, comment) {
+
+				if (err) {
+					console.log(chalk.red('Error occurred 9446151'));
+					return res.json({success: false, message: "Error occurred"});
+				} else {
+					if (comment) {
+						comment.comment = commentData;
+						comment.lastUpdated = Date.now();
+
+						comment.save(function (err) {
+							if (err) {
+								console.log(chalk.red('Error occurred while saving the comment'));
+								return res.json({success: false, message: "Error occurred"});
+							}
+							else {
+								return res.json({
+									success: true,
+									commentid: commentid,
+									mysid: myid,
+									myid: me._id,
+									targetsid: targetid,
+									targetid: target._id,
+									comment: commentData
+								});
+							}
+						});
+						//If no entry is found
+					} else {
+
+						var newComment = new Comment({
+							commentid: commentid,
+							mysid: myid,
+							myid: me._id,
+							targetsid: targetid,
+							targetid: target._id,
+							comment: commentData
+						});
+
+						newComment.save(function (err) {
+							if (err) {
+								console.log("Error: " + err);
+								return res.json({success: false, message: "Error occurred"});
+							} else {
+								return res.json({
+									success: true,
+									commentid: commentid,
+									mysid: myid,
+									myid: me._id,
+									targetsid: targetid,
+									targetid: target._id,
+									comment: commentData
+								});
+							}
+						});
+					}
+				}
 			});
 		}
-
-        //If an enty already exists
-        Comment.findOne({
-            mysid: myid,
-            targetsid: targetid
-        }, function (err, comment) {
-
-            if (err) {
-                console.log(chalk.red('Error occurred 9446151'));
-                return res.json({success: false, message: "Error occurred"});
-            } else {
-                if (comment) {
-                    comment.comment = commentData;
-                    comment.lastUpdated = Date.now();
-
-                    comment.save(function (err) {
-                        if (err) {
-                            console.log(chalk.red('Error occurred while saving the comment'));
-                            return res.json({success: false, message: "Error occurred"});
-                        }
-                        else {
-                            return res.json({
-                                success: true,
-                                commentid: commentid,
-                                mysid: myid,
-                                myid: me._id,
-                                targetsid: targetid,
-                                targetid: target._id,
-                                comment: commentData
-                            });
-                        }
-                    });
-                    //If no entry is found
-                } else {
-
-                    var newComment = new Comment({
-                        commentid: commentid,
-                        mysid: myid,
-                        myid: me._id,
-                        targetsid: targetid,
-                        targetid: target._id,
-                        comment: commentData
-                    });
-
-                    newComment.save(function (err) {
-                        if (err) {
-                            console.log("Error: " + err);
-                            return res.json({success: false, message: "Error occurred"});
-                        } else {
-                            return res.json({
-                                success: true,
-                                commentid: commentid,
-                                mysid: myid,
-                                myid: me._id,
-                                targetsid: targetid,
-                                targetid: target._id,
-                                comment: commentData
-                            });
-                        }
-                    });
-                }
-            }
-        });
     };
 
     var requestMembership = function (req, res, myUser, organization, secret) {
