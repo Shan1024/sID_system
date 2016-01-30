@@ -761,7 +761,8 @@ module.exports = function (app, passport) {
                                                     user: req.user,
                                                     name: name,
                                                     facebook: facebookData,
-                                                    linkedin: linkedinData
+                                                    linkedin: linkedinData,
+                                                    facebook_uid: facebook.uid
                                                 });
                                             } else {
                                                 if (claims) {
@@ -794,7 +795,8 @@ module.exports = function (app, passport) {
                                                                     user: req.user,
                                                                     name: name,
                                                                     facebook: facebookData,
-                                                                    linkedin: linkedinData
+                                                                    linkedin: linkedinData,
+                                                                    facebook_uid: facebook.uid
                                                                 });
                                                             } else {
                                                                 if (linkedin) {
@@ -809,7 +811,9 @@ module.exports = function (app, passport) {
                                                                                 user: req.user,
                                                                                 name: name,
                                                                                 facebook: facebookData,
-                                                                                linkedin: linkedinData
+                                                                                linkedin: linkedinData,
+                                                                                facebook_uid: facebook.uid,
+                                                                                linkedin_url: linkedin.url
                                                                             });
                                                                         } else {
                                                                             if (claims) {
@@ -846,7 +850,9 @@ module.exports = function (app, passport) {
                                                                                     user: req.user,
                                                                                     name: name,
                                                                                     facebook: facebookData,
-                                                                                    linkedin: linkedinData
+                                                                                    linkedin: linkedinData,
+                                                                                    facebook_uid: facebook.uid,
+                                                                                    linkedin_url: linkedin.url
                                                                                 });
 
                                                                             } else {
@@ -855,7 +861,9 @@ module.exports = function (app, passport) {
                                                                                     user: req.user,
                                                                                     name: name,
                                                                                     facebook: facebookData,
-                                                                                    linkedin: linkedinData
+                                                                                    linkedin: linkedinData,
+                                                                                    facebook_uid: facebook.uid,
+                                                                                    linkedin_url: linkedin.url
                                                                                 });
                                                                             }
                                                                         }
@@ -866,7 +874,9 @@ module.exports = function (app, passport) {
                                                                         user: req.user,
                                                                         name: name,
                                                                         facebook: facebookData,
-                                                                        linkedin: linkedinData
+                                                                        linkedin: linkedinData,
+                                                                        facebook_uid: facebook.uid,
+                                                                        linkedin_url: linkedin.url
                                                                     });
                                                                 }
                                                             }
@@ -880,7 +890,8 @@ module.exports = function (app, passport) {
                                                             user: req.user,
                                                             name: name,
                                                             facebook: facebookData,
-                                                            linkedin: linkedinData
+                                                            linkedin: linkedinData,
+                                                            facebook_uid: facebook.uid
                                                         });
                                                     }
 
@@ -890,7 +901,8 @@ module.exports = function (app, passport) {
                                                         user: req.user,
                                                         name: name,
                                                         facebook: facebookData,
-                                                        linkedin: linkedinData
+                                                        linkedin: linkedinData,
+                                                        facebook_uid: facebook.uid
                                                     });
                                                 }
                                             }
