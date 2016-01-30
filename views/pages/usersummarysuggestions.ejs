@@ -1,72 +1,144 @@
+<!doctype html>
 <html>
-<head>
-    <% include ../partials/head %>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
-
-    <link rel="stylesheet" href="/stylesheets/sb-admin.css">
-
-</head>
-<body style="padding: 0px">
-
-
-<div id="wrapper" style="padding-left:0px">
-    <% include ../partials/navbar-overallrating %>
-    <div id="page-wrapper">
-        <div class="container-fluid">
-            <div class="row" style="width: 100%;">
-                <div class="row text-center">
-                    <h3>Are you looking for</h3>
-                </div>
-                <div class="row">
-                    <% if (suggestions.facebook && suggestions.facebook.length > 0) { %>
-                    <% for(var i = 0; i < suggestions.facebook.length ; i++) { %>
-                    <% var fbid = suggestions.facebook[i].user %>
-                    <% var fbname = suggestions.facebook[i].name %>
-                    <div class="row">
-                        <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
-                            <div class="well">
-                                <img src="https://graph.facebook.com/v2.3/<%= suggestions.facebook[i].uid %>/picture">
-                                <strong><a style="color:#428bca;"
-                                           href="/overview?id=<%= fbid %>&name=<%= fbname %>"> <%= fbname %> </a></strong>
-                            </div>
-                        </div>
-                    </div>
-                    <% } %>
-                    <% } %>
-                </div>
-                <div class="row">
-                    <% if (suggestions.linkedin && suggestions.linkedin.length > 0) { %>
-                    <% for(var i = 0; i < suggestions.linkedin.length ; i++) { %>
-                    <% var linkid = suggestions.linkedin[i].user %>
-                    <% var linkname = suggestions.linkedin[i].name %>
-                    <div class="row">
-                        <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
-                            <div class="well">
-                                <img src="<%= suggestions.linkedin[i].photo %>" style="width: 50px; height: 50px;">
-                                <strong><a style="color:#428bca;"
-                                           href="/overview?id=<%= linkid %>&name=<%= linkname %>"> <%= linkname %> </a></strong>
-                            </div>
-                        </div>
-                    </div>
-                    <% } %>
-                    <% } %>
-                </div>
+   <head>
+      <title>sID Social Identity</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+      <link rel="shortcut icon" href="/icons/logo.ico"/>
+      <link rel="stylesheet" href="/stylesheets/home.css">
+      <link rel="stylesheet" href="/stylesheets/search.css">
+      <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+      <script src="https://code.jquery.com/jquery-2.0.3.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+   </head>
+   <body style="padding-right:0px; padding-left:0px;">
+      <!-- Navigation -->
+      <!-- <nav class="navbar navbar-default navbar-fixed-top"> -->
+      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="margin-bottom:0" id="landingnavbar">
+         <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header"
+               style="background-color: rgba(255,255,255,.15); color: rgba(255,255,255,.15); background: transparent; margin-top: 10px;">
+               <button type="button" class="navbar-toggle" data-toggle="collapse"
+                  data-target="#bs-example-navbar-collapse-1">
+               <span class="sr-only">Toggle navigation</span>
+               <span class="icon-bar"></span>
+               <span class="icon-bar"></span>
+               <span class="icon-bar"></span>
+               </button>
+               <a class="navbar-brand page-scroll" href="/">sID Social Identity</a>
             </div>
-            <% include ../partials/footer %>
-        </div>
-    </div>
-</div>
-
-<script type="text/javascript">
-
-    // $('#clickme').click(function(){
-    //   console.log('insideclickme');
-    // $('#frmPost').submit();
-    // });
-
-</script>
-</body>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+               <ul class="nav navbar-nav navbar-right">
+                  <li class="hidden">
+                     <a href="#home"></a>
+                  </li>
+                  <!-- <li>
+                     <a class="page-scroll" href="#home" style="padding: 7px 20px;">Home</a>
+                     </li> -->
+                  <!--<li>-->
+                  <!--<a class="page-scroll" href="#platforms">Platforms</a>-->
+                  <!--</li>-->
+                  <!--<li>-->
+                  <!--<a class="page-scroll" href="#progress">Progress</a>-->
+                  <!--</li>-->
+                  <!--<li>-->
+                  <!--<a class="page-scroll" href="#contactus">Contact</a>-->
+                  <!--</li>-->
+                  <!-- <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li> -->
+                  <% if (user) { %>
+                  <li style="margin-right: 20px; margin-top: 10px; ">
+                     <a class="page-scroll" href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a>
+                  </li>
+                  <% } else { %>
+                  <li style="margin-right: 20px; margin-top: 10px; ">
+                     <a class="page-scroll" href="/signup"><span class="glyphicon glyphicon-log-in"></span> Sign Up </a>
+                  </li>
+                  <li style="margin-right: 20px; margin-top: 10px; ">
+                     <a class="page-scroll" href="/login"><span class="glyphicon glyphicon-log-in"></span> Sign In </a>
+                  </li>
+                  <% } %>
+               </ul>
+               <div class="col-xs-12 col-sm-5 col-md-5 pull-left" style="margin-top: 10px;">
+                  <form class="navbar-form" role="search" action="/overview" method="post" id="sidusersearchform">
+                     <div class="input-group" style="width: 100%;">
+                        <input type="text" class="form-control" name="name" placeholder="Search sID" id="sidusersearch">
+                        <div class="input-group-btn">
+                           <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i>
+                           </button>
+                        </div>
+                     </div>
+                  </form>
+                  <!-- <div id="sidusersearch">
+                     <input class="typeahead" type="text" placeholder="Search sID">
+                     </div> -->
+               </div>
+            </div>
+            <!-- /.navbar-collapse -->
+         </div>
+         <!-- /.container-fluid -->
+      </nav>
+      <div class="container">
+         <div class="row">
+            <div class="row text-center">
+              <% if (suggestions.facebook && suggestions.facebook.length > 0 && suggestions.linkedin && suggestions.linkedin.length > 0) { %>
+               <h3>Are you looking for</h3>
+              <%} else {%>
+                <h3>Sorry! sID user is available under the name you have searched for.</h3>
+              <% } %>
+            </div>
+            <div class="row">
+               <% if (suggestions.facebook && suggestions.facebook.length > 0) { %>
+               <% for(var i = 0; i < suggestions.facebook.length ; i++) { %>
+               <% var fbid = suggestions.facebook[i].user %>
+               <% var fbname = suggestions.facebook[i].name %>
+               <div class="row">
+                  <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
+                     <div class="well">
+                        <img src="https://graph.facebook.com/v2.3/<%= suggestions.facebook[i].uid %>/picture">
+                        <strong><a style="color:#428bca;"
+                           href="/overview?id=<%= fbid %>&name=<%= fbname %>"> <%= fbname %> </a></strong>
+                     </div>
+                  </div>
+               </div>
+               <% } %>
+               <% } %>
+            </div>
+            <div class="row">
+               <% if (suggestions.linkedin && suggestions.linkedin.length > 0) { %>
+               <% for(var i = 0; i < suggestions.linkedin.length ; i++) { %>
+               <% var linkid = suggestions.linkedin[i].user %>
+               <% var linkname = suggestions.linkedin[i].name %>
+               <div class="row">
+                  <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
+                     <div class="well">
+                        <img src="<%= suggestions.linkedin[i].photo %>" style="width: 50px; height: 50px;">
+                        <strong><a style="color:#428bca;"
+                           href="/overview?id=<%= linkid %>&name=<%= linkname %>"> <%= linkname %> </a></strong>
+                     </div>
+                  </div>
+               </div>
+               <% } %>
+               <% } %>
+            </div>
+         </div>
+         <div class="row">
+         </div>
+         <div class="row">
+         </div>
+      </div>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+      <script src="/scripts/angular-validator-app.js"></script>
+      <script src="/scripts/angular-validator.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="scripts/typeahead.bundle.js"></script>
+      <script type="text/javascript" src="scripts/bloodhound.js"></script>
+      <script type="text/javascript" src="scripts/search.js"></script>
+   </body>
 </html>

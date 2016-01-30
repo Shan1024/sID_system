@@ -105,6 +105,9 @@
                     <div class="panel-body">
                       <div id="donut-facebook" style="height: 250px;"></div>
                     </div>
+                    <div class="panel-footer">
+                      <div id="facebook-footer"></div>
+                    </div>
                   </div>
               </div>
               <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
@@ -114,6 +117,9 @@
                       </div>
                       <div class="panel-body">
                           <div id="donut-linkedin" style="height: 250px;"></div>
+                      </div>
+                      <div class="panel-footer">
+                        <div id="linkedin-footer"></div>
                       </div>
                   </div>
               </div>
@@ -131,6 +137,13 @@
     var facebookTempData = <%-JSON.stringify(facebook)%>;
 
     var linkedinTempData = <%-JSON.stringify(linkedin)%>;
+
+    var facebook_uid = <%-JSON.stringify(facebook_uid)%>;
+
+    var linkedin_url = <%-JSON.stringify(linkedin_url)%>;
+
+    console.log(facebookTempData);
+    console.log(linkedinTempData);
 
     if (facebookTempData.length > 0 && linkedinTempData.length > 0) {
         if (facebookTempData[0].value == 0 && facebookTempData[1].value == 0 && facebookTempData[2].value == 0) {
@@ -166,6 +179,16 @@
     } else {
         var $content = $('#overallratingstitle');
         $content.replaceWith("<div class='text-center'> <h3>Sorry! No Facebook rating data is available for <%= name %>.</h3></div>");
+    }
+
+    if(facebook_uid){
+      var $content = $('#facebook-footer');
+      $content.replaceWith("<div class='text-center'><a href='http://www.facebook.com/<%= facebook_uid%>'>Visit profile</a></div>");
+    }
+
+    if(linkedin_url){
+      var $content = $('#linkedin-footer');
+      $content.replaceWith("<div class='text-center'><a href='<%= linkedin_url%>'>Visit profile</a></div>");
     }
 
 </script>
