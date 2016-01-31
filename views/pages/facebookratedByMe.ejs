@@ -284,6 +284,45 @@
     </div>
 </div>
 
+<div id="popover_content_wrapper" style="display: none;">
+  <div style="padding: 10px;">
+    <div class="row">
+      <a href="/facebookratedByMe"onclick="getNewRating(1)"><img src="/icons/claimT.png" style="height: 20px;">Accept</a>
+    </div>
+    <div class="row">
+      <a href="/facebookratedByMe" onclick="getNewRating(0)"><img src="/icons/claimC.png" style="height: 20px;">No Idea</a>
+    </div>
+    <div class="row">
+      <a href="/facebookratedByMe" onclick="getNewRating(-1)"><img src="/icons/claimR.png" style="height: 20px;">Reject</a>
+    </div>
+  </div>
+</div>
+
+<script>
+function getNewRating(rating) {
+    var claimid = $('#popover_content_wrapper').attr("data-claimid");
+    var claim = $('#popover_content_wrapper').attr("data-claim");
+    var myid = $('#popover_content_wrapper').attr("data-myid");
+    var targetid = $('#popover_content_wrapper').attr("data-targetid");
+
+
+    console.log(claimid);
+
+    $.post("/rate/facebook/addRating",
+    {
+        myid: myid,
+        targetid: targetid,
+        claimid: claimid,
+        claim: claim,
+        rating: rating
+    },
+    function(data, status){
+        // alert("Data: " + data + "\nStatus: " + status);
+        console.log(data);
+    });
+}
+</script>
+
 <script id="ratedbyme-template" type="x-handlebars-template">
     {{#data}}
     <div class="panel panel-default">
@@ -301,14 +340,14 @@
 
             <ul class="fa-ul">
                 {{#entries}}
-                <li><i class="fa-li fa fa-comment"></i>{{{claim}}}
+                <li data-claimid={{claimid}} data-claim="{{claim}}" data-myid={{mysid}} data-targetid={{targetsid}}><i class="fa-li fa fa-comment"></i>{{{claim}}}
                     {{#ifCond rating 1}}
-                    <img src="/icons/claimT.png" style="height: 20px;">
+                    <a data-toggle="popover"><img src="/icons/claimT.png" style="height: 20px;"></a>
                     {{else}}
                     {{#ifCond rating 0}}
-                    <img src="/icons/claimC.png" style="height: 20px;">
+                    <a data-toggle="popover"><img src="/icons/claimC.png" style="height: 20px;"></a>
                     {{else}}
-                    <img src="/icons/claimR.png" style="height: 20px;">
+                    <a data-toggle="popover"><img src="/icons/claimR.png" style="height: 20px;"></a>
                     {{/ifCond}}
                     {{/ifCond}}
                 </li>
@@ -368,6 +407,36 @@
                 var theTemplate = Handlebars.compile(theTemplateScript);
 
                 $(".ratedbyme-contentarea").append(theTemplate(response));
+
+                // $('[data-toggle="popover"]').popover();
+                $('[data-toggle="popover"]').popover({ trigger: "manual" , html: true,
+                content: function() {
+                  return $('#popover_content_wrapper').html();
+                },
+                animation:false})
+                    .on("mouseenter", function () {
+                        var _this = this;
+                        $(this).popover("show");
+                        $(".popover").on("mouseleave", function () {
+                            $(_this).popover('hide');
+                        });
+                    }).on("mouseleave", function () {
+                        var _this = this;
+                        setTimeout(function () {
+                            if (!$(".popover:hover").length) {
+                                $(_this).popover("hide");
+                            }
+                        }, 300);
+                    }).on("shown.bs.popover", function(){
+                        var _this =  this;
+                        // alert('The popover is now fully shown.');
+                        // var temp = _this.closest( "li" ).getAttribute("data-claimid");
+                        var closest = _this.closest("li");
+                        $('#popover_content_wrapper').attr("data-claimid", closest.getAttribute("data-claimid"))
+                          .attr("data-myid", closest.getAttribute("data-myid"))
+                          .attr("data-targetid", closest.getAttribute("data-targetid"))
+                          .attr("data-claim", closest.getAttribute("data-claim"));
+                    });
 
             }
         });
