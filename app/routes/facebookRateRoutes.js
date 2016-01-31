@@ -2330,7 +2330,7 @@ module.exports = function (app, express) {
                             })
                             .populate({
                                     path: 'entries',
-                                    select: '-claimid -myid -targetid'
+                                    select: '-myid -targetid'
                                     //populate: {path: 'targetid', model: "Facebook", select: 'uid name'}
                                 }
                                 //,
