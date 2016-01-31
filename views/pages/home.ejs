@@ -287,6 +287,7 @@
                       </div>
                       <div class="panel-body">
                           <div id="donut-linkedin" style="height: 250px;"></div>
+                          <div id="linkedin-ratedbyme"></div>
                       </div>
                   </div>
               </div>
@@ -434,25 +435,28 @@
 
 </script>
 <script type="text/javascript">
-    var $content = $('#facebook-ratedbyme');
     $.post("/rate/facebook/getAllUsersRatedByMeCount",
             function (data, status) {
+                var $content = $('#facebook-ratedbyme');
                 $content.append("<div class='text-center'> No of profiles rated: " + data.count + " <a href='/allFacebookUsersRatedByMe' class='btn' role='button'>(View All)</a></div>");
             });
     $.post("/rate/facebook/getAllClaimsRatedByMeCount",
             function (data, status) {
+                var $content = $('#facebook-ratedbyme');
                 $content.append("<div class='text-center'> No of claims rated: " + data.count + " <a href='/facebookratedByMe' class='btn' role='button'>(View All)</a></div>");
             });
 </script>
 <script type="text/javascript">
-    var $content = $('#linkedin-ratedbyme');
     $.post("/rate/linkedin/getAllUsersRatedByMeCount",
             function (data, status) {
-                $content.append("<div class='text-center'> No of profiles rated: " + data.count + " <a href='/allFacebookUsersRatedByMe' class='btn' role='button'>(View All)</a></div>");
+                var $content = $('#linkedin-ratedbyme');
+                $content.append("<div class='text-center'> No of profiles rated: " + data.count + " <a href='/allLinkedInUsersRatedByMe' class='btn' role='button'>(View All)</a></div>");
             });
     $.post("/rate/linkedin/getAllClaimsRatedByMeCount",
             function (data, status) {
-                $content.append("<div class='text-center'> No of claims rated: " + data.count + " <a href='/facebookratedByMe' class='btn' role='button'>(View All)</a></div>");
+                console.log(data);
+                var $content = $('#linkedin-ratedbyme');
+                $content.append("<div class='text-center'> No of claims rated: " + data.count + " <a href='/linkedinratedByMe' class='btn' role='button'>(View All)</a></div>");
             });
 </script>
 <script type="text/javascript" src="scripts/typeahead.bundle.js"></script>

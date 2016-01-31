@@ -652,6 +652,10 @@ module.exports = function (app, passport) {
         res.render('allFacebookUsersRatedByMe.ejs', {user: req.user});
     });
 
+    app.get('/allLinkedInUsersRatedByMe', isLoggedIn, function (req, res) {
+        res.render('allLinkedInUsersRatedByMe.ejs', {user: req.user});
+    });
+
     app.get('/usersummary', function (req, res) {
         console.log('sender: ');
         rest.post(req.protocol + '://' + req.get('host') + '/claimRating', {
