@@ -1960,7 +1960,7 @@ module.exports = function (app, express) {
                 } else {
 
                     if (linkedin) {
-                        LinkedINRatedByMe
+                        LinkedInRatedByMe
                             .find({
                                 myid: linkedin._id
                             })
