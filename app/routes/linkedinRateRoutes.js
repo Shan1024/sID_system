@@ -119,7 +119,6 @@ module.exports = function (app, express) {
 
         });
 
-
     var addRating = function (req, res, me, target, myUser, targetUser) {
 
         var myid = req.body.myid;
@@ -344,7 +343,8 @@ module.exports = function (app, express) {
                                                     myid: targetid
                                                 }, function (err, myClaim) {
                                                     if (err) {
-
+                                                        console.log("Error 6484512");
+                                                        return res.json({success: false, message: "Error occurred"});
                                                     } else {
                                                         if (myClaim) {
 
@@ -371,6 +371,11 @@ module.exports = function (app, express) {
                                                                     return res.json({
                                                                         success: false,
                                                                         message: "Error occurred"
+                                                                    });
+                                                                } else {
+                                                                    return res.json({
+                                                                        success: true,
+                                                                        message: "Successful"
                                                                     });
                                                                 }
                                                             });
@@ -406,27 +411,27 @@ module.exports = function (app, express) {
                                                                         success: false,
                                                                         message: "Error occurred"
                                                                     });
-                                                                }
-                                                            });
-
-                                                            targetUser.linkedin.claims.push(newClaim);
-                                                            targetUser.setOverallLinkedInRating();
-                                                            targetUser.save(function (err) {
-                                                                if (err) {
-                                                                    console.log("User save error: " + err);
-                                                                    return res.json({
-                                                                        success: false,
-                                                                        message: "Error occurred"
-                                                                    });
                                                                 } else {
-                                                                    console.log("User saved successfully");
-                                                                    return res.json({
-                                                                        success: true,
-                                                                        myid: myid,
-                                                                        targetid: targetid,
-                                                                        claimid: claimid,
-                                                                        claim: claim,
-                                                                        rating: rating
+                                                                    targetUser.linkedin.claims.push(newClaim);
+                                                                    targetUser.setOverallLinkedInRating();
+                                                                    targetUser.save(function (err) {
+                                                                        if (err) {
+                                                                            console.log("User save error: " + err);
+                                                                            return res.json({
+                                                                                success: false,
+                                                                                message: "Error occurred"
+                                                                            });
+                                                                        } else {
+                                                                            console.log("User saved successfully");
+                                                                            return res.json({
+                                                                                success: true,
+                                                                                myid: myid,
+                                                                                targetid: targetid,
+                                                                                claimid: claimid,
+                                                                                claim: claim,
+                                                                                rating: rating
+                                                                            });
+                                                                        }
                                                                     });
                                                                 }
                                                             });
@@ -694,6 +699,153 @@ module.exports = function (app, express) {
             });
         });
 
+    /**
+     * @api {post} /rate/linkedin/getRating Returns the ratings of a claim.
+     * @apiName GetRating
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} claimid The LinkedIn Claim ID.
+     * @apiParam {String} [targetid] The LinkedIn User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     * @apiParam {String} [myid] The LinkedIn User ID of the logged in user.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "yes": 0,
+     *         "no": 0,
+     *         "notSure": 1,
+     *         "overallRating": 0,
+     *         "claimScore": "C",
+	 *		   "my rating : -1"
+     *    }
+     *
+     */
+    rateRouter.route('/getRating')
+        .post(function (req, res) {
+
+            var targetid = req.body.targetid;
+            var claimid = req.body.claimid;
+            var viewerid = req.body.myid;
+
+            if (!targetid) {
+                if (req.user) {
+                    if (req.user.userDetails.linkedin) {
+                        targetid = req.user.userDetails.linkedin.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Claim not found",
+                            yes: 0,
+                            no: 0,
+                            notSure: 0,
+                            overallRating: 0,
+                            claimScore: "N"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "Claim not found",
+                        yes: 0,
+                        no: 0,
+                        notSure: 0,
+                        overallRating: 0,
+                        claimScore: "N"
+                    });
+                }
+            }
+
+            if (!claimid) {
+                return res.json({error: "Missing claimid parameter"});
+            }
+
+            Claim.findOne({
+                claimid: claimid,
+                myid: targetid
+            }, function (err, claim) {
+                if (err) {
+                    console.log(chalk.red("Error occurred 8975"));
+                    res.json({
+                        success: false,
+                        message: "Error occurred",
+                        yes: 0,
+                        no: 0,
+                        notSure: 0,
+                        overallRating: 0,
+                        claimScore: "N"
+                    });
+                } else {
+                    if (claim) {
+
+                        var character;
+
+                        if (claim.overallRatingLevel == defaultValues.ratings.trustedUser) {
+                            character = "T";
+                        } else if (claim.overallRatingLevel == defaultValues.ratings.untrustedUser) {
+                            character = "R";
+                        } else {
+                            character = "C";
+                        }
+
+                        /**Added by Dodan*/
+
+                        Entry.findOne({
+                            claimid: claimid,
+                            targetsid: targetid,
+                            mysid: viewerid
+                        }, function (err, entry) {
+                            var myrating;
+                            if (err) {
+                                //do nothingg
+                                console.log(chalk.red("Error occurred when getting entry"));
+                            } else {
+                                if (entry) {
+                                    myrating = entry.rating;
+                                }
+                            }
+                            res.json({
+                                success: true,
+                                yes: claim.yes,
+                                no: claim.no,
+                                notSure: claim.notSure,
+                                overallRating: claim.overallRatingLevel,
+                                claimScore: character,
+                                myrating: myrating
+                            });
+                        });
+
+                        /** Addition done*/
+                        /*** Commented by Dodan
+
+                         res.json({
+                            success: true,
+                            yes: claim.yes,
+                            no: claim.no,
+                            notSure: claim.notSure,
+                            overallRating: claim.overallRatingLevel,
+                            claimScore: character
+                        });*/
+
+                    } else {
+                        console.log(chalk.red("Claim not found"));
+                        return res.json({
+                            success: false,
+                            message: "Claim not found",
+                            yes: 0,
+                            no: 0,
+                            notSure: 0,
+                            overallRating: 0,
+                            claimScore: "N"
+                        });
+                    }
+                }
+            });
+        });
+
+    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     var addComment = function (req, res, me, target, myUser, targetUser) {
 
         var myid = req.body.myid;
@@ -825,7 +977,6 @@ module.exports = function (app, express) {
             });
         }
     };
-
 
     /**
      * @api {post} /rate/linkedin/addComment Adds a new LinkedIn comment or update an existing one.
@@ -1088,151 +1239,8 @@ module.exports = function (app, express) {
             });
         });
 
-
-    /**
-     * @api {post} /rate/linkedin/getRating Returns the ratings of a claim.
-     * @apiName GetRating
-     * @apiGroup LinkedIn
-     * @apiVersion 0.1.0
-     *
-     * @apiParam {String} targetid The LinkedIn User ID of the target user.
-     * @apiParam {String} claimid The LinkedIn Claim ID.
-     * @apiParam {String} [myid] The LinkedIn User ID of the logged in user.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *     {
-     *         "success": true,
-     *         "yes": 0,
-     *         "no": 0,
-     *         "notSure": 1,
-     *         "overallRating": 0,
-     *         "claimScore": "C",
-	 *		   "my rating : -1"
-     *    }
-     *
-     */
-    rateRouter.route('/getRating')
-        .post(function (req, res) {
-
-            var targetid = req.body.targetid;
-            var claimid = req.body.claimid;
-            var viewerid = req.body.myid;
-
-            if (!targetid) {
-                if (req.user) {
-                    if (req.user.userDetails.linkedin) {
-                        targetid = req.user.userDetails.linkedin.uid;
-                    } else {
-                        return res.json({
-                            success: false,
-                            message: "Claim not found",
-                            yes: 0,
-                            no: 0,
-                            notSure: 0,
-                            overallRating: 0,
-                            claimScore: "N"
-                        });
-                    }
-                } else {
-                    return res.json({
-                        success: false,
-                        message: "Claim not found",
-                        yes: 0,
-                        no: 0,
-                        notSure: 0,
-                        overallRating: 0,
-                        claimScore: "N"
-                    });
-                }
-            }
-
-            if (!claimid) {
-                return res.json({error: "Missing claimid parameter"});
-            }
-
-            Claim.findOne({
-                claimid: claimid,
-                myid: targetid
-            }, function (err, claim) {
-                if (err) {
-                    console.log(chalk.red("Error occurred 8975"));
-                    res.json({
-                        success: false,
-                        message: "Error occurred",
-                        yes: 0,
-                        no: 0,
-                        notSure: 0,
-                        overallRating: 0,
-                        claimScore: "N"
-                    });
-                } else {
-                    if (claim) {
-
-                        var character;
-
-                        if (claim.overallRatingLevel == defaultValues.ratings.trustedUser) {
-                            character = "T";
-                        } else if (claim.overallRatingLevel == defaultValues.ratings.untrustedUser) {
-                            character = "R";
-                        } else {
-                            character = "C";
-                        }
-
-                        /**Added by Dodan*/
-
-                        Entry.findOne({
-                            claimid: claimid,
-                            targetsid: targetid,
-                            mysid: viewerid
-                        }, function (err, entry) {
-                            var myrating;
-                            if (err) {
-                                //do nothingg
-                                console.log(chalk.red("Error occurred when getting entry"));
-                            } else {
-                                if (entry) {
-                                    myrating = entry.rating;
-                                }
-                            }
-                            res.json({
-                                success: true,
-                                yes: claim.yes,
-                                no: claim.no,
-                                notSure: claim.notSure,
-                                overallRating: claim.overallRatingLevel,
-                                claimScore: character,
-                                myrating: myrating
-                            });
-                        });
-
-                        /** Addition done*/
-                        /*** Commented by Dodan
-
-                         res.json({
-                            success: true,
-                            yes: claim.yes,
-                            no: claim.no,
-                            notSure: claim.notSure,
-                            overallRating: claim.overallRatingLevel,
-                            claimScore: character
-                        });*/
-
-                    } else {
-                        console.log(chalk.red("Claim not found"));
-                        return res.json({
-                            success: false,
-                            message: "Claim not found",
-                            yes: 0,
-                            no: 0,
-                            notSure: 0,
-                            overallRating: 0,
-                            claimScore: "N"
-                        });
-                    }
-                }
-            });
-        });
+    //##########################################################
+    //##########################################################
 
     /**
      * @api {post} /rate/linkedin/getAllRatingsCount Get sum of Yes, No, NotSure counts of all claims made by the target user.
@@ -1342,7 +1350,7 @@ module.exports = function (app, express) {
      * @apiGroup LinkedIn
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The LinkedIn User ID of the target user.
+     * @apiParam {String} [targetid] The LinkedIn User ID of the target user. If this is provided, targerid will be set to current User ID.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -1442,7 +1450,7 @@ module.exports = function (app, express) {
      * @apiGroup LinkedIn
      * @apiVersion 0.1.0
      *
-     * @apiParam {String} targetid The LinkedIn User ID of the target user.
+     * @apiParam {String} [targetid] The LinkedIn User ID of the target user. If this is not provided, targetid will be set to current User ID.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -1989,7 +1997,6 @@ module.exports = function (app, express) {
 
         });
 
-
     /**
      * @api {post} /rate/linkedin/getAllClaimsRatedByMeCount Returns the number of claims that the target user has rated.
      * @apiName getAllClaimsRatedByMeCount
@@ -2129,7 +2136,7 @@ module.exports = function (app, express) {
                     if (user) {
                         var url;
                         if (user.userDetails.linkedin) {
-                            url = user.userDetails.linkedin.url;
+                            url = user.userDetails.linkedin.publicurl;
                         }
                         return res.json({success: true, url: url});
                     } else {
