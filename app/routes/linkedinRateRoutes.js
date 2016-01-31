@@ -1966,7 +1966,7 @@ module.exports = function (app, express) {
                             })
                             .populate({
                                 path: 'targetid',
-                                select: 'name uid url -_id'
+                                select: 'name uid url photo -_id'
                             })
                             .select('targetid -_id')
                             .exec(function (err, linkedinRatedByMes) {
