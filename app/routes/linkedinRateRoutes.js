@@ -2136,7 +2136,7 @@ module.exports = function (app, express) {
                     if (user) {
                         var url;
                         if (user.userDetails.linkedin) {
-                            url = user.userDetails.linkedin.url;
+                            url = user.userDetails.linkedin.publicurl;
                         }
                         return res.json({success: true, url: url});
                     } else {
