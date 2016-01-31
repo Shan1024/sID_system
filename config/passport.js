@@ -625,7 +625,7 @@ module.exports = function (passport) {
             }
         }
         return null;
-    }
+    };
 
 
     passport.use('linkedin-auth', new LinkedInStrategy({
@@ -674,7 +674,9 @@ module.exports = function (passport) {
                                 linkedin.photo = profile.photos[0].value;
                             }
                             linkedin.url = profile._json.siteStandardProfileRequest.url;
-                            linkedin.uid = getLinkedInID("id", linkedin.url);
+                            linkedin.publicurl = profile._json.publicProfileUrl;
+                            linkedin.newid = getLinkedInID("id", linkedin.url);
+                            linkedin.uid = profile._json.publicProfileUrl;
 
                             linkedin.save(function (err) {
                                 if (err) {
@@ -757,6 +759,11 @@ module.exports = function (passport) {
                             linkedinUser.photo = profile.photos[0].value;
                         }
 
+                        linkedinUser.url = profile._json.siteStandardProfileRequest.url;
+                        linkedinUser.publicurl = profile._json.publicProfileUrl;
+                        linkedinUser.newid = getLinkedInID("id", linkedinUser.url);
+                        linkedinUser.uid = profile._json.publicProfileUrl;
+
                         linkedinUser.user = newUser._id;
 
                         linkedinUser.save(function (err) {
@@ -791,7 +798,9 @@ module.exports = function (passport) {
                             linkedin.photo = profile.photos[0].value;
                         }
                         linkedin.url = profile._json.siteStandardProfileRequest.url;
-                        linkedin.uid = getLinkedInID("id", linkedin.url);
+                        linkedin.publicurl = profile._json.publicProfileUrl;
+                        linkedin.newid = getLinkedInID("id", linkedin.url);
+                        linkedin.uid = profile._json.publicProfileUrl;
 
                         linkedin.user = newUser._id;
 
