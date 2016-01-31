@@ -45,6 +45,74 @@ module.exports = function (app, passport) {
 
     });
 
+
+    var sendToken = function (req, res, user, facebook, linkedin) {
+
+        var tempUser;
+
+        var apiSecret = app.get('apiSecret');
+
+        console.log(chalk.yellow('apiSecret loaded'));
+
+        if (facebook) {
+            tempUser = {
+                iss: 'sID',
+                context: {
+                    username: user.userDetails.local.username,
+                    id: facebook.id,
+                    uid: facebook.uid
+                }
+            };
+        } else {
+            tempUser = {
+                iss: 'sID',
+                context: {
+                    username: user.userDetails.local.username,
+                }
+            };
+        }
+        var token = jwt.sign(tempUser, apiSecret, {
+            expiresInMinutes: 1440 // expires in 24 hours
+        });
+
+        if (facebook) {
+
+            console.log(chalk.blue("Facebook: " + JSON.stringify(facebook, null, "\t")));
+            console.log(chalk.blue("LinkedIn: " + JSON.stringify(linkedin, null, "\t")));
+            // return the information including token as JSON
+
+            var isFacebookLinked = false;
+            if (facebook) {
+                if (facebook.token) {
+                    isFacebookLinked = true;
+                }
+            }
+
+            var isLinkedInLinked = false;
+            if (linkedin) {
+                if (linkedin.token) {
+                    isLinkedInLinked = true;
+                }
+            }
+
+            return res.json({
+                success: true,
+                isFacebookLinked: isFacebookLinked,
+                fbappid: facebook.id,
+                fbid: facebook.uid,
+                isLinkedInLinked: isLinkedInLinked,
+                liappid: linkedin.appid,
+                liid: linkedin.uid,
+                token: token
+            });
+        } else {
+            return res.json({
+                success: true,
+                token: token
+            });
+        }
+    };
+
     /**
      * @api {post} /authenticate Authenticate an user
      * @apiName /authenticate
@@ -108,9 +176,7 @@ module.exports = function (app, passport) {
 
                             console.log(chalk.green('Password correct'));
 
-                            var apiSecret = app.get('apiSecret');
 
-                            console.log(chalk.yellow('apiSecret: ' + apiSecret));
                             // if user is found and password is right
                             // create a token
 
@@ -118,61 +184,35 @@ module.exports = function (app, passport) {
                             Facebook.findOne({
                                 _id: user.userDetails.facebook
                             }, function (err, facebook) {
+
                                 if (err) {
 
                                     console.log("Error occurred");
                                     return res.status(400).json({
                                         success: false,
-                                        message: 'Error occurred.'
+                                        message: 'Error occurred while looking for facebook user.'
                                     });
 
                                 } else {
-                                    var tempUser;
-                                    if (facebook) {
-                                        tempUser = {
-                                            iss: 'sID',
-                                            context: {
-                                                username: user.userDetails.local.username,
-                                                id: facebook.id,
-                                                uid: facebook.uid
-                                            }
-                                        };
-                                    } else {
-                                        tempUser = {
-                                            iss: 'sID',
-                                            context: {
-                                                username: user.userDetails.local.username,
-                                            }
-                                        };
-                                    }
-                                    var token = jwt.sign(tempUser, apiSecret, {
-                                        expiresInMinutes: 1440 // expires in 24 hours
-                                    });
 
-                                    if (facebook) {
+                                    LinkedIn.findOne({
+                                        _id: user.userDetails.linkedin
+                                    }, function (err, linkedin) {
 
-                                        console.log(chalk.blue("Facebook: " + JSON.stringify(facebook, null, "\t")));
+                                        if (err) {
 
-                                        // return the information including token as JSON
-                                        var linked = false;
+                                            console.log("Error occurred");
+                                            return res.status(400).json({
+                                                success: false,
+                                                message: 'Error occurred while looking for linkedin user.'
+                                            });
 
-                                        if (facebook.token) {
-                                            linked = true;
+                                        } else {
+
+                                            sendToken(req, res, user, facebook, linkedin);
+
                                         }
-
-                                        return res.json({
-                                            success: true,
-                                            linked: linked,
-                                            fbappid: facebook.id,
-                                            fbid: facebook.uid,
-                                            token: token
-                                        });
-                                    } else {
-                                        return res.json({
-                                            success: true,
-                                            token: token
-                                        });
-                                    }
+                                    });
                                 }
                             });
                         }

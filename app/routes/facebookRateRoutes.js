@@ -85,7 +85,8 @@ module.exports = function (app, express) {
      *     HTTP/1.1 200 OK
      *     {
      *       "success": true,
-     *       "id": {FB_APP_ID}
+     *       "id": {FB_APP_ID},
+     *       "uid": {FB_USER_ID}
      *     }
      *
      */
@@ -108,7 +109,7 @@ module.exports = function (app, express) {
                 } else {
                     if (user) {
                         console.log(chalk.green("USER: " + JSON.stringify(user, null, "\t")));
-                        res.json({success: true, id: user.userDetails.facebook.id});
+                        res.json({success: true, id: user.userDetails.facebook.id, uid: user.userDetails.facebook.uid});
                     } else {
                         res.json({success: false, message: 'Email not found'});
                     }
@@ -801,41 +802,41 @@ module.exports = function (app, express) {
         var targetid = req.body.targetid;
         var commentid = req.body.commentid;
         var commentData = req.body.comment;
-		var claimid = req.body.claimid;
-		
-		if(commentid){
-			Comment.findOne({
-				mysid:myid,
-				targetsid:targetid,
-				claimid: claimid
-			},function(err,comment){
-				if(err){
-					return res.json({success: false, message: "Error occurred"});
-				}
-				if(comment){
-					comment.comment = commentData;
-					comment.lastUpdated = Date.now();
-					comment.save(function (err) {
-						if (err) {
-							return res.json({success: false, message: "Error occurred"});
-						}
-						else {
-							return res.json({
-								success: true,
-								commentid: commentid,
-								claimid: claimid,
-								mysid: myid,
-								myid: me._id,
-								targetsid: targetid,
-								targetid: target._id,
-								comment: commentData
-							});
-						}
-					});
-				}else{
-					var newComment = new Comment({
+        var claimid = req.body.claimid;
+
+        if (commentid) {
+            Comment.findOne({
+                mysid: myid,
+                targetsid: targetid,
+                claimid: claimid
+            }, function (err, comment) {
+                if (err) {
+                    return res.json({success: false, message: "Error occurred"});
+                }
+                if (comment) {
+                    comment.comment = commentData;
+                    comment.lastUpdated = Date.now();
+                    comment.save(function (err) {
+                        if (err) {
+                            return res.json({success: false, message: "Error occurred"});
+                        }
+                        else {
+                            return res.json({
+                                success: true,
+                                commentid: commentid,
+                                claimid: claimid,
+                                mysid: myid,
+                                myid: me._id,
+                                targetsid: targetid,
+                                targetid: target._id,
+                                comment: commentData
+                            });
+                        }
+                    });
+                } else {
+                    var newComment = new Comment({
                         commentid: commentid,
-						claimid: claimid,
+                        claimid: claimid,
                         mysid: myid,
                         myid: me._id,
                         targetsid: targetid,
@@ -851,7 +852,7 @@ module.exports = function (app, express) {
                             return res.json({
                                 success: true,
                                 commentid: commentid,
-								claimid: claimid,
+                                claimid: claimid,
                                 mysid: myid,
                                 myid: me._id,
                                 targetsid: targetid,
@@ -860,71 +861,71 @@ module.exports = function (app, express) {
                             });
                         }
                     });
-				}
-			});
-		}else{
-			Comment.findOne({
-				mysid: myid,
-				targetsid: targetid
-			}, function (err, comment) {
+                }
+            });
+        } else {
+            Comment.findOne({
+                mysid: myid,
+                targetsid: targetid
+            }, function (err, comment) {
 
-				if (err) {
-					console.log(chalk.red('Error occurred 9446151'));
-					return res.json({success: false, message: "Error occurred"});
-				} else {
-					if (comment) {
-						comment.comment = commentData;
-						comment.lastUpdated = Date.now();
+                if (err) {
+                    console.log(chalk.red('Error occurred 9446151'));
+                    return res.json({success: false, message: "Error occurred"});
+                } else {
+                    if (comment) {
+                        comment.comment = commentData;
+                        comment.lastUpdated = Date.now();
 
-						comment.save(function (err) {
-							if (err) {
-								console.log(chalk.red('Error occurred while saving the comment'));
-								return res.json({success: false, message: "Error occurred"});
-							}
-							else {
-								return res.json({
-									success: true,
-									commentid: commentid,
-									mysid: myid,
-									myid: me._id,
-									targetsid: targetid,
-									targetid: target._id,
-									comment: commentData
-								});
-							}
-						});
-						//If no entry is found
-					} else {
+                        comment.save(function (err) {
+                            if (err) {
+                                console.log(chalk.red('Error occurred while saving the comment'));
+                                return res.json({success: false, message: "Error occurred"});
+                            }
+                            else {
+                                return res.json({
+                                    success: true,
+                                    commentid: commentid,
+                                    mysid: myid,
+                                    myid: me._id,
+                                    targetsid: targetid,
+                                    targetid: target._id,
+                                    comment: commentData
+                                });
+                            }
+                        });
+                        //If no entry is found
+                    } else {
 
-						var newComment = new Comment({
-							commentid: commentid,
-							mysid: myid,
-							myid: me._id,
-							targetsid: targetid,
-							targetid: target._id,
-							comment: commentData
-						});
+                        var newComment = new Comment({
+                            commentid: commentid,
+                            mysid: myid,
+                            myid: me._id,
+                            targetsid: targetid,
+                            targetid: target._id,
+                            comment: commentData
+                        });
 
-						newComment.save(function (err) {
-							if (err) {
-								console.log("Error: " + err);
-								return res.json({success: false, message: "Error occurred"});
-							} else {
-								return res.json({
-									success: true,
-									commentid: commentid,
-									mysid: myid,
-									myid: me._id,
-									targetsid: targetid,
-									targetid: target._id,
-									comment: commentData
-								});
-							}
-						});
-					}
-				}
-			});
-		}
+                        newComment.save(function (err) {
+                            if (err) {
+                                console.log("Error: " + err);
+                                return res.json({success: false, message: "Error occurred"});
+                            } else {
+                                return res.json({
+                                    success: true,
+                                    commentid: commentid,
+                                    mysid: myid,
+                                    myid: me._id,
+                                    targetsid: targetid,
+                                    targetid: target._id,
+                                    comment: commentData
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        }
     };
 
     var requestMembership = function (req, res, myUser, organization, secret) {
@@ -1679,7 +1680,7 @@ module.exports = function (app, express) {
 
             Comment.find({
                 targetsid: targetid,
-				claimid: null
+                claimid: null
             }, function (err, comments) {
                 if (err) {
                     console.log(chalk.red("Error occurred 8975") + " " + commentid + " " + targetid + " " + viewerid + err);
@@ -1704,8 +1705,8 @@ module.exports = function (app, express) {
             });
         });
 
-		
-	/**
+
+    /**
      * @api {post} /rate/facebook/getClaimComments Returns all the comments of a users claims.
      * @apiName GetClaimComments
      * @apiGroup Facebook
@@ -1713,7 +1714,7 @@ module.exports = function (app, express) {
      *
      * @apiParam {String} [targetid] The Facebook User ID of the target user. If this is not provided, targetid will be set to current User ID.
      * @apiParam {String} [myid] The Facebook User ID of the logged in user.
-	 * @apiParam {String} [claimid] The Facebook claim ID of the associated claim.
+     * @apiParam {String} [claimid] The Facebook claim ID of the associated claim.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -1728,11 +1729,11 @@ module.exports = function (app, express) {
 
             var targetid = req.body.targetid;
             var viewerid = req.body.myid;
-			var claimid = req.body.claimid;
-			
-			if(!claimid){
-				return res.json({success: false, message: "claim id not defined"});
-			}
+            var claimid = req.body.claimid;
+
+            if (!claimid) {
+                return res.json({success: false, message: "claim id not defined"});
+            }
 
             if (!targetid) {
                 if (req.user) {
@@ -1754,7 +1755,7 @@ module.exports = function (app, express) {
 
             Comment.find({
                 targetsid: targetid,
-				claimid: claimid
+                claimid: claimid
             }, function (err, comments) {
                 if (err) {
                     console.log(chalk.red("Error occurred 8975") + " " + commentid + " " + targetid + " " + viewerid + err);
@@ -1778,8 +1779,7 @@ module.exports = function (app, express) {
                 }
             });
         });
-		
-		
+
 
     /**
      * @api {post} /rate/facebook/getAllRatingsCount Get sum of Yes, No, NotSure counts of all claims made by the target user.

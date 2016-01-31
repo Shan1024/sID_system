@@ -7,6 +7,7 @@ var Claim = require('../models/claim');
 var LinkedInRatedByMe = require('../models/linkedinRatedByMe');
 var LinkedIn = require("../models/linkedin");
 var User = require("../models/user");
+var Comment = require("../models/comment");
 
 module.exports = function (app, express) {
 
@@ -67,6 +68,57 @@ module.exports = function (app, express) {
         .get(function (req, res) {
             res.json({message: "Welcome to sID API !!!"});
         });
+
+
+    /**
+     * @api {post} /rate/linkedin/getID Check the availability of a user in the DB using the email
+     * @apiName GetID
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} email User email used to create the sID account.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *       "success": true,
+     *       "id": {LI_APP_ID},
+     *       "uid": {LI_USER_ID}
+     *     }
+     *
+     */
+    rateRouter.route('/getID')
+        .post(function (req, res) {
+
+            var email = req.body.email;
+
+            if (!email) {
+                return res.json({error: "Missing email paramter"});
+            }
+
+            User.findOne({
+                'userDetails.local.email': email
+            }).populate({
+                path: 'userDetails.linkedin'
+            }).exec(function (err, user) {
+                if (err) {
+                    res.json({success: false, message: 'Error occurred'});
+                } else {
+                    if (user) {
+                        console.log(chalk.green("USER: " + JSON.stringify(user, null, "\t")));
+                        res.json({
+                            success: true,
+                            id: user.userDetails.linkedin.appid,
+                            uid: user.userDetails.linkedin.uid
+                        });
+                    } else {
+                        res.json({success: false, message: 'Email not found'});
+                    }
+                }
+            });
+
+        });
+
 
     var addRating = function (req, res, me, target, myUser, targetUser) {
 
@@ -531,8 +583,7 @@ module.exports = function (app, express) {
             }
         });
     };
-	
-	
+
 
     /**
      * @api {post} /rate/linkedin/addRating Adds a new LinkedIn rating or update an existing one.
@@ -642,48 +693,48 @@ module.exports = function (app, express) {
                 }
             });
         });
-	
-	var addComment = function (req, res, me, target, myUser, targetUser) {
+
+    var addComment = function (req, res, me, target, myUser, targetUser) {
 
         var myid = req.body.myid;
         var targetid = req.body.targetid;
         var commentid = req.body.commentid;
         var commentData = req.body.comment;
-		var claimid = req.body.claimid;
-		
-		if(commentid){
-			Comment.findOne({
-				mysid:myid,
-				targetsid:targetid,
-				claimid: claimid
-			},function(err,comment){
-				if(err){
-					return res.json({success: false, message: "Error occurred"});
-				}
-				if(comment){
-					comment.comment = commentData;
-					comment.lastUpdated = Date.now();
-					comment.save(function (err) {
-						if (err) {
-							return res.json({success: false, message: "Error occurred"});
-						}
-						else {
-							return res.json({
-								success: true,
-								commentid: commentid,
-								claimid: claimid,
-								mysid: myid,
-								myid: me._id,
-								targetsid: targetid,
-								targetid: target._id,
-								comment: commentData
-							});
-						}
-					});
-				}else{
-					var newComment = new Comment({
+        var claimid = req.body.claimid;
+
+        if (commentid) {
+            Comment.findOne({
+                mysid: myid,
+                targetsid: targetid,
+                claimid: claimid
+            }, function (err, comment) {
+                if (err) {
+                    return res.json({success: false, message: "Error occurred"});
+                }
+                if (comment) {
+                    comment.comment = commentData;
+                    comment.lastUpdated = Date.now();
+                    comment.save(function (err) {
+                        if (err) {
+                            return res.json({success: false, message: "Error occurred"});
+                        }
+                        else {
+                            return res.json({
+                                success: true,
+                                commentid: commentid,
+                                claimid: claimid,
+                                mysid: myid,
+                                myid: me._id,
+                                targetsid: targetid,
+                                targetid: target._id,
+                                comment: commentData
+                            });
+                        }
+                    });
+                } else {
+                    var newComment = new Comment({
                         commentid: commentid,
-						claimid: claimid,
+                        claimid: claimid,
                         mysid: myid,
                         myid: me._id,
                         targetsid: targetid,
@@ -699,7 +750,7 @@ module.exports = function (app, express) {
                             return res.json({
                                 success: true,
                                 commentid: commentid,
-								claimid: claimid,
+                                claimid: claimid,
                                 mysid: myid,
                                 myid: me._id,
                                 targetsid: targetid,
@@ -708,77 +759,75 @@ module.exports = function (app, express) {
                             });
                         }
                     });
-				}
-			});
-		}else{
-			Comment.findOne({
-				mysid: myid,
-				targetsid: targetid
-			}, function (err, comment) {
+                }
+            });
+        } else {
+            Comment.findOne({
+                mysid: myid,
+                targetsid: targetid
+            }, function (err, comment) {
 
-				if (err) {
-					console.log(chalk.red('Error occurred 9446151'));
-					return res.json({success: false, message: "Error occurred"});
-				} else {
-					if (comment) {
-						comment.comment = commentData;
-						comment.lastUpdated = Date.now();
+                if (err) {
+                    console.log(chalk.red('Error occurred 9446151'));
+                    return res.json({success: false, message: "Error occurred"});
+                } else {
+                    if (comment) {
+                        comment.comment = commentData;
+                        comment.lastUpdated = Date.now();
 
-						comment.save(function (err) {
-							if (err) {
-								console.log(chalk.red('Error occurred while saving the comment'));
-								return res.json({success: false, message: "Error occurred"});
-							}
-							else {
-								return res.json({
-									success: true,
-									commentid: commentid,
-									mysid: myid,
-									myid: me._id,
-									targetsid: targetid,
-									targetid: target._id,
-									comment: commentData
-								});
-							}
-						});
-						//If no entry is found
-					} else {
+                        comment.save(function (err) {
+                            if (err) {
+                                console.log(chalk.red('Error occurred while saving the comment'));
+                                return res.json({success: false, message: "Error occurred"});
+                            }
+                            else {
+                                return res.json({
+                                    success: true,
+                                    commentid: commentid,
+                                    mysid: myid,
+                                    myid: me._id,
+                                    targetsid: targetid,
+                                    targetid: target._id,
+                                    comment: commentData
+                                });
+                            }
+                        });
+                        //If no entry is found
+                    } else {
 
-						var newComment = new Comment({
-							commentid: commentid,
-							mysid: myid,
-							myid: me._id,
-							targetsid: targetid,
-							targetid: target._id,
-							comment: commentData
-						});
+                        var newComment = new Comment({
+                            commentid: commentid,
+                            mysid: myid,
+                            myid: me._id,
+                            targetsid: targetid,
+                            targetid: target._id,
+                            comment: commentData
+                        });
 
-						newComment.save(function (err) {
-							if (err) {
-								console.log("Error: " + err);
-								return res.json({success: false, message: "Error occurred"});
-							} else {
-								return res.json({
-									success: true,
-									commentid: commentid,
-									mysid: myid,
-									myid: me._id,
-									targetsid: targetid,
-									targetid: target._id,
-									comment: commentData
-								});
-							}
-						});
-					}
-				}
-			});
-		}
+                        newComment.save(function (err) {
+                            if (err) {
+                                console.log("Error: " + err);
+                                return res.json({success: false, message: "Error occurred"});
+                            } else {
+                                return res.json({
+                                    success: true,
+                                    commentid: commentid,
+                                    mysid: myid,
+                                    myid: me._id,
+                                    targetsid: targetid,
+                                    targetid: target._id,
+                                    comment: commentData
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        }
     };
 
 
-	
-		
-	/**
+    /**
      * @api {post} /rate/linkedin/addComment Adds a new LinkedIn comment or update an existing one.
      * @apiName AddComment
      * @apiGroup LinkedIn
@@ -841,7 +890,7 @@ module.exports = function (app, express) {
                                         return res.json({error: "Unexpected error occured when getting user object: " + err});
                                     }
                                     addComment(req, res, me, target, myUser, targetUser);
-                                    setName(me, target);
+                                    //setName(me, target);
                                 });
                             });
 
@@ -880,7 +929,7 @@ module.exports = function (app, express) {
                                                     }
                                                     addComment(req, res, me, linkedin, myUser, targetUser);
                                                     if (linkedin) {
-                                                        setName(me, linkedin);
+                                                        // setName(me, linkedin);
                                                     }
                                                 });
                                             });
@@ -895,9 +944,9 @@ module.exports = function (app, express) {
                     return res.json({message: "User with uid=" + myid + " not found"});
                 }
             });
-        });	
-	
-	/**
+        });
+
+    /**
      * @api {post} /rate/linkedin/getComments Returns all the comments of a user.
      * @apiName GetComments
      * @apiGroup LinkedIn
@@ -940,7 +989,7 @@ module.exports = function (app, express) {
 
             Comment.find({
                 targetsid: targetid,
-				claimid: null
+                claimid: null
             }, function (err, comments) {
                 if (err) {
                     console.log(chalk.red("Error occurred 8975") + " " + commentid + " " + targetid + " " + viewerid + err);
@@ -965,7 +1014,7 @@ module.exports = function (app, express) {
             });
         });
 
-	/**
+    /**
      * @api {post} /rate/linkedin/getClaimComments Returns all the comments of a users claims.
      * @apiName GetClaimComments
      * @apiGroup LinkedIn
@@ -973,7 +1022,7 @@ module.exports = function (app, express) {
      *
      * @apiParam {String} [targetid] The LinkedIn User ID of the target user. If this is not provided, targetid will be set to current User ID.
      * @apiParam {String} [myid] The LinkedIn User ID of the logged in user.
-	 * @apiParam {String} [claimid] The LinkedIn claim ID of the associated claim.
+     * @apiParam {String} [claimid] The LinkedIn claim ID of the associated claim.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -988,11 +1037,11 @@ module.exports = function (app, express) {
 
             var targetid = req.body.targetid;
             var viewerid = req.body.myid;
-			var claimid = req.body.claimid;
-			
-			if(!claimid){
-				return res.json({success: false, message: "claim id not defined"});
-			}
+            var claimid = req.body.claimid;
+
+            if (!claimid) {
+                return res.json({success: false, message: "claim id not defined"});
+            }
 
             if (!targetid) {
                 if (req.user) {
@@ -1014,7 +1063,7 @@ module.exports = function (app, express) {
 
             Comment.find({
                 targetsid: targetid,
-				claimid: claimid
+                claimid: claimid
             }, function (err, comments) {
                 if (err) {
                     console.log(chalk.red("Error occurred 8975") + " " + commentid + " " + targetid + " " + viewerid + err);
@@ -1037,11 +1086,8 @@ module.exports = function (app, express) {
 
                 }
             });
-        });	
-	
+        });
 
-
-	
 
     /**
      * @api {post} /rate/linkedin/getRating Returns the ratings of a claim.
@@ -2092,9 +2138,9 @@ module.exports = function (app, express) {
                 }
             });
         });
-	
-	
-	/**
+
+
+    /**
      * Written By Dodan, Delete route if problems arise
      * @api {post} /rate/linkedin/getId Returns the linkedin id given the email address.
      * @apiName getId
