@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="shortcut icon" href="/icons/logo.ico"/>
     <link rel="stylesheet" href="/stylesheets/home.css">
     <link rel="stylesheet" href="/stylesheets/search.css">
@@ -93,6 +93,8 @@
                         <% } else { %>
 
                         <% } %>
+                        <i class="fa fa-facebook-square fa-3x"
+                           style="float: right;margin-top: 12px;margin-right: 12px;color: white;"></i>
                         <!-- <img src="/img/homepage/facebook_leftblank.png" id="facebook_leftblank"> -->
                     </div>
                     <div class="panel-body">
@@ -100,8 +102,8 @@
                         <% if (user.userDetails.facebook) { %>
                         <% if (user.userDetails.facebook.token) { %>
                         <p>
-                          <strong><%= user.userDetails.facebook.name %></strong><br>
-                          <%= user.userDetails.facebook.email %><br>
+                            <strong><%= user.userDetails.facebook.name %></strong><br>
+                            <%= user.userDetails.facebook.email %><br>
                         </p>
 
                         <div class="row">
@@ -135,6 +137,8 @@
                         <% } else { %>
 
                         <% } %>
+                        <i class="fa fa-linkedin-square fa-3x"
+                           style="float: right;margin-top: 12px;margin-right: 12px;color: white;"></i>
                         <!-- <img src="/img/homepage/linkedin_leftblank.png" id="facebook_leftblank"> -->
                     </div>
                     <div class="panel-body">
@@ -242,7 +246,10 @@
 
                                                 <div class="form-group">
                                                     <div align="center">
-                                                        <button type="submit" class="btn btn-primary" ng-disabled="myForm.$invalid" style="color: #fff; background-color: #0084B4;">Submit</button>
+                                                        <button type="submit" class="btn btn-primary"
+                                                                ng-disabled="myForm.$invalid"
+                                                                style="color: #fff; background-color: #0084B4;">Submit
+                                                        </button>
                                                         <button type="button" ng-click="myForm.reset()"
                                                                 class="btn btn-danger">
                                                             Reset
@@ -264,35 +271,35 @@
             </div>
         </div>
         <div class="col-xs-12 col-sm-6 col-md-9">
-          <div class="panel panel-default">
-            <div class="panel-heading text-center" id="overallratingstitle" style="font-size: 20px;">
-              My Profile Ratings
-            </div>
-            <div class="panel-body overall-rating-container">
-              <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
-                <div class="panel panel-default overall-rating-panel">
-                  <div class="panel-heading text-center">
-                    <h3><span class="fa fa-facebook"></span> Facebook - Overall Rating </h3>
+            <div class="panel panel-default">
+                <div class="panel-heading text-center" id="overallratingstitle" style="font-size: 20px;">
+                    My Profile Ratings
+                </div>
+                <div class="panel-body overall-rating-container">
+                    <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
+                        <div class="panel panel-default overall-rating-panel">
+                            <div class="panel-heading text-center">
+                                <h3><span class="fa fa-facebook"></span> Facebook - Overall Rating </h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="donut-facebook" style="height: 250px;"></div>
+                                <div id="facebook-ratedbyme"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="panel-body">
-                      <div id="donut-facebook" style="height: 250px;"></div>
-                      <div id="facebook-ratedbyme"></div>
+                    <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
+                        <div class="panel panel-default overall-rating-panel">
+                            <div class="panel-heading text-center">
+                                <h3><span class="fa fa-linkedin"></span> LinkedIn - Overall Rating </h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="donut-linkedin" style="height: 250px;"></div>
+                                <div id="linkedin-ratedbyme"></div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-              </div>
-              <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
-                  <div class="panel panel-default overall-rating-panel">
-                      <div class="panel-heading text-center">
-                          <h3><span class="fa fa-linkedin"></span> LinkedIn - Overall Rating </h3>
-                      </div>
-                      <div class="panel-body">
-                          <div id="donut-linkedin" style="height: 250px;"></div>
-                          <div id="linkedin-ratedbyme"></div>
-                      </div>
-                  </div>
-              </div>
+                </div>
             </div>
-          </div>
         </div>
     </div>
     <div class="row">
