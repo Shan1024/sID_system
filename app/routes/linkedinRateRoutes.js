@@ -119,6 +119,38 @@ module.exports = function (app, express) {
 
         });
 
+    var setName = function (req, res, target) {
+
+        if (!target.name) {
+            console.log("Name not found");
+
+            var name = req.body.name;
+            console.log("name: " + name);
+            if (name) {
+                target.name = name;
+            }
+        }
+
+        if (!target.photo) {
+            console.log("Name not found");
+
+            var photo = req.body.img;
+            console.log("photo: " + photo);
+            if (photo) {
+                target.photo = img;
+            }
+        }
+
+        target.save(function (err) {
+            if (err) {
+                console.log("Error occurred while updating linkedin");
+            } else {
+                console.log("LinkedIn successfully updated");
+            }
+        });
+
+    };
+
     var addRating = function (req, res, me, target, myUser, targetUser) {
 
         var myid = req.body.myid;
@@ -589,7 +621,6 @@ module.exports = function (app, express) {
         });
     };
 
-
     /**
      * @api {post} /rate/linkedin/addRating Adds a new LinkedIn rating or update an existing one.
      * @apiName AddRating
@@ -653,6 +684,9 @@ module.exports = function (app, express) {
                                     _id: target.user
                                 }, function (err, targetUser) {
                                     addRating(req, res, me, target, myUser, targetUser);
+                                    if (target) {
+                                        setName(req, res, target);
+                                    }
                                 });
                             });
 
@@ -684,6 +718,9 @@ module.exports = function (app, express) {
                                                     _id: linkedin.user
                                                 }, function (err, targetUser) {
                                                     addRating(req, res, me, linkedin, myUser, targetUser);
+                                                    if (linkedin) {
+                                                        setName(req, res, linkedin);
+                                                    }
                                                 });
                                             });
                                         }
@@ -2154,7 +2191,7 @@ module.exports = function (app, express) {
 
                                         var publicUrl;
 
-                                        if(user.userDetails.facebook) {
+                                        if (user.userDetails.facebook) {
                                             if (user.userDetails.facebook.uid) {
                                                 publicUrl = "https://www.facebook.com/" + user.userDetails.facebook.uid;
                                             }
