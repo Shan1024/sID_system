@@ -2691,10 +2691,19 @@ module.exports = function (app, express) {
                                 } else {
                                     if (user) {
                                         console.log(chalk.green("USER: " + JSON.stringify(user, null, "\t")));
+
+                                        var publicUrl;
+
+                                        if(user.userDetails.linkedin) {
+                                            if (user.userDetails.facebook.publicurl) {
+                                                publicUrl = user.userDetails.linkedin.publicurl;
+                                            }
+                                        }
+
                                         res.json({
                                             success: true,
                                             uid: uid,
-                                            linkedinUrl: user.userDetails.linkedin.publicurl
+                                            linkedinUrl: publicUrl
                                         });
                                     } else {
                                         res.json({success: false, message: 'User not found'});

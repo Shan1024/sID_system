@@ -2154,10 +2154,11 @@ module.exports = function (app, express) {
 
                                         var publicUrl;
 
-                                        if (user.userDetails.facebook.uid) {
-                                            publicUrl = "https://www.facebook.com/" + user.userDetails.facebook.uid;
+                                        if(user.userDetails.facebook) {
+                                            if (user.userDetails.facebook.uid) {
+                                                publicUrl = "https://www.facebook.com/" + user.userDetails.facebook.uid;
+                                            }
                                         }
-
                                         res.json({
                                             success: true,
                                             uid: uid,
