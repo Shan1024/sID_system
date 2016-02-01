@@ -2086,6 +2086,100 @@ module.exports = function (app, express) {
 
         });
 
+    /**
+     * @api {post} /rate/linkedin/getFacebookUrl Returns the LinkedIn profile public url.
+     * @apiName getFacebookUrl
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} [uid] The LinkedIn User ID of the target user. If this is not provided, targetid will be set to current User ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *          "success": true,
+     *          "uid": {LI_UID},
+     *          "linkedinUrl": {PUBLIC_URL}
+     *     }
+     *
+     */
+    rateRouter.route('/getFacebookUrl')
+        .post(function (req, res) {
+
+            var uid = req.body.uid;
+
+            if (!uid) {
+                if (req.user) {
+                    if (req.user.userDetails.linkedin) {
+                        targetid = req.user.userDetails.linkedin.uid;
+                    } else {
+                        return res.json({
+                            success: true,
+                            message: "No linkedin account is linked"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "No user found in the session"
+                    });
+                }
+            }
+
+            LinkedIn.findOne({
+                uid: uid
+            }, function (err, linkedin) {
+
+                if (err) {
+                    return res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+
+                    if (linkedin) {
+
+                        User.findOne({
+                                'userDetails.linkedin': linkedin._id
+                            })
+                            .populate({
+                                path: 'userDetails.facebook'
+                            })
+                            .exec(function (err, user) {
+                                if (err) {
+                                    res.json({success: false, message: 'Error occured'});
+                                } else {
+                                    if (user) {
+                                        console.log(chalk.green("USER: " + JSON.stringify(user, null, "\t")));
+
+                                        var publicUrl;
+
+                                        if (user.userDetails.facebook.uid) {
+                                            publicUrl = "https://www.facebook.com/" + user.userDetails.facebook.uid;
+                                        }
+
+                                        res.json({
+                                            success: true,
+                                            uid: uid,
+                                            linkedinUrl: publicUrl
+                                        });
+                                    } else {
+                                        res.json({success: false, message: 'User not found'});
+                                    }
+                                }
+                            });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "No facebook account for the given id found"
+                        });
+                    }
+                }
+
+            });
+
+        });
+
 
     /**
      * Written By Dodan, Delete route if problems arise
