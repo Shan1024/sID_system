@@ -137,7 +137,7 @@ module.exports = function (app, express) {
             var photo = req.body.img;
             console.log("photo: " + photo);
             if (photo) {
-                target.photo = img;
+                target.photo = photo;
             }
         }
 
