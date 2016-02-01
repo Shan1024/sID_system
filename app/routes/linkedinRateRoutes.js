@@ -2161,7 +2161,7 @@ module.exports = function (app, express) {
                                         res.json({
                                             success: true,
                                             uid: uid,
-                                            linkedinUrl: publicUrl
+                                            facebookUrl: publicUrl
                                         });
                                     } else {
                                         res.json({success: false, message: 'User not found'});
