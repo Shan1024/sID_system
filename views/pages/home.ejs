@@ -277,29 +277,33 @@
         </div>
         <div class="col-xs-12 col-sm-6 col-md-9">
             <div class="panel panel-default">
-                <div class="panel-heading text-center" id="overallratingstitle" style="font-size: 20px;">
+                <div class="panel-heading text-center" id="overallratingstitle" style="font-size: 40px;">
                     My Profile Ratings
                 </div>
                 <div class="panel-body overall-rating-container">
                     <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
                         <div class="panel panel-default overall-rating-panel">
                             <div class="panel-heading text-center">
-                                <h3><span class="fa fa-facebook"></span> Facebook - Overall Rating </h3>
+                                <h3><span class="fa fa-facebook-square" style="font-size: 32px;"></span> Overall Rating </h3>
                             </div>
                             <div class="panel-body">
                                 <div id="donut-facebook" style="height: 250px;"></div>
-                                <div id="facebook-ratedbyme"></div>
+                                <div id="facebook-overall"></div>
+                                <div id="facebook-ratedbyme-profiles"></div>
+                                <div id="facebook-ratedbyme-claims"></div>
                             </div>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
                         <div class="panel panel-default overall-rating-panel">
                             <div class="panel-heading text-center">
-                                <h3><span class="fa fa-linkedin"></span> LinkedIn - Overall Rating </h3>
+                                <h3><span class="fa fa-linkedin-square" style="font-size: 32px;"></span> Overall Rating </h3>
                             </div>
                             <div class="panel-body">
                                 <div id="donut-linkedin" style="height: 250px;"></div>
-                                <div id="linkedin-ratedbyme"></div>
+                                <div id="linkedin-overall"></div>
+                                <div id="linkedin-ratedbyme-profiles"></div>
+                                <div id="linkedin-ratedbyme-claims"></div>
                             </div>
                         </div>
                     </div>
@@ -449,26 +453,54 @@
 <script type="text/javascript">
     $.post("/rate/facebook/getAllUsersRatedByMeCount",
             function (data, status) {
-                var $content = $('#facebook-ratedbyme');
+                var $content = $('#facebook-ratedbyme-profiles');
                 $content.append("<div class='text-center'> No. of profiles rated by me: " + data.count + " <a href='/allFacebookUsersRatedByMe' class='btn' role='button'>(View All)</a></div>");
             });
     $.post("/rate/facebook/getAllClaimsRatedByMeCount",
             function (data, status) {
-                var $content = $('#facebook-ratedbyme');
+                var $content = $('#facebook-ratedbyme-claims');
                 $content.append("<div class='text-center'> No. of claims rated by me: " + data.count + " <a href='/facebookratedByMe' class='btn' role='button'>(View All)</a></div>");
+            });
+    $.post("/rate/facebook/getOverallProfileRating",
+            function (data, status) {
+              console.log(JSON.stringify(data, null, "\t"));
+              var profileRating;
+              if(data.ratingLevel == 'T'){
+                profileRating = 'Your profile appears to be authentic.';
+              }else if(data.ratingLevel == 'C'){
+                profileRating = 'Your profile needs more ratings'
+              }else{
+                profileRating = 'Your profile claims have been rejected by a majority of users'
+              }
+              var $content = $('#facebook-overall');
+              $content.append("<br><div class='text-center'>" + profileRating + "</div><br>");
             });
 </script>
 <script type="text/javascript">
     $.post("/rate/linkedin/getAllUsersRatedByMeCount",
             function (data, status) {
-                var $content = $('#linkedin-ratedbyme');
+                var $content = $('#linkedin-ratedbyme-profiles');
                 $content.append("<div class='text-center'> No. of profiles rated by me: " + data.count + " <a href='/allLinkedInUsersRatedByMe' class='btn' role='button'>(View All)</a></div>");
             });
     $.post("/rate/linkedin/getAllClaimsRatedByMeCount",
             function (data, status) {
                 console.log(data);
-                var $content = $('#linkedin-ratedbyme');
+                var $content = $('#linkedin-ratedbyme-claims');
                 $content.append("<div class='text-center'> No. of claims rated by me: " + data.count + " <a href='/linkedinratedByMe' class='btn' role='button'>(View All)</a></div>");
+            });
+    $.post("/rate/linkedin/getOverallProfileRating",
+            function (data, status) {
+              console.log(JSON.stringify(data, null, "\t"));
+              var profileRating;
+              if(data.ratingLevel == 'T'){
+                profileRating = 'Your profile appears to be authentic.';
+              }else if(data.ratingLevel == 'C'){
+                profileRating = 'Your profile needs more ratings'
+              }else{
+                profileRating = 'Your profile claims have been rejected by a majority of users'
+              }
+              var $content = $('#linkedin-overall');
+              $content.append("<br><div class='text-center'>" + profileRating + "</div><br>");
             });
 </script>
 <script type="text/javascript" src="scripts/typeahead.bundle.js"></script>

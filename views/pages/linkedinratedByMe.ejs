@@ -279,6 +279,10 @@
         </div>
         <div class="col-xs-12 col-sm-6 col-md-9">
 
+            <div class="panel panel-default">
+                <div class="panel-body" style="padding: 10px; font-size: 40px; text-align: center; background-color: #0084B4; color: #fff; border-radius: 4px;">LinkedIn Profiles Rated by Me</div>
+            </div>
+
             <div id="spinner" align="center" style="margin-top:50px; font-size:xx-large;"><i
                         class="fa fa-circle-o-notch fa-spin"></i> Loading
             </div>
@@ -304,8 +308,80 @@
     <div class="row">
       <a href="/linkedinratedByMe" onclick="getNewRating(-1)"><img src="/icons/claimR.png" style="height: 20px;">Reject</a>
     </div>
+    <div class="row">
+      <button type="button" class="btn btn-default" onclick="getClaimComments(this)">My Comment</button>
+    </div>
   </div>
 </div>
+
+<!-- Modal -->
+<div id="mycommentsModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <div class="modal-title" id='commenttitle'></div>
+      </div>
+      <div class="modal-body">
+        <p id='commenttip'>You have not commented on this claim yet.</p>
+        <textarea id="mycomment" rows="8" style="width: 100%;"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="saveNewComment()">Save</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+<script>
+    function getClaimComments(button) {
+        var claimid = $('#popover_content_wrapper').attr("data-claimid");
+        var claim = $('#popover_content_wrapper').attr("data-claim");
+        var myid = $('#popover_content_wrapper').attr("data-myid");
+        var targetid = $('#popover_content_wrapper').attr("data-targetid");
+
+
+        // console.log(claimid);
+        // console.log(myid);
+        // console.log(targetid);
+
+        $.post("/rate/linkedin/getClaimComment",
+        {
+            myid: myid,
+            targetid: targetid,
+            claimid: claimid
+        },
+        function(data, status){
+            // alert("Data: " + data + "\nStatus: " + status);
+            console.log(JSON.stringify(data, null, "\t"));
+            // console.log(data);
+
+
+            $('[data-toggle="popover"]').popover('hide');
+            $('#commenttitle').html('My comment on claim: ' + claim);
+
+            if(data.comments.length > 0 ){
+              $('#commenttip').hide();
+              $('#mycomment').html(data.comments[0].comment);
+            }else{
+              $('#commenttip').show();
+              $('#mycomment').html(' ');
+            }
+
+            $('#mycommentsModal').modal('show');
+        });
+    }
+</script>
+
+<script type="text/javascript">
+      function saveNewComment(){
+        var text = $('textarea#mycomment').val();
+        console.log(text);
+      }
+</script>
+
+<script>
 
 <script>
 function getNewRating(rating) {
