@@ -91,20 +91,27 @@
 
 <div class="container">
     <div class="row">
-      <div class="col-xs-12 col-md-8 col-md-offset-2">
-          <div class="panel panel-default">
-            <div class="panel-heading text-center" id="overallratingstitle" style="font-size: 25px;">
-              Overall Profile Rating for : <%= name %>
-            </div>
-            <div class="panel-body overall-rating-container">
-              <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
-                <div class="panel panel-default overall-rating-panel">
-                  <div class="panel-heading text-center">
-                    <h3><span class="fa fa-facebook"></span> Facebook</h3>
+        <div class="col-xs-12 col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center" id="overallratingstitle" style="font-size: 25px;">
+                    Overall Profile Rating for : <%= name %>
+                </div>
+                <div class="panel-body overall-rating-container">
+
+                    <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
+                        <div class="panel panel-default overall-rating-panel">
+                            <div class="panel-heading text-center">
+                                <h3><span class="fa fa-facebook"></span> Facebook</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="donut-facebook" style="height: 250px;"></div>
+                            </div>
+                            <div class="panel-footer">
+                                <div id="facebook-footer"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="panel-body">
-                      <div id="donut-facebook" style="height: 250px;"></div>
-                    </div>
+
                     <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
                         <div class="panel panel-default overall-rating-panel">
                             <div class="panel-heading text-center">
@@ -118,79 +125,79 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
+
+            </div>
+            <div class="row">
+            </div>
+            <div class="row">
             </div>
         </div>
-    </div>
-    <div class="row">
-    </div>
-    <div class="row">
-    </div>
-</div>
-<script type="text/javascript">
+        <script type="text/javascript">
 
-    var facebookTempData = <%-JSON.stringify(facebook)%>;
-    var linkedinTempData = <%-JSON.stringify(linkedin)%>;
+            var facebookTempData = <%-JSON.stringify(facebook)%>;
+            var linkedinTempData = <%-JSON.stringify(linkedin)%>;
 
-    var facebookUID =  <%-JSON.stringify(facebook_uid)%>;
-    var linkedinURL = <%-JSON.stringify(linkedin_url)%>;
+            var facebookUID =  <%-JSON.stringify(facebook_uid)%>;
+            var linkedinURL = <%-JSON.stringify(linkedin_url)%>;
 
-    console.log(facebookTempData);
-    console.log(linkedinTempData);
+            console.log(facebookTempData);
+            console.log(linkedinTempData);
 
-    if (facebookTempData.length > 0 && linkedinTempData.length > 0) {
-        if (facebookTempData[0].value == 0 && facebookTempData[1].value == 0 && facebookTempData[2].value == 0) {
-            var $content = $('#donut-facebook');
-            $content.replaceWith("<div class='text-center'> Sorry! No facebook rating data is available for <%= name %>.</div>");
-        } else {
-            Morris.Donut({
-                element: 'donut-facebook',
-                data: facebookTempData,
-                colors: [
-                    '#33cc33',
-                    '#ff0000',
-                    '#ffff00'
-                ]
-            });
-        }
+            if (facebookTempData.length > 0 && linkedinTempData.length > 0) {
+                if (facebookTempData[0].value == 0 && facebookTempData[1].value == 0 && facebookTempData[2].value == 0) {
+                    var $content = $('#donut-facebook');
+                    $content.replaceWith("<div class='text-center'> Sorry! No facebook rating data is available for <%= name %>.</div>");
+                } else {
+                    Morris.Donut({
+                        element: 'donut-facebook',
+                        data: facebookTempData,
+                        colors: [
+                            '#33cc33',
+                            '#ff0000',
+                            '#ffff00'
+                        ]
+                    });
+                }
 
-        if (linkedinTempData[0].value == 0 && linkedinTempData[1].value == 0 && linkedinTempData[2].value == 0) {
-            var $content = $('#donut-linkedin');
-            $content.replaceWith("<div class='text-center'> Sorry! No LinkedIn rating data is available for <%= name %>.</div>");
-        } else {
-            Morris.Donut({
-                element: 'donut-linkedin',
-                data: linkedinTempData,
-                colors: [
-                    '#33cc33',
-                    '#ff0000',
-                    '#ffff00'
-                ]
-            });
-        }
+                if (linkedinTempData[0].value == 0 && linkedinTempData[1].value == 0 && linkedinTempData[2].value == 0) {
+                    var $content = $('#donut-linkedin');
+                    $content.replaceWith("<div class='text-center'> Sorry! No LinkedIn rating data is available for <%= name %>.</div>");
+                } else {
+                    Morris.Donut({
+                        element: 'donut-linkedin',
+                        data: linkedinTempData,
+                        colors: [
+                            '#33cc33',
+                            '#ff0000',
+                            '#ffff00'
+                        ]
+                    });
+                }
 
-    } else {
-        var $content = $('#overallratingstitle');
-        $content.replaceWith("<div class='text-center'> <h3>Sorry! No Facebook rating data is available for <%= name %>.</h3></div>");
-    }
+            } else {
+                var $content = $('#overallratingstitle');
+                $content.replaceWith("<div class='text-center'> <h3>Sorry! No Facebook rating data is available for <%= name %>.</h3></div>");
+            }
 
-    if (facebookUID) {
-        var $content = $('#facebook-footer');
-        $content.replaceWith("<div class='text-center'><a href='http://www.facebook.com/<%= facebook_uid%>'>Visit profile</a></div>");
-    }
+            if (facebookUID) {
+                var $content = $('#facebook-footer');
+                $content.replaceWith("<div class='text-center'><a href='http://www.facebook.com/<%= facebook_uid%>'>Visit profile</a></div>");
+            }
 
-    if (linkedinURL) {
-        var $content = $('#linkedin-footer');
-        $content.replaceWith("<div class='text-center'><a href='<%= linkedin_url%>'>Visit profile</a></div>");
-    }
+            if (linkedinURL) {
+                var $content = $('#linkedin-footer');
+                $content.replaceWith("<div class='text-center'><a href='<%= linkedin_url%>'>Visit profile</a></div>");
+            }
 
-</script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
-<script src="/scripts/angular-validator-app.js"></script>
-<script src="/scripts/angular-validator.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="scripts/typeahead.bundle.js"></script>
-<script type="text/javascript" src="scripts/bloodhound.js"></script>
-<script type="text/javascript" src="scripts/search.js"></script>
+        </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+        <script src="/scripts/angular-validator-app.js"></script>
+        <script src="/scripts/angular-validator.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="scripts/typeahead.bundle.js"></script>
+        <script type="text/javascript" src="scripts/bloodhound.js"></script>
+        <script type="text/javascript" src="scripts/search.js"></script>
 </body>
 </html>
