@@ -664,6 +664,7 @@ module.exports = function (passport) {
                         return done(err);
                     } else {
                         if (linkedin) {
+
                             console.log("Linkedin found");
                             linkedin.token = token;
                             linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
@@ -693,8 +694,51 @@ module.exports = function (passport) {
                                 }
                             });
                         } else {
-                            console.log("No linkedin connected");
-                            return done(null, false, req.flash('error', 'LinkedIn account is not linked to a Local account.'));
+
+                            LinkedIn.findOne({
+                                uid: profile._json.publicProfileUrl
+                            }, function (err, linkedin) {
+                                if (err) {
+                                    console.log(chalk.red("Error occurred 6546456"));
+                                    return done(err);
+                                } else {
+                                    if (linkedinUser) {
+
+                                        console.log("Linkedin found 2");
+                                        linkedin.token = token;
+                                        linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                                        if (profile.emails && profile.emails.length > 0) {
+                                            linkedin.email = (profile.emails[0].value || '').toLowerCase();
+                                        }
+                                        if (profile.photos && profile.photos.length > 0) {
+                                            linkedin.photo = profile.photos[0].value;
+                                        }
+                                        linkedin.url = profile._json.siteStandardProfileRequest.url;
+                                        linkedin.publicurl = profile._json.publicProfileUrl;
+                                        linkedin.newid = getLinkedInID("id", linkedin.url);
+                                        linkedin.uid = profile._json.publicProfileUrl;
+
+                                        linkedin.save(function (err) {
+                                            if (err) {
+                                                console.log(chalk.red("Error occurred 51368435"));
+                                                return done(err);
+                                            } else {
+                                                User.findById(linkedin.user, function (err, user) {
+                                                    if (err) {
+                                                        return done(err);
+                                                    } else {
+                                                        return done(null, user);
+                                                    }
+                                                });
+                                            }
+                                        });
+
+                                    } else {
+                                        console.log("No linkedin connected");
+                                        return done(null, false, req.flash('error', 'LinkedIn account is not linked to a Local account.'));
+                                    }
+                                }
+                            });
                         }
                     }
                 });
@@ -743,7 +787,9 @@ module.exports = function (passport) {
                     appid: profile.id
                 }, function (err, linkedinUser) {
 
-                    if (linkedinUser) {
+                    if (err) {
+                        return done(null);
+                    } else if (linkedinUser) {
 
                         console.log("LinkedIn user found");
 
@@ -784,39 +830,93 @@ module.exports = function (passport) {
 
                     } else {
 
-                        console.log("LinkedIn user not found");
+                        LinkedIn.findOne({
+                            uid: profile._json.publicProfileUrl
+                        }, function (err, linkedinUser) {
 
-                        var linkedin = new LinkedIn();
-
-                        linkedin.appid = profile.id;
-                        linkedin.token = token;
-                        linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
-                        if (profile.emails && profile.emails.length > 0) {
-                            linkedin.email = (profile.emails[0].value || '').toLowerCase();
-                        }
-                        if (profile.photos && profile.photos.length > 0) {
-                            linkedin.photo = profile.photos[0].value;
-                        }
-                        linkedin.url = profile._json.siteStandardProfileRequest.url;
-                        linkedin.publicurl = profile._json.publicProfileUrl;
-                        linkedin.newid = getLinkedInID("id", linkedin.url);
-                        linkedin.uid = profile._json.publicProfileUrl;
-
-                        linkedin.user = newUser._id;
-
-                        linkedin.save(function (err) {
                             if (err) {
-                                return done(err);
+                                return done(null);
                             } else {
-                                newUser.userDetails.linkedin = linkedin._id;
+                                if (err) {
+                                    return done(null);
+                                } else {
+                                    if (linkedinUser) {
 
-                                newUser.save(function (err) {
-                                    if (err) {
-                                        return done(err);
+                                        console.log("LinkedIn user found 2");
+
+                                        linkedinUser.token = token;
+
+                                        linkedinUser.name = profile.name.givenName + ' ' + profile.name.familyName;
+
+                                        linkedinUser.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                                        if (profile.emails && profile.emails.length > 0) {
+                                            linkedinUser.email = (profile.emails[0].value || '').toLowerCase();
+                                        }
+                                        if (profile.photos && profile.photos.length > 0) {
+                                            linkedinUser.photo = profile.photos[0].value;
+                                        }
+
+                                        linkedinUser.url = profile._json.siteStandardProfileRequest.url;
+                                        linkedinUser.publicurl = profile._json.publicProfileUrl;
+                                        linkedinUser.newid = getLinkedInID("id", linkedinUser.url);
+                                        linkedinUser.uid = profile._json.publicProfileUrl;
+
+                                        linkedinUser.user = newUser._id;
+
+                                        linkedinUser.save(function (err) {
+                                            if (err) {
+                                                return done(err);
+                                            } else {
+                                                newUser.userDetails.linkedin = linkedinUser._id;
+
+                                                newUser.save(function (err) {
+                                                    if (err) {
+                                                        return done(err);
+                                                    } else {
+                                                        return done(null, newUser);
+                                                    }
+                                                });
+                                            }
+                                        });
+
                                     } else {
-                                        return done(null, newUser);
+                                        console.log("LinkedIn user not found");
+
+                                        var linkedin = new LinkedIn();
+
+                                        linkedin.appid = profile.id;
+                                        linkedin.token = token;
+                                        linkedin.name = profile.name.givenName + ' ' + profile.name.familyName; // look at the passport user profile to see how names are returned
+                                        if (profile.emails && profile.emails.length > 0) {
+                                            linkedin.email = (profile.emails[0].value || '').toLowerCase();
+                                        }
+                                        if (profile.photos && profile.photos.length > 0) {
+                                            linkedin.photo = profile.photos[0].value;
+                                        }
+                                        linkedin.url = profile._json.siteStandardProfileRequest.url;
+                                        linkedin.publicurl = profile._json.publicProfileUrl;
+                                        linkedin.newid = getLinkedInID("id", linkedin.url);
+                                        linkedin.uid = profile._json.publicProfileUrl;
+
+                                        linkedin.user = newUser._id;
+
+                                        linkedin.save(function (err) {
+                                            if (err) {
+                                                return done(err);
+                                            } else {
+                                                newUser.userDetails.linkedin = linkedin._id;
+
+                                                newUser.save(function (err) {
+                                                    if (err) {
+                                                        return done(err);
+                                                    } else {
+                                                        return done(null, newUser);
+                                                    }
+                                                });
+                                            }
+                                        });
                                     }
-                                });
+                                }
                             }
                         });
                     }
