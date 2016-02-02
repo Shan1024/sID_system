@@ -2086,8 +2086,7 @@ module.exports = function (app, express) {
 
                     if (linkedin) {
 
-                        LinkedIn
-                            .find({
+                        LinkedInRatedByMe.find({
                                 myid: linkedin._id
                             })
                             //.populate({
@@ -2096,7 +2095,7 @@ module.exports = function (app, express) {
                             //})
                             //.select('entries')
                             .exec(function (err, linkedinRatedByMes) {
-                                //console.log(chalk.blue("linkedinRatedByMes found: " + JSON.stringify(linkedinRatedByMes, null, "\t")));
+                                console.log(chalk.blue("linkedinRatedByMes found: " + JSON.stringify(linkedinRatedByMes, null, "\t")));
                                 var count = 0;
 
                                 for (var i = 0; i < linkedinRatedByMes.length; i++) {
@@ -2104,6 +2103,7 @@ module.exports = function (app, express) {
                                         count += linkedinRatedByMes[i].entries.length;
                                     }
                                 }
+                                console.log("x");
                                 return res.json({
                                     success: true,
                                     count: count
