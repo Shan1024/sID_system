@@ -17,42 +17,42 @@ module.exports = function (app, express) {
     var rateRouter = express.Router();
 
     //// middleware to use for all requests
-    //rateRouter.use(function (req, res, next) {
-    //    console.log(chalk.blue('Request received to secure api.'));
-    //
-    //    // check header or url parameters or post parameters for token
-    //    var token = req.body.token || req.query.token || req.headers['x-access-token'];
-    //
-    //    //if the user is authenticated - used in the web interface
-    //    if (req.isAuthenticated()) {
-    //        return next();
-    //
-    //        //if user has a token - used in the chrome extension
-    //    } else {
-    //
-    //        // decode token
-    //        if (token) {
-    //
-    //            // verifies secret and checks exp
-    //            jwt.verify(token, app.get('apiSecret'), function (err, decoded) {
-    //                if (err) {
-    //                    return res.json({success: false, message: 'Failed to authenticate token.'});
-    //                } else {
-    //                    // if everything is good, save to request for use in other routes
-    //                    req.decoded = decoded;
-    //                    next();
-    //                }
-    //            });
-    //        } else {
-    //            //if there is no token
-    //            //return an error
-    //            return res.status(403).send({
-    //                success: false,
-    //                message: 'Forbidden. No token provided.'
-    //            });
-    //        }
-    //    }
-    //});
+    rateRouter.use(function (req, res, next) {
+        console.log(chalk.blue('Request received to secure api.'));
+
+        // check header or url parameters or post parameters for token
+        var token = req.body.token || req.query.token || req.headers['x-access-token'];
+
+        //if the user is authenticated - used in the web interface
+        if (req.isAuthenticated()) {
+            return next();
+
+            //if user has a token - used in the chrome extension
+        } else {
+
+            // decode token
+            if (token) {
+
+                // verifies secret and checks exp
+                jwt.verify(token, app.get('apiSecret'), function (err, decoded) {
+                    if (err) {
+                        return res.json({success: false, message: 'Failed to authenticate token.'});
+                    } else {
+                        // if everything is good, save to request for use in other routes
+                        req.decoded = decoded;
+                        next();
+                    }
+                });
+            } else {
+                //if there is no token
+                //return an error
+                return res.status(403).send({
+                    success: false,
+                    message: 'Forbidden. No token provided.'
+                });
+            }
+        }
+    });
 
     /**
      * @api {get} /rate/facebook Test the secure api connection
