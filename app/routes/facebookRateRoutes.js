@@ -17,42 +17,42 @@ module.exports = function (app, express) {
     var rateRouter = express.Router();
 
     //// middleware to use for all requests
-    rateRouter.use(function (req, res, next) {
-        console.log(chalk.blue('Request received to secure api.'));
-
-        // check header or url parameters or post parameters for token
-        var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
-        //if the user is authenticated - used in the web interface
-        if (req.isAuthenticated()) {
-            return next();
-
-            //if user has a token - used in the chrome extension
-        } else {
-
-            // decode token
-            if (token) {
-
-                // verifies secret and checks exp
-                jwt.verify(token, app.get('apiSecret'), function (err, decoded) {
-                    if (err) {
-                        return res.json({success: false, message: 'Failed to authenticate token.'});
-                    } else {
-                        // if everything is good, save to request for use in other routes
-                        req.decoded = decoded;
-                        next();
-                    }
-                });
-            } else {
-                //if there is no token
-                //return an error
-                return res.status(403).send({
-                    success: false,
-                    message: 'Forbidden. No token provided.'
-                });
-            }
-        }
-    });
+    //rateRouter.use(function (req, res, next) {
+    //    console.log(chalk.blue('Request received to secure api.'));
+    //
+    //    // check header or url parameters or post parameters for token
+    //    var token = req.body.token || req.query.token || req.headers['x-access-token'];
+    //
+    //    //if the user is authenticated - used in the web interface
+    //    if (req.isAuthenticated()) {
+    //        return next();
+    //
+    //        //if user has a token - used in the chrome extension
+    //    } else {
+    //
+    //        // decode token
+    //        if (token) {
+    //
+    //            // verifies secret and checks exp
+    //            jwt.verify(token, app.get('apiSecret'), function (err, decoded) {
+    //                if (err) {
+    //                    return res.json({success: false, message: 'Failed to authenticate token.'});
+    //                } else {
+    //                    // if everything is good, save to request for use in other routes
+    //                    req.decoded = decoded;
+    //                    next();
+    //                }
+    //            });
+    //        } else {
+    //            //if there is no token
+    //            //return an error
+    //            return res.status(403).send({
+    //                success: false,
+    //                message: 'Forbidden. No token provided.'
+    //            });
+    //        }
+    //    }
+    //});
 
     /**
      * @api {get} /rate/facebook Test the secure api connection
@@ -1756,6 +1756,66 @@ module.exports = function (app, express) {
             }, function (err, comments) {
                 if (err) {
                     console.log(chalk.red("Error occurred 8975") + " " + commentid + " " + targetid + " " + viewerid + err);
+                    res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+                    if (comments) {
+                        return res.json({
+                            success: true,
+                            comments: comments
+                        });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Unexpected error"
+                        });
+                    }
+
+                }
+            });
+        });
+
+    rateRouter.route('/getClaimComment')
+        .post(function(req,res){
+
+            var targetid = req.body.targetid;
+            var myid = req.body.myid;
+            var claimid = req.body.claimid;
+
+            if (!claimid) {
+                return res.json({success: false, message: "claimid not defined"});
+            }
+            if (!targetid) {
+                return res.json({success: false, message: "targetid not defined"});
+            }
+
+            if (!myid) {
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Comments not found"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "Comments not found"
+                    });
+                }
+            }
+
+            Comment.find({
+                targetsid: targetid,
+                mysid:myid,
+                claimid: claimid
+            }, function (err, comments) {
+                if (err) {
+                    console.log(chalk.red("Error occurred 8975") + " " + commentid + " " + targetid + " " + myid + err);
                     res.json({
                         success: false,
                         message: "Error occurred"
