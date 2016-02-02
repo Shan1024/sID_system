@@ -16,6 +16,26 @@ body {
   height: 65px;
 }
 
+.panel-default>.panel-heading {
+    color: #fff;
+    background-color: #0084B4;
+    border-color: #0084B4;
+}
+.panel-heading>a, a:focus, a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.panel-body>a, a:focus, a:hover {
+    color: #0084B4;
+    text-decoration: underline;
+}
+
+/*.panel-body>a:focus, a:hover {
+    color: #0084B4;
+    text-decoration: underline;
+}*/
+
 .overall-rating-panel-super{
   padding: 2px;
 }
@@ -48,6 +68,12 @@ body {
 }
 
 .btn-primary:hover {
+    color: #fff;
+    background-color: #0084B4;
+    border-color: #0084B4;
+}
+
+.btn-default:hover {
     color: #fff;
     background-color: #0084B4;
     border-color: #0084B4;
