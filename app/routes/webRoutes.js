@@ -95,14 +95,30 @@ module.exports = function (app, passport) {
                 }
             }
 
+            var facebookId;
+            var facebookUid;
+
+            if (facebook) {
+                facebookId = facebook.id;
+                facebookUid = facebook.uid;
+            }
+
+            var linkedinAppId;
+            var linkedinUid;
+
+            if (linkedin) {
+                linkedinAppId = linkedin.appid;
+                linkedinUid = linkedin.uid;
+            }
+
             return res.json({
                 success: true,
                 isFacebookLinked: isFacebookLinked,
-                fbappid: facebook.id,
-                fbid: facebook.uid,
+                fbappid: facebookId,
+                fbid: facebookUid,
                 isLinkedInLinked: isLinkedInLinked,
-                liappid: linkedin.appid,
-                liid: linkedin.uid,
+                liappid: linkedinAppId,
+                liid: linkedinUid,
                 token: token
             });
         } else {
