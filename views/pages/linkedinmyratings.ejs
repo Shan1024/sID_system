@@ -90,8 +90,13 @@
                 <div class="panel panel-default">
                     <div class="panel panel-header" style="border-radius: 4px 4px 0px 0px">
                         <% if(user.userDetails.facebook && user.userDetails.facebook.token){ %>
+                        <% if(user.userDetails.facebook.uid){ %>
                         <img src="https://graph.facebook.com/v2.3/<%= user.userDetails.facebook.uid %>/picture"
                              id="homepage_fb_pic">
+                        <% } else { %>
+                        <img src="https://graph.facebook.com/v2.3/<%= user.userDetails.facebook.id %>/picture"
+                             id="homepage_fb_pic">
+                        <% } %>
                         <% } else { %>
 
                         <% } %>

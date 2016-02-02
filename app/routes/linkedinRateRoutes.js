@@ -119,6 +119,38 @@ module.exports = function (app, express) {
 
         });
 
+    var setName = function (req, res, target) {
+
+        if (!target.name) {
+            console.log("Name not found");
+
+            var name = req.body.name;
+            console.log("name: " + name);
+            if (name) {
+                target.name = name;
+            }
+        }
+
+        if (!target.photo) {
+            console.log("Name not found");
+
+            var photo = req.body.img;
+            console.log("photo: " + photo);
+            if (photo) {
+                target.photo = photo;
+            }
+        }
+
+        target.save(function (err) {
+            if (err) {
+                console.log("Error occurred while updating linkedin");
+            } else {
+                console.log("LinkedIn successfully updated");
+            }
+        });
+
+    };
+
     var addRating = function (req, res, me, target, myUser, targetUser) {
 
         var myid = req.body.myid;
@@ -589,7 +621,6 @@ module.exports = function (app, express) {
         });
     };
 
-
     /**
      * @api {post} /rate/linkedin/addRating Adds a new LinkedIn rating or update an existing one.
      * @apiName AddRating
@@ -653,6 +684,9 @@ module.exports = function (app, express) {
                                     _id: target.user
                                 }, function (err, targetUser) {
                                     addRating(req, res, me, target, myUser, targetUser);
+                                    if (target) {
+                                        setName(req, res, target);
+                                    }
                                 });
                             });
 
@@ -684,6 +718,9 @@ module.exports = function (app, express) {
                                                     _id: linkedin.user
                                                 }, function (err, targetUser) {
                                                     addRating(req, res, me, linkedin, myUser, targetUser);
+                                                    if (linkedin) {
+                                                        setName(req, res, linkedin);
+                                                    }
                                                 });
                                             });
                                         }
@@ -1239,6 +1276,66 @@ module.exports = function (app, express) {
             });
         });
 
+    rateRouter.route('/getClaimComment')
+        .post(function(req,res){
+
+            var targetid = req.body.targetid;
+            var myid = req.body.myid;
+            var claimid = req.body.claimid;
+
+            if (!claimid) {
+                return res.json({success: false, message: "claimid not defined"});
+            }
+            if (!targetid) {
+                return res.json({success: false, message: "targetid not defined"});
+            }
+
+            if (!myid) {
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Comments not found"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "Comments not found"
+                    });
+                }
+            }
+
+            Comment.find({
+                targetsid: targetid,
+                mysid:myid,
+                claimid: claimid
+            }, function (err, comments) {
+                if (err) {
+                    console.log(chalk.red("Error occurred 8975") + " " + commentid + " " + targetid + " " + myid + err);
+                    res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+                    if (comments) {
+                        return res.json({
+                            success: true,
+                            comments: comments
+                        });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Unexpected error"
+                        });
+                    }
+
+                }
+            });
+        });
+    
     //##########################################################
     //##########################################################
 
@@ -2049,8 +2146,7 @@ module.exports = function (app, express) {
 
                     if (linkedin) {
 
-                        LinkedIn
-                            .find({
+                        LinkedInRatedByMe.find({
                                 myid: linkedin._id
                             })
                             //.populate({
@@ -2059,7 +2155,7 @@ module.exports = function (app, express) {
                             //})
                             //.select('entries')
                             .exec(function (err, linkedinRatedByMes) {
-                                //console.log(chalk.blue("linkedinRatedByMes found: " + JSON.stringify(linkedinRatedByMes, null, "\t")));
+                                console.log(chalk.blue("linkedinRatedByMes found: " + JSON.stringify(linkedinRatedByMes, null, "\t")));
                                 var count = 0;
 
                                 for (var i = 0; i < linkedinRatedByMes.length; i++) {
@@ -2067,6 +2163,7 @@ module.exports = function (app, express) {
                                         count += linkedinRatedByMes[i].entries.length;
                                     }
                                 }
+                                console.log("x");
                                 return res.json({
                                     success: true,
                                     count: count
@@ -2154,10 +2251,11 @@ module.exports = function (app, express) {
 
                                         var publicUrl;
 
-                                        if (user.userDetails.facebook.uid) {
-                                            publicUrl = "https://www.facebook.com/" + user.userDetails.facebook.uid;
+                                        if (user.userDetails.facebook) {
+                                            if (user.userDetails.facebook.uid) {
+                                                publicUrl = "https://www.facebook.com/" + user.userDetails.facebook.uid;
+                                            }
                                         }
-
                                         res.json({
                                             success: true,
                                             uid: uid,

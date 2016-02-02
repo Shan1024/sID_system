@@ -1777,6 +1777,66 @@ module.exports = function (app, express) {
             });
         });
 
+    rateRouter.route('/getClaimComment')
+        .post(function(req,res){
+
+            var targetid = req.body.targetid;
+            var myid = req.body.myid;
+            var claimid = req.body.claimid;
+
+            if (!claimid) {
+                return res.json({success: false, message: "claimid not defined"});
+            }
+            if (!targetid) {
+                return res.json({success: false, message: "targetid not defined"});
+            }
+
+            if (!myid) {
+                if (req.user) {
+                    if (req.user.userDetails.facebook) {
+                        targetid = req.user.userDetails.facebook.uid;
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Comments not found"
+                        });
+                    }
+                } else {
+                    return res.json({
+                        success: false,
+                        message: "Comments not found"
+                    });
+                }
+            }
+
+            Comment.find({
+                targetsid: targetid,
+                mysid:myid,
+                claimid: claimid
+            }, function (err, comments) {
+                if (err) {
+                    console.log(chalk.red("Error occurred 8975") + " " + commentid + " " + targetid + " " + myid + err);
+                    res.json({
+                        success: false,
+                        message: "Error occurred"
+                    });
+                } else {
+                    if (comments) {
+                        return res.json({
+                            success: true,
+                            comments: comments
+                        });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: "Unexpected error"
+                        });
+                    }
+
+                }
+            });
+        });
+
     //##########################################################
     //##########################################################
 
@@ -2350,7 +2410,7 @@ module.exports = function (app, express) {
                                 } else {
                                     if (facebookRatedByMe) {
                                         console.log(chalk.blue("facebookRatedByMe found: " + JSON.stringify(facebookRatedByMe, null, "\t")));
-                                        console.log("test: " + facebookRatedByMe[0].entries);
+                                        //console.log("test: " + facebookRatedByMe[0].entries);
                                         res.json({success: true, data: facebookRatedByMe.reverse()});
                                     } else {
                                         console.log("facebookRatedByMe not found");
@@ -2691,10 +2751,19 @@ module.exports = function (app, express) {
                                 } else {
                                     if (user) {
                                         console.log(chalk.green("USER: " + JSON.stringify(user, null, "\t")));
+
+                                        var publicUrl;
+
+                                        if(user.userDetails.linkedin) {
+                                            if (user.userDetails.facebook.publicurl) {
+                                                publicUrl = user.userDetails.linkedin.publicurl;
+                                            }
+                                        }
+
                                         res.json({
                                             success: true,
                                             uid: uid,
-                                            linkedinUrl: user.userDetails.linkedin.publicurl
+                                            linkedinUrl: publicUrl
                                         });
                                     } else {
                                         res.json({success: false, message: 'User not found'});

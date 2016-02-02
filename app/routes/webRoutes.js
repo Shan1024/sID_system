@@ -95,14 +95,30 @@ module.exports = function (app, passport) {
                 }
             }
 
+            var facebookId;
+            var facebookUid;
+
+            if (facebook) {
+                facebookId = facebook.id;
+                facebookUid = facebook.uid;
+            }
+
+            var linkedinAppId;
+            var linkedinUid;
+
+            if (linkedin) {
+                linkedinAppId = linkedin.appid;
+                linkedinUid = linkedin.uid;
+            }
+
             return res.json({
                 success: true,
                 isFacebookLinked: isFacebookLinked,
-                fbappid: facebook.id,
-                fbid: facebook.uid,
+                fbappid: facebookId,
+                fbid: facebookUid,
                 isLinkedInLinked: isLinkedInLinked,
-                liappid: linkedin.appid,
-                liid: linkedin.uid,
+                liappid: linkedinAppId,
+                liid: linkedinUid,
                 token: token
             });
         } else {
@@ -790,7 +806,9 @@ module.exports = function (app, passport) {
                                         user: req.user,
                                         name: name,
                                         facebook: facebookData,
-                                        linkedin: linkedinData
+                                        linkedin: linkedinData,
+                                        facebook_uid: null,
+                                        linkedin_url: null
                                     });
                                 } else {
                                     if (facebook) {
@@ -806,7 +824,8 @@ module.exports = function (app, passport) {
                                                     name: name,
                                                     facebook: facebookData,
                                                     linkedin: linkedinData,
-                                                    facebook_uid: facebook.uid
+                                                    facebook_uid: facebook.uid,
+                                                    linkedin_url: null
                                                 });
                                             } else {
                                                 if (claims) {
@@ -840,7 +859,8 @@ module.exports = function (app, passport) {
                                                                     name: name,
                                                                     facebook: facebookData,
                                                                     linkedin: linkedinData,
-                                                                    facebook_uid: facebook.uid
+                                                                    facebook_uid: facebook.uid,
+                                                                    linkedin_url: null
                                                                 });
                                                             } else {
                                                                 if (linkedin) {
@@ -857,7 +877,7 @@ module.exports = function (app, passport) {
                                                                                 facebook: facebookData,
                                                                                 linkedin: linkedinData,
                                                                                 facebook_uid: facebook.uid,
-                                                                                linkedin_url: linkedin.url
+                                                                                linkedin_url: linkedin.uid
                                                                             });
                                                                         } else {
                                                                             if (claims) {
@@ -896,7 +916,7 @@ module.exports = function (app, passport) {
                                                                                     facebook: facebookData,
                                                                                     linkedin: linkedinData,
                                                                                     facebook_uid: facebook.uid,
-                                                                                    linkedin_url: linkedin.url
+                                                                                    linkedin_url: linkedin.uid
                                                                                 });
 
                                                                             } else {
@@ -907,7 +927,7 @@ module.exports = function (app, passport) {
                                                                                     facebook: facebookData,
                                                                                     linkedin: linkedinData,
                                                                                     facebook_uid: facebook.uid,
-                                                                                    linkedin_url: linkedin.url
+                                                                                    linkedin_url: linkedin.uid
                                                                                 });
                                                                             }
                                                                         }
@@ -920,7 +940,7 @@ module.exports = function (app, passport) {
                                                                         facebook: facebookData,
                                                                         linkedin: linkedinData,
                                                                         facebook_uid: facebook.uid,
-                                                                        linkedin_url: linkedin.url
+                                                                        linkedin_url: linkedin.uid
                                                                     });
                                                                 }
                                                             }
@@ -935,7 +955,8 @@ module.exports = function (app, passport) {
                                                             name: name,
                                                             facebook: facebookData,
                                                             linkedin: linkedinData,
-                                                            facebook_uid: facebook.uid
+                                                            facebook_uid: facebook.uid,
+                                                            linkedin_url: null
                                                         });
                                                     }
 
@@ -946,7 +967,8 @@ module.exports = function (app, passport) {
                                                         name: name,
                                                         facebook: facebookData,
                                                         linkedin: linkedinData,
-                                                        facebook_uid: facebook.uid
+                                                        facebook_uid: facebook.uid,
+                                                        linkedin_url: null
                                                     });
                                                 }
                                             }
@@ -957,7 +979,9 @@ module.exports = function (app, passport) {
                                             user: req.user,
                                             name: name,
                                             facebook: facebookData,
-                                            linkedin: linkedinData
+                                            linkedin: linkedinData,
+                                            facebook_uid: null,
+                                            linkedin_url: null
                                         });
                                     }
                                 }

@@ -54,16 +54,16 @@
                 <!--</li>-->
                 <!-- <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li> -->
                 <% if (user) { %>
-                  <li style="margin-right: 20px; margin-top: 10px; ">
-                      <a class="page-scroll" href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a>
-                  </li>
+                <li style="margin-right: 20px; margin-top: 10px; ">
+                    <a class="page-scroll" href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a>
+                </li>
                 <% } else { %>
-                  <li style="margin-right: 20px; margin-top: 10px; ">
-                      <a class="page-scroll" href="/signup"><span class="glyphicon glyphicon-log-in"></span> Sign Up </a>
-                  </li>
-                  <li style="margin-right: 20px; margin-top: 10px; ">
-                      <a class="page-scroll" href="/login"><span class="glyphicon glyphicon-log-in"></span> Sign In </a>
-                  </li>
+                <li style="margin-right: 20px; margin-top: 10px; ">
+                    <a class="page-scroll" href="/signup"><span class="glyphicon glyphicon-log-in"></span> Sign Up </a>
+                </li>
+                <li style="margin-right: 20px; margin-top: 10px; ">
+                    <a class="page-scroll" href="/login"><span class="glyphicon glyphicon-log-in"></span> Sign In </a>
+                </li>
                 <% } %>
 
             </ul>
@@ -91,40 +91,40 @@
 
 <div class="container">
     <div class="row">
-      <div class="col-xs-12 col-md-8 col-md-offset-2">
-          <div class="panel panel-default">
-            <div class="panel-heading text-center" id="overallratingstitle" style="font-size: 20px;">
-              Overall Profile Rating for : <%= name %>
+        <div class="col-xs-12 col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center" id="overallratingstitle" style="font-size: 20px;">
+                    Overall Profile Rating for : <%= name %>
+                </div>
+                <div class="panel-body overall-rating-container">
+                    <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
+                        <div class="panel panel-default overall-rating-panel">
+                            <div class="panel-heading text-center">
+                                <h3><span class="fa fa-facebook"></span> Facebook</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="donut-facebook" style="height: 250px;"></div>
+                            </div>
+                            <div class="panel-footer">
+                                <div id="facebook-footer"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
+                        <div class="panel panel-default overall-rating-panel">
+                            <div class="panel-heading text-center">
+                                <h3><span class="fa fa-linkedin"></span> LinkedIn</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="donut-linkedin" style="height: 250px;"></div>
+                            </div>
+                            <div class="panel-footer">
+                                <div id="linkedin-footer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="panel-body overall-rating-container">
-              <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
-                <div class="panel panel-default overall-rating-panel">
-                  <div class="panel-heading text-center">
-                    <h3><span class="fa fa-facebook"></span> Facebook</h3>
-                    </div>
-                    <div class="panel-body">
-                      <div id="donut-facebook" style="height: 250px;"></div>
-                    </div>
-                    <div class="panel-footer">
-                      <div id="facebook-footer"></div>
-                    </div>
-                  </div>
-              </div>
-              <div class="col-xs-12 col-sm-6 overall-rating-panel-super">
-                  <div class="panel panel-default overall-rating-panel">
-                      <div class="panel-heading text-center">
-                          <h3><span class="fa fa-linkedin"></span> LinkedIn</h3>
-                      </div>
-                      <div class="panel-body">
-                          <div id="donut-linkedin" style="height: 250px;"></div>
-                      </div>
-                      <div class="panel-footer">
-                        <div id="linkedin-footer"></div>
-                      </div>
-                  </div>
-              </div>
-            </div>
-          </div>
         </div>
     </div>
     <div class="row">
@@ -135,12 +135,10 @@
 <script type="text/javascript">
 
     var facebookTempData = <%-JSON.stringify(facebook)%>;
-
     var linkedinTempData = <%-JSON.stringify(linkedin)%>;
 
-    var facebook_uid = <%-JSON.stringify(facebook_uid)%>;
-
-    var linkedin_url = <%-JSON.stringify(linkedin_url)%>;
+    var facebookUID =  <%-JSON.stringify(facebook_uid)%>;
+    var linkedinURL = <%-JSON.stringify(linkedin_url)%>;
 
     console.log(facebookTempData);
     console.log(linkedinTempData);
@@ -181,14 +179,14 @@
         $content.replaceWith("<div class='text-center'> <h3>Sorry! No Facebook rating data is available for <%= name %>.</h3></div>");
     }
 
-    if(facebook_uid){
-      var $content = $('#facebook-footer');
-      $content.replaceWith("<div class='text-center'><a href='http://www.facebook.com/<%= facebook_uid%>'>Visit profile</a></div>");
+    if (facebookUID) {
+        var $content = $('#facebook-footer');
+        $content.replaceWith("<div class='text-center'><a href='http://www.facebook.com/<%= facebook_uid%>'>Visit profile</a></div>");
     }
 
-    if(linkedin_url){
-      var $content = $('#linkedin-footer');
-      $content.replaceWith("<div class='text-center'><a href='<%= linkedin_url%>'>Visit profile</a></div>");
+    if (linkedinURL) {
+        var $content = $('#linkedin-footer');
+        $content.replaceWith("<div class='text-center'><a href='<%= linkedin_url%>'>Visit profile</a></div>");
     }
 
 </script>
