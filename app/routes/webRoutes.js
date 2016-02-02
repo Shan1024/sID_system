@@ -790,7 +790,9 @@ module.exports = function (app, passport) {
                                         user: req.user,
                                         name: name,
                                         facebook: facebookData,
-                                        linkedin: linkedinData
+                                        linkedin: linkedinData,
+                                        facebook_uid: null,
+                                        linkedin_url: null
                                     });
                                 } else {
                                     if (facebook) {
@@ -806,7 +808,8 @@ module.exports = function (app, passport) {
                                                     name: name,
                                                     facebook: facebookData,
                                                     linkedin: linkedinData,
-                                                    facebook_uid: facebook.uid
+                                                    facebook_uid: facebook.uid,
+                                                    linkedin_url: null
                                                 });
                                             } else {
                                                 if (claims) {
@@ -840,7 +843,8 @@ module.exports = function (app, passport) {
                                                                     name: name,
                                                                     facebook: facebookData,
                                                                     linkedin: linkedinData,
-                                                                    facebook_uid: facebook.uid
+                                                                    facebook_uid: facebook.uid,
+                                                                    linkedin_url: null
                                                                 });
                                                             } else {
                                                                 if (linkedin) {
@@ -935,7 +939,8 @@ module.exports = function (app, passport) {
                                                             name: name,
                                                             facebook: facebookData,
                                                             linkedin: linkedinData,
-                                                            facebook_uid: facebook.uid
+                                                            facebook_uid: facebook.uid,
+                                                            linkedin_url: null
                                                         });
                                                     }
 
@@ -946,7 +951,8 @@ module.exports = function (app, passport) {
                                                         name: name,
                                                         facebook: facebookData,
                                                         linkedin: linkedinData,
-                                                        facebook_uid: facebook.uid
+                                                        facebook_uid: facebook.uid,
+                                                        linkedin_url: null
                                                     });
                                                 }
                                             }
@@ -957,7 +963,9 @@ module.exports = function (app, passport) {
                                             user: req.user,
                                             name: name,
                                             facebook: facebookData,
-                                            linkedin: linkedinData
+                                            linkedin: linkedinData,
+                                            facebook_uid: null,
+                                            linkedin_url: null
                                         });
                                     }
                                 }
