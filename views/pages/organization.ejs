@@ -1,99 +1,277 @@
 <!doctype html>
-<html lang="en-US">
+<html>
 <head>
-	<link rel="stylesheet" href="/stylesheets/profile.css">
+    <title>sID Social Identity</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="shortcut icon" href="/icons/logo.ico"/>
+    <link rel="stylesheet" href="/stylesheets/home.css">
+    <link rel="stylesheet" href="/stylesheets/search.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <script src="https://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
 </head>
-<body style="background-image:url('/img/organizations/<%= org.orgid%>/bg.png')">
-	<div class = "profile-container">
-		<div class="tag-container">
-			<span class="tag-line">
-				<% if(org.userDetails.tagline){ %>
-					<%= org.userDetails.tagline %>
-				<%}else{%>
-					sID Verified Organization
-				<%}%>
-			</span>
-		</div>
-		<img class="profile-cover" src="/img/organizations/<%= org.orgid%>/cover.png">
-		<img class="sid-banner" src="/img/organizations/commons/banner.png">
-		<img class="logo" src="/img/organizations/<%= org.orgid%>/logo.png">
-		<span class="profile-title">
-			<% if(org.userDetails.organization){ %>
-				<%= org.userDetails.organization %>
-			<%}else{%>
-				Organization Title Not Available
-			<%}%>
-		</span>
-		<div class="data-container">
-			<div class="about-container">
-				<div class="section-header">
-					<img class="section-icon" src="/img/organizations/commons/about-icon.png">
-					About
+
+<body style="padding-right:0px; padding-left:0px;">
+<!-- Navigation -->
+<!-- <nav class="navbar navbar-default navbar-fixed-top"> -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="margin-bottom:0" id="landingnavbar">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header"
+             style="background-color: rgba(255,255,255,.15); color: rgba(255,255,255,.15); background: transparent; margin-top: 10px;">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand page-scroll" href="/">sID Social Identity</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="hidden">
+                    <a href="#home"></a>
+                </li>
+                <!-- <li>
+                <a class="page-scroll" href="#home" style="padding: 7px 20px;">Home</a>
+                </li> -->
+                <!--<li>-->
+                <!--<a class="page-scroll" href="#platforms">Platforms</a>-->
+                <!--</li>-->
+                <!--<li>-->
+                <!--<a class="page-scroll" href="#progress">Progress</a>-->
+                <!--</li>-->
+                <!--<li>-->
+                <!--<a class="page-scroll" href="#contactus">Contact</a>-->
+                <!--</li>-->
+                <!-- <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li> -->
+                <li style="margin-right: 20px; margin-top: 10px; ">
+                    <a class="page-scroll" href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a>
+                </li>
+
+
+            </ul>
+            <div class="col-xs-12 col-sm-5 col-md-5 pull-left" style="margin-top: 10px;">
+                <form class="navbar-form" role="search" action="/overview" method="post" id="sidusersearchform">
+                    <div class="input-group" style="width: 100%;">
+                        <input type="text" class="form-control" name="name" placeholder="Search sID" id="sidusersearch">
+
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- <div id="sidusersearch">
+                  <input class="typeahead" type="text" placeholder="Search sID">
+                </div> -->
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="row">
+                <div class="panel panel-default">
+                    <div class="panel panel-header" style="border-radius: 4px 4px 0px 0px">
+                        <% if(user.orgid){ %>
+                        <img src="/img/organizations/<%= user.orgid%>/logo.png" id="homepage_fb_pic">
+                        <% } %>
+                    </div>
+                    <div class="panel-body">
+                        <!-- check if the user has this token (is the user authenticated with this social account) -->
+                        <% if (user.userDetails.organization) { %>
+                        <p>
+                            <strong><%= user.userDetails.organization %></strong><br>
+                            <%= user.userDetails.email %><br><br>
+														<% if(user.userDetails.description){ %>
+															<%= user.userDetails.description %><br>
+														<%}else{%>
+															Organization description not available<br>
+														<%}%>
+														<%if(user.orgid){%>
+															<br><br><%= user.orgid %><br>
+														<%}else{%>
+															<br><br>Organization Id not available<br>
+														<%}%>
+														<%if(user.userDetails.website){%>
+															<br><br><%= user.userDetails.website %>
+														<%}else{%>
+															<br><br>Website info not available<br>
+														<%}%>
+                        </p>
+                        <div class="row">
+                            <div class="btn-group btn-group-justified">
+                                <a href="/facebookmyratings" class="btn btn-primary">Button Options</a>
+                            </div>
+                        </div>
+                        <% } else { %>
+                        <div align="center">
+                            <a href="/connect/facebook" class="btn btn-primary">Button Options</a>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
 				</div>
-				<div class="section-body">
-					<li class="about-item">
-						<img class="about-item" src="/img/organizations/commons/description.png">
-						<div class="item-content">
-							<% if(org.userDetails.description){ %>
-								<%= org.userDetails.description %>
-							<%}else{%>
-								Organization description not available
-							<%}%>
-						</div>
-					</li>
-					<li class="about-item">
-						<img class="about-item" src="/img/organizations/commons/email.png">
-						<div class="item-content">
-							<%if(org.userDetails.email){%>
-								<%= org.userDetails.email %>
-							<%}else{%>
-								Organization email not available
-							<%}%>
-						</div>
-					</li>
-					<li class="about-item">
-						<img class="about-item" src="/img/organizations/commons/id.png">
-						<div class="item-content">
-							<%if(org.orgid){%>
-								<%= org.orgid %>
-							<%}else{%>
-								Organization Id not available
-							<%}%>
-						</div>
-					</li>
-					<li class="about-item">
-						<img class="about-item" src="/img/organizations/commons/website.png">
-						<div class="item-content">
-							<%if(org.userDetails.website){%>
-								<%= org.userDetails.website %>
-							<%}else{%>
-								Website info not available
-							<%}%>
-						</div>
-					</li>
-				</div>
-			</div>
-			<div class="members-container">
-				<div class="section-header">
-					<img class="section-icon" src="/img/organizations/commons/members-icon.png">
-					Members
-				</div>
-				<div class="section-body">
-					<%if(org.members){%>
-						<% for(var i = 0; i < org.members.length ; i += 1) { %>
-							<li class="about-item">
-								<div class="fb-profile">
-									<img class="fb-photo" src="https://graph.facebook.com/v2.3/<%= org.members[i].fbid %>/picture">
-									<span class="fb-name"><%= org.members[i].fbid %> | <%= org.members[i].username %></span>
-								</div>
-							</li>
-						<% } %>
-					<%}else{%>
-						<span>This organization does not have any members yet</span>
-					<%}%>
-				</div>
-			</div>
-		</div>
-	</div>
+        <div class="col-xs-12 col-sm-6 col-md-9">
+
+          <div class="panel panel-default">
+              <div class="panel-heading" style="padding: 10px; font-size: 40px; text-align: center; background-color: #0084B4; color: #fff; border-radius: 4px 4px 0px 0px;;">Accepted Memberships</div>
+
+              <div class="panel-body">
+                <div class="members-contentarea">
+    							<div class="members-contentarea">
+    	              <div class="col-xs-12 col-sm-12 col-md-6" style="padding-left: 0;">
+    	                <div class="members-contentarea-leftPanel"></div>
+    	              </div>
+    	              <div class="col-xs-12 col-sm-12 col-md-6" style="padding-left: 0; padding-right: 0;">
+    	                <div class="members-contentarea-rightPanel"></div>
+    	              </div>
+    	            </div>
+    						</div>
+              </div>
+          </div>
+
+
+
+
+            <div class="panel panel-default">
+              <div class="panel-heading" style="padding: 10px; font-size: 40px; text-align: center; background-color: #0084B4; color: #fff; border-radius: 4px 4px 0px 0px;;">Requested Members</div>
+
+              <div class="panel-body">
+                <div class="requests-contentarea">
+    							<div class="ratedbyme-contentarea">
+    	              <div class="col-xs-12 col-sm-12 col-md-6" style="padding-left: 0;">
+    	                <div class="requests-contentarea-leftPanel"></div>
+    	              </div>
+    	              <div class="col-xs-12 col-sm-12 col-md-6" style="padding-left: 0; padding-right: 0;">
+    	                <div class="requests-contentarea-rightPanel"></div>
+    	              </div>
+    	            </div>
+    						</div>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+    </div>
+    <div class="row">
+    </div>
+</div>
+
+<script id="requests-template" type="x-handlebars-template">
+    {{#requests}}
+    <div class="panel panel-default">
+        <div class="panel-body" style="margin:5px; padding: 0px;">
+          <img src="https://graph.facebook.com/v2.3/{{fbid}}/picture?width=50&height=50">
+          <a href="https://facebook.com/{{fbid}}" target="_blank"><strong>{{username}}</strong></a>
+					<button type="button" class="btn btn-default" data-userid={{fbid}} onclick="grantMembership(this)" style="float: right; position: relative; left: -5px; top: 7px;">Accept</button>
+        </div>
+    </div>
+    {{/requests}}
+</script>
+
+<script id="members-template" type="x-handlebars-template">
+    {{#members}}
+    <div class="panel panel-default">
+        <div class="panel-body" style="margin:5px; padding: 0px;">
+          <img src="https://graph.facebook.com/v2.3/{{fbid}}/picture?width=50&height=50">
+          <a href="https://facebook.com/{{fbid}}" target="_blank"><strong>{{username}}</strong></a><br>
+        </div>
+    </div>
+    {{/members}}
+</script>
+
+<script type="text/javascript">
+	function grantMembership(button){
+		var userid = button.getAttribute("data-userid");
+		var orguser = <%-JSON.stringify(user)%>;
+
+		$.post("/rate/facebook/grantMembership",
+    {
+        userid: userid,
+        orgid: orguser.orgid
+    },
+    function(data, status){
+      // console.log(data);
+				location.reload();
+    });
+	}
+</script>
+
+<script type="text/javascript">
+	$(function(){
+		var user = <%-JSON.stringify(user)%>;
+
+		// console.log(JSON.stringify(user, null, "\t"));
+
+		var theTemplateScript = $("#requests-template").html();
+
+		var theTemplate = Handlebars.compile(theTemplateScript);
+
+		var leftPanel = new Object();
+		var rightPanel = new Object();
+		leftPanel.requests = [];
+		rightPanel.requests = [];
+
+		for(var i = 0; i < user.requests.length ; i++){
+			if(i%2 == 0){ leftPanel.requests.push(user.requests[i]);}
+			else{rightPanel.requests.push(user.requests[i]);}
+		}
+
+		$(".requests-contentarea-leftPanel").append(theTemplate(leftPanel));
+		$(".requests-contentarea-rightPanel").append(theTemplate(rightPanel));
+	})
+</script>
+
+<script type="text/javascript">
+	$(function(){
+		var user = <%-JSON.stringify(user)%>;
+
+		// console.log(JSON.stringify(user, null, "\t"));
+
+		var theTemplateScript = $("#members-template").html();
+
+		var theTemplate = Handlebars.compile(theTemplateScript);
+
+		var leftPanel = new Object();
+		var rightPanel = new Object();
+		leftPanel.members = [];
+		rightPanel.members = [];
+
+		for(var i = 0; i < user.members.length ; i++){
+			if(i%2 == 0){ leftPanel.members.push(user.members[i]);}
+			else{rightPanel.members.push(user.members[i]);}
+		}
+
+		$(".members-contentarea-leftPanel").append(theTemplate(leftPanel));
+		$(".members-contentarea-rightPanel").append(theTemplate(rightPanel));
+	})
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.js'></script>
+<script src="/scripts/angular-validator-app.js"></script>
+<script src="/scripts/angular-validator.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="scripts/typeahead.bundle.js"></script>
+<script type="text/javascript" src="scripts/bloodhound.js"></script>
+<script type="text/javascript" src="scripts/search.js"></script>
 </body>
 </html>
