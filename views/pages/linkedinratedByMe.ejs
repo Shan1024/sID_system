@@ -335,6 +335,8 @@
             <div class="modal-body">
                 <p id='commenttip'>You have not commented on this claim yet.</p>
                 <textarea id="mycomment" rows="8" style="width: 100%;"></textarea>
+                <input type="hidden" name="comment" value="" id="comment-input">
+                <input type="hidden" name="country" value="" id="commentid-input">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="saveNewComment()">Save
@@ -375,6 +377,7 @@
                     if (data.comments.length > 0) {
                         $('#commenttip').hide();
                         $('#mycomment').html(data.comments[0].comment);
+                        $('#commentid-input').attr("value", data.comments[0].commentid);
                     } else {
                         $('#commenttip').show();
                         $('#mycomment').html(' ');
@@ -387,8 +390,31 @@
 
 <script type="text/javascript">
     function saveNewComment() {
+        var myid = $('#popover_content_wrapper').attr("data-myid");
+        var targetid = $('#popover_content_wrapper').attr("data-targetid");
         var text = $('textarea#mycomment').val();
+        var commentid = $('#commentid-input').attr("value");
+        var claimid = $('#popover_content_wrapper').attr("data-claimid");
+
+        console.log(myid);
+        console.log(targetid);
         console.log(text);
+        console.log(commentid);
+
+        $.post("/rate/linkedin/addComment",
+                {
+                    myid: myid,
+                    targetid: targetid,
+                    commentid: commentid,
+                    comment: text,
+                    claimid: claimid
+                },
+                function (data, status) {
+                    // alert("Data: " + data + "\nStatus: " + status);
+                    console.log(JSON.stringify(data, null, "\t"));
+                    // console.log(data);
+
+                });
     }
 </script>
 
