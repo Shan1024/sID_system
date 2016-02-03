@@ -206,7 +206,7 @@
 <script type="text/javascript">
     $(function () {
         var orguser = <%-JSON.stringify(orguser)%>;
-
+        <% if (user&&user.userDetails) { %>
         <% if (user.userDetails.facebook) { %>
         console.log('user found');
 
@@ -228,7 +228,7 @@
         <% } else { %>
         console.log('user not found');
         <% }  %>
-
+        <% }  %>
         // console.log(JSON.stringify(user, null, "\t"));
 
         var theTemplateScript = $("#members-template").html();
