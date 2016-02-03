@@ -58,9 +58,18 @@
                 <li style="margin-right: 20px; margin-top: 10px; ">
                     <a class="page-scroll" href="/getAllOrganizations"><span class="glyphicon glyphicon-th-list"></span> Registered Organizations </a>
                 </li>
+                <% if (user) { %>
                 <li style="margin-right: 20px; margin-top: 10px; ">
-                    <a class="page-scroll" href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a>
+                   <a class="page-scroll" href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a>
                 </li>
+                <% } else { %>
+                <li style="margin-right: 20px; margin-top: 10px; ">
+                   <a class="page-scroll" href="/signup"><span class="glyphicon glyphicon-log-in"></span> Sign Up </a>
+                </li>
+                <li style="margin-right: 20px; margin-top: 10px; ">
+                   <a class="page-scroll" href="/login"><span class="glyphicon glyphicon-log-in"></span> Sign In </a>
+                </li>
+                <% } %>
 
 
             </ul>
@@ -120,7 +129,7 @@
                         </p>
                         <% if(user && user.userDetails.facebook && user.userDetails.facebook.token && user.userDetails.facebook.uid){ %>
                           <div class="row">
-                              <div class="btn-group btn-group-justified">
+                              <div class="btn-group btn-group-justified" id="requestMembershipButton">
                                   <form id="membershipRequestForm" method="post" action="/rate/facebook/requestMembership">
                                     <input type="hidden" name="targetid" value="<%= orguser.orgid %>" />
                                     <input type="hidden" name="myid" value="<%= user.userDetails.facebook.uid %>" />
@@ -161,9 +170,20 @@
 </div>
 
 <script type="text/javascript">
-  function test1() {
-    console.log('test called');
-  }
+$('#membershipRequestForm').submit(function(e){
+    e.preventDefault();
+    var url=$(this).closest('form').attr('action'),
+        data=$(this).closest('form').serialize();
+    $.ajax({
+        url:url,
+        type:'post',
+        data:data,
+        success:function(){
+           //whatever you wanna do after the form is successfully submitted
+           location.reload();
+        }
+    });
+});
 </script>
 
 <script id="members-template" type="x-handlebars-template">
@@ -180,6 +200,28 @@
 <script type="text/javascript">
 	$(function(){
 		var orguser = <%-JSON.stringify(orguser)%>;
+
+    <% if (user.userDetails.facebook) { %>
+      console.log('user found');
+
+      var user = <%-JSON.stringify(user)%>;
+
+      $.post("/rate/facebook/requestMembership",
+      {
+          myid: user.userDetails.facebook.uid,
+          targetid: orguser.orgid
+      },
+      function(data, status){
+          if(data.errorCode == 1){
+            $("#requestMembershipButton").html("<a class='btn btn-primary'>Already a member</a>");
+          }
+          if(data.errorCode == 2){
+            $("#requestMembershipButton").html("<a class='btn btn-primary'>Already requested membership</a>");
+          }
+      });
+    <% } else { %>
+      console.log('user not found');
+    <% }  %>
 
 		// console.log(JSON.stringify(user, null, "\t"));
 
