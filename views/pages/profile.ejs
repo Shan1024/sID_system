@@ -151,15 +151,16 @@
                 <hr>
                 <div align="center">
                     <a href="/unlink/facebook" class="btn btn-primary">Unlink</a></div>
-                <% } else { %>
-                <div align="center">
-                    <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a></div>
-                <% } %>
-                <% } else { %>
-                <div align="center">
-                    <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a></div>
-                <% } %>
-
+                    <% } else { %>
+                    <div class="btn-group btn-group-justified">
+                      <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                    </div>
+                    <% } %>
+                    <% } else { %>
+                    <div class="btn-group btn-group-justified">
+                      <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                    </div>
+                    <% } %>
             </div>
         </div>
     </div>
