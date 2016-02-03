@@ -1335,6 +1335,262 @@ module.exports = function (app, express) {
                 }
             });
         });
+		
+	var requestMembership = function (req, res, myUser, organization, secret) {
+        var members = organization.members;
+        var requests = organization.requests;
+
+        var request = {
+            userid: myUser._id,
+            liid: req.body.myid,
+            secret: secret,
+            username: myUser.userDetails.local.firstname + " " + myUser.userDetails.local.lastname,
+            email: myUser.userDetails.local.email
+        };
+
+        var hasRequested = requests.map(function (e) {
+            return e.userid;
+        }).indexOf(myUser._id.toString());
+        var hasMembership = members.map(function (e) {
+            return e.userid;
+        }).indexOf(myUser._id.toString());
+
+        if (hasRequested === -1) {
+            if (hasMembership === -1) {
+                requests.push(request);
+                organization.save(function (err) {
+                    if (err) {
+                        return res.json({error: "unexpected error adding request", err: err});
+                    }
+                    return res.json({
+                        success: true,
+                        user: myUser.userDetails,
+                        organization: organization
+                    });
+                });
+            } else {
+                return res.json({
+                    error: "Already a member: ",
+                    user: myUser.userDetails,
+                    org: organization,
+                    errorCode: 1
+                });
+            }
+        } else {
+            return res.json({
+                error: "Already requested membership: ",
+                user: myUser.userDetails,
+                org: organization,
+                errorCode: 2
+            });
+        }
+    };
+
+    /**
+     * @api {post} /rate/linkedin/requestMembership Requests membership from an organization.
+     * @apiName RequestMembership
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} myid The LinkedIn User ID of the user who is requesting membership.
+     * @apiParam {String} targetid The Organizational User ID.
+     * @apiParam {String} secret (Optional) secret which may be known by the two parties.
+     *
+     */
+    rateRouter.route('/requestMembership')
+        .post(function (req, res) {
+
+            var myid = req.body.myid;
+            var targetid = req.body.targetid;
+            var secret = req.body.secret;
+
+            if (!myid) {
+                return res.json({error: "Missing myid paramter"});
+            }
+            if (!targetid) {
+                return res.json({error: "Missing targetid paramter"});
+            }
+
+            LinkedIn.findOne({
+                uid: myid
+            }, function (err, me) {
+                if (err) {
+                    return res.json({error: "Unexpected error occured when getting target fb object: " + err});
+                }
+                if (me) {
+                    User.findOne({
+                        _id: me.user
+                    }, function (err, myUser) {
+                        if (err) {
+                            return res.json({error: "Unexpected error occured when getting user object: " + err});
+                        }
+                        if (myUser) {
+                            OrgUser.findOne({
+                                orgid: targetid
+                            }, function (err, organization) {
+                                if (err) {
+                                    return res.json({error: "Unexpected error occured when getting user object: " + err});
+                                }
+                                if (organization) {
+                                    requestMembership(req, res, myUser, organization, secret);
+                                } else {
+                                    return res.json({error: "Organization not found: " + organization});
+                                }
+                            });
+                        } else {
+                            return res.json({error: "Unexpected error occured when getting user object: " + err});
+                        }
+                    });
+                } else {
+                    return res.json({error: "LinkedIn user with given id does not exist: " + err});
+                }
+            });
+        });
+
+    /**
+     * @api {post} /rate/linkedin/grantMembership Grants membership to a request.
+     * @apiName GrnatMembership
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} userid The LinkedIn User ID of the user who is requesting membership.
+     * @apiParam {String} orgid The Organizational User ID.
+     *
+     */
+    rateRouter.route('/grantMembership')
+        .post(function (req, res) {
+
+            var userid = req.body.userid;
+            var orgid = req.body.orgid;
+
+            if (!userid) {
+                return res.json({error: "Missing userid paramter"});
+            }
+            if (!orgid) {
+                return res.json({error: "Missing orgid paramter"});
+            }
+
+            OrgUser.findOne({
+                orgid: orgid
+            }, function (err, organization) {
+                if (err) {
+                    return res.json({error: "Unexpected error when getting organization", err: err});
+                }
+                var requests = organization.requests;
+                var members = organization.members;
+
+                var requestIndex = requests.map(function (e) {
+                    return e.fbid;
+                }).indexOf(userid);
+                var memberIndex = members.map(function (e) {
+                    return e.fbid;
+                }).indexOf(userid);
+                if (memberIndex !== -1) {
+                    return res.json({error: "Already a member", index: memberIndex});
+                }
+                if (requestIndex !== -1) {
+                    var request = requests[requestIndex];
+                    organization.members.push(request);
+                    organization.requests.splice(requestIndex, 1);
+
+                    LinkedIn.findOne({
+                        uid: userid
+                    }, function (err, li) {
+                        if (err) {
+                            return res.json({error: "error getting li user", err: err});
+                        }
+                        User.findOne({
+                            _id: li.user
+                        }, function (err, user) {
+                            if (err) {
+                                return res.json({error: "error getting user from given li user", err: err});
+                            }
+                            if (user.organizations.indexOf(orgid) === -1) {
+                                user.organizations.push(orgid);
+                                user.save(function (err) {
+                                    if (err) {
+                                        return res.json({error: "error saving membership to user", err: err});
+                                    }
+                                    organization.save(function (err) {
+                                        if (err) {
+                                            return res.json({
+                                                error: "error saving membership in organization",
+                                                err: err
+                                            });
+                                        }
+                                        return res.json({
+                                            success: true,
+                                            organization: organization
+                                        });
+                                    });
+                                });
+                            } else {
+                                return res.json({error: "organization already in user list", user: user});
+                            }
+                        });
+                    });
+                } else {
+                    return res.json({error: "No request available from user", user: userid});
+                }
+            });
+        });
+
+    /**
+     * @api {post} /rate/linkedin/getMyOrganizations Returns the array of organizations the user is a member of.
+     * @apiName getMyOrganizations
+     * @apiGroup LinkedIn
+     * @apiVersion 0.1.0
+     *
+     * @apiParam {String} myid The LinkedIn ID of user.
+
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {
+     *         "success": true,
+     *         "organizations": ["org1","org2","org3"]
+     *    }
+     *
+     */
+    rateRouter.route('/getMyOrganizations')
+        .post(function (req, res) {
+            var myid = req.body.myid;
+            if (!myid) {
+                return res.json({error: "missing myid parameter"});
+            }
+
+            LinkedIn.findOne({
+                uid: myid
+            }, function (err, li) {
+                if (err) {
+                    return res.json({error: "Unexpected error occurred", err: err});
+                }
+                if (li) {
+                    User.findOne({
+                        _id: li.user
+                    }, function (err, user) {
+                        if (err) {
+                            return res.json({error: "Unexpected error getting user from li id", err: err});
+                        }
+                        if (user) {
+                            var organizations = user.organizations;
+                            if (organizations) {
+                                return res.json({
+                                    success: true,
+                                    organizations: organizations
+                                });
+                            } else {
+                                return res.json({error: "No organizations found for user", user: user});
+                            }
+                        } else {
+                            return res.json({error: "no user found associated with li user", li: li});
+                        }
+                    });
+                } else {
+                    return res.json({error: "no li user found with given id", id: myid});
+                }
+            });
+        });
+	
 
     //##########################################################
     //##########################################################
