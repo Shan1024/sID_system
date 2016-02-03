@@ -567,6 +567,21 @@ module.exports = function (app, passport) {
         }
     });
 
+    app.get('/getAllOrganizations', isLoggedIn, function (req, res) {
+        res.render('allOrganizations.ejs', {user: req.user});
+    });
+
+    app.get('/organizationProfile', function (req, res) {
+        var orgid = req.param('orgid');
+        rest.post(req.protocol + '://' + req.get('host') + '/rate/facebook/getOrganizationDetails', {
+            data: {orgid: orgid},
+        }).on('complete', function (data, response) {
+            var user;
+            console.log(chalk.green("data: " + JSON.stringify(data, null, "\t")));
+            res.render('organizationProfile.ejs', {user: req.user, orguser: data.organization});
+        });
+    });
+
     app.get('/morrisroute', function (req, res) {
         // res.json([
         //   {label: "Download Sales", value: 100},

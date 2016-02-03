@@ -89,41 +89,43 @@
             <div class="row">
                 <div class="panel panel-default">
                     <div class="panel panel-header" style="border-radius: 4px 4px 0px 0px">
-                        <% if(user.orgid){ %>
-                        <img src="/img/organizations/<%= user.orgid%>/logo.png" id="homepage_fb_pic">
+                        <% if(orguser.orgid){ %>
+                        <img src="/img/organizations/<%= orguser.orgid%>/logo.png" id="homepage_fb_pic">
                         <% } %>
                     </div>
                     <div class="panel-body">
                         <!-- check if the user has this token (is the user authenticated with this social account) -->
-                        <% if (user.userDetails.organization) { %>
+                        <% if (orguser.userDetails.organization) { %>
                         <p>
-                            <strong><%= user.userDetails.organization %></strong><br>
-                            <%= user.userDetails.email %><br><br>
-														<% if(user.userDetails.description){ %>
-															<%= user.userDetails.description %><br>
+                            <strong><%= orguser.userDetails.organization %></strong><br>
+                            <%= orguser.userDetails.email %><br><br>
+														<% if(orguser.userDetails.description){ %>
+															<%= orguser.userDetails.description %><br>
 														<%}else{%>
 															Organization description not available<br>
 														<%}%>
-														<%if(user.orgid){%>
-															<br><br><%= user.orgid %><br>
+														<%if(orguser.orgid){%>
+															<br><br><%= orguser.orgid %><br>
 														<%}else{%>
 															<br><br>Organization Id not available<br>
 														<%}%>
-														<%if(user.userDetails.website){%>
-															<br><br><%= user.userDetails.website %>
+														<%if(orguser.userDetails.website){%>
+															<br><br><%= orguser.userDetails.website %>
 														<%}else{%>
 															<br><br>Website info not available<br>
 														<%}%>
                         </p>
-                        <div class="row">
-                            <div class="btn-group btn-group-justified">
-                                <!-- <a href="/facebookmyratings" class="btn btn-primary">Button Options</a> -->
-                            </div>
-                        </div>
-                        <% } else { %>
-                        <div align="center">
-                            <!-- <a href="/connect/facebook" class="btn btn-primary">Button Options</a> -->
-                        </div>
+                        <% if(user && user.userDetails.facebook && user.userDetails.facebook.token && user.userDetails.facebook.uid){ %>
+                          <div class="row">
+                              <div class="btn-group btn-group-justified">
+                                  <form id="membershipRequestForm" method="post" action="/rate/facebook/requestMembership">
+                                    <input type="hidden" name="targetid" value="<%= orguser.orgid %>" />
+                                    <input type="hidden" name="myid" value="<%= user.userDetails.facebook.uid %>" />
+                                    <button type="submit" form="membershipRequestForm" value="Submit" class="btn btn-primary" style="width: 100%">Request Membership</button>
+                                  </form>
+                              </div>
+                          </div>
+                          <% } %>
                         <% } %>
                     </div>
                 </div>
@@ -147,26 +149,6 @@
     						</div>
               </div>
           </div>
-
-
-
-
-            <div class="panel panel-default">
-              <div class="panel-heading" style="padding: 10px; font-size: 40px; text-align: center; background-color: #0084B4; color: #fff; border-radius: 4px 4px 0px 0px;;">Requested Members</div>
-
-              <div class="panel-body">
-                <div class="requests-contentarea">
-    							<div class="ratedbyme-contentarea">
-    	              <div class="col-xs-12 col-sm-12 col-md-6" style="padding-left: 0;">
-    	                <div class="requests-contentarea-leftPanel"></div>
-    	              </div>
-    	              <div class="col-xs-12 col-sm-12 col-md-6" style="padding-left: 0; padding-right: 0;">
-    	                <div class="requests-contentarea-rightPanel"></div>
-    	              </div>
-    	            </div>
-    						</div>
-              </div>
-            </div>
         </div>
     </div>
     <div class="row">
@@ -175,16 +157,10 @@
     </div>
 </div>
 
-<script id="requests-template" type="x-handlebars-template">
-    {{#requests}}
-    <div class="panel panel-default">
-        <div class="panel-body" style="margin:5px; padding: 0px;">
-          <img src="https://graph.facebook.com/v2.3/{{fbid}}/picture?width=50&height=50">
-          <a href="https://facebook.com/{{fbid}}" target="_blank"><strong>{{username}}</strong></a>
-					<button type="button" class="btn btn-default" data-userid={{fbid}} onclick="grantMembership(this)" style="float: right; position: relative; left: -5px; top: 7px;">Accept</button>
-        </div>
-    </div>
-    {{/requests}}
+<script type="text/javascript">
+  function test1() {
+    console.log('test called');
+  }
 </script>
 
 <script id="members-template" type="x-handlebars-template">
@@ -199,50 +175,8 @@
 </script>
 
 <script type="text/javascript">
-	function grantMembership(button){
-		var userid = button.getAttribute("data-userid");
-		var orguser = <%-JSON.stringify(user)%>;
-
-		$.post("/rate/facebook/grantMembership",
-    {
-        userid: userid,
-        orgid: orguser.orgid
-    },
-    function(data, status){
-      // console.log(data);
-				location.reload();
-    });
-	}
-</script>
-
-<script type="text/javascript">
 	$(function(){
-		var user = <%-JSON.stringify(user)%>;
-
-		// console.log(JSON.stringify(user, null, "\t"));
-
-		var theTemplateScript = $("#requests-template").html();
-
-		var theTemplate = Handlebars.compile(theTemplateScript);
-
-		var leftPanel = new Object();
-		var rightPanel = new Object();
-		leftPanel.requests = [];
-		rightPanel.requests = [];
-
-		for(var i = 0; i < user.requests.length ; i++){
-			if(i%2 == 0){ leftPanel.requests.push(user.requests[i]);}
-			else{rightPanel.requests.push(user.requests[i]);}
-		}
-
-		$(".requests-contentarea-leftPanel").append(theTemplate(leftPanel));
-		$(".requests-contentarea-rightPanel").append(theTemplate(rightPanel));
-	})
-</script>
-
-<script type="text/javascript">
-	$(function(){
-		var user = <%-JSON.stringify(user)%>;
+		var orguser = <%-JSON.stringify(orguser)%>;
 
 		// console.log(JSON.stringify(user, null, "\t"));
 
@@ -255,9 +189,9 @@
 		leftPanel.members = [];
 		rightPanel.members = [];
 
-		for(var i = 0; i < user.members.length ; i++){
-			if(i%2 == 0){ leftPanel.members.push(user.members[i]);}
-			else{rightPanel.members.push(user.members[i]);}
+		for(var i = 0; i < orguser.members.length ; i++){
+			if(i%2 == 0){ leftPanel.members.push(orguser.members[i]);}
+			else{rightPanel.members.push(orguser.members[i]);}
 		}
 
 		$(".members-contentarea-leftPanel").append(theTemplate(leftPanel));

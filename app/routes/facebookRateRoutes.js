@@ -1652,6 +1652,23 @@ module.exports = function (app, express) {
                 });
             });
 
+            rateRouter.route('/getOrganizationDetails')
+                .post(function (req, res) {
+                    var orgid = req.body.orgid;
+                    OrgUser.findOne({orgid: orgid},
+                      function (err, organization) {
+                        if (err) {
+                            return res.json({error: "Unexpected error occurred 7657567567", err: err});
+                        }
+                        if (organization) {
+                            return res.json({success: true, organization: organization});
+                        } else {
+                            return res.json({error: "Unexpected error occurred 3454354353", err: err});
+                        }
+                    });
+                });
+
+
     /**
      * @api {post} /rate/facebook/getComments Returns all the comments of a user.
      * @apiName GetComments
