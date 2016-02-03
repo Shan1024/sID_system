@@ -54,7 +54,8 @@
                 <!--</li>-->
                 <!-- <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li> -->
                 <li style="margin-right: 20px; margin-top: 10px; ">
-                    <a class="page-scroll" href="/getAllOrganizations"><span class="glyphicon glyphicon-th-list"></span> Registered Organizations </a>
+                    <a class="page-scroll" href="/getAllOrganizations"><span class="glyphicon glyphicon-th-list"></span>
+                        Registered Organizations </a>
                 </li>
                 <% if (user) { %>
                 <li style="margin-right: 20px; margin-top: 10px; ">
@@ -174,7 +175,7 @@
                     var profileRating;
                     if (facebookOverallRating == '1') {
                         profileRating = 'This profile appears to be</br><div style="color: green;background: black;padding-bottom: 40px;">Authentic</div>';
-                    } else if (facebookOverallRating == '0'||facebookOverallRating == 'N') {
+                    } else if (facebookOverallRating == '0' || facebookOverallRating == 'N') {
                         profileRating = '<div style="color: white;background: black;">Not Enough Ratings. Currently</br><div style="color: yellow;background: black;font-size: 36px;">Uncertain</div></div>';
                     } else if (facebookOverallRating == '-1') {
                         profileRating = '<div style="color: white;background: black;">This profile appears to be</br><div style="color: red;background: black;font-size: 36px;">Unreliable</div></div>';
@@ -209,7 +210,7 @@
                     var profileRating;
                     if (linkedinOverallRating == '1') {
                         profileRating = 'This profile appears to be</br><div style="color: green;background: black;padding-bottom: 40px;">Authentic</div>';
-                    } else if (linkedinOverallRating == '0'||facebookOverallRating == 'N') {
+                    } else if (linkedinOverallRating == '0' || facebookOverallRating == 'N') {
                         profileRating = '<div style="color: white;background: black;">Not Enough Ratings. Currently</br><div style="color: yellow;background: black;font-size: 36px;">Uncertain</div></div>';
                     } else if (linkedinOverallRating == '-1') {
                         profileRating = '<div style="color: white;background: black;">This profile appears to be</br><div style="color: red;background: black;font-size: 36px;">Unreliable</div></div>';

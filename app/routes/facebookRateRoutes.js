@@ -1398,7 +1398,7 @@ module.exports = function (app, express) {
             userid: myUser._id,
             fbid: req.body.myid,
             secret: secret,
-            username: myUser.userDetails.local.firstname,
+            username: myUser.userDetails.local.firstname + " " + myUser.userDetails.local.lastname,
             email: myUser.userDetails.local.email
         };
 
@@ -1423,10 +1423,20 @@ module.exports = function (app, express) {
                     });
                 });
             } else {
-                return res.json({error: "Already a member: ", user: myUser.userDetails, org: organization, errorCode: 1});
+                return res.json({
+                    error: "Already a member: ",
+                    user: myUser.userDetails,
+                    org: organization,
+                    errorCode: 1
+                });
             }
         } else {
-            return res.json({error: "Already requested membership: ", user: myUser.userDetails, org: organization, errorCode: 2});
+            return res.json({
+                error: "Already requested membership: ",
+                user: myUser.userDetails,
+                org: organization,
+                errorCode: 2
+            });
         }
     };
 
@@ -1635,12 +1645,11 @@ module.exports = function (app, express) {
             });
         });
 
+    rateRouter.route('/getAllOrganizations')
+        .get(function (req, res) {
 
-        rateRouter.route('/getAllOrganizations')
-            .get(function (req, res) {
-
-                OrgUser.find({},
-                  function (err, organizations) {
+            OrgUser.find({},
+                function (err, organizations) {
                     if (err) {
                         return res.json({error: "Unexpected error occurred 24324324", err: err});
                     }
@@ -1650,23 +1659,23 @@ module.exports = function (app, express) {
                         return res.json({error: "Unexpected error occurred 343243345", err: err});
                     }
                 });
-            });
+        });
 
-            rateRouter.route('/getOrganizationDetails')
-                .post(function (req, res) {
-                    var orgid = req.body.orgid;
-                    OrgUser.findOne({orgid: orgid},
-                      function (err, organization) {
-                        if (err) {
-                            return res.json({error: "Unexpected error occurred 7657567567", err: err});
-                        }
-                        if (organization) {
-                            return res.json({success: true, organization: organization});
-                        } else {
-                            return res.json({error: "Unexpected error occurred 3454354353", err: err});
-                        }
-                    });
+    rateRouter.route('/getOrganizationDetails')
+        .post(function (req, res) {
+            var orgid = req.body.orgid;
+            OrgUser.findOne({orgid: orgid},
+                function (err, organization) {
+                    if (err) {
+                        return res.json({error: "Unexpected error occurred 7657567567", err: err});
+                    }
+                    if (organization) {
+                        return res.json({success: true, organization: organization});
+                    } else {
+                        return res.json({error: "Unexpected error occurred 3454354353", err: err});
+                    }
                 });
+        });
 
 
     /**
@@ -1812,7 +1821,7 @@ module.exports = function (app, express) {
         });
 
     rateRouter.route('/getClaimComment')
-        .post(function(req,res){
+        .post(function (req, res) {
 
             var targetid = req.body.targetid;
             var myid = req.body.myid;
@@ -1845,7 +1854,7 @@ module.exports = function (app, express) {
 
             Comment.find({
                 targetsid: targetid,
-                mysid:myid,
+                mysid: myid,
                 claimid: claimid
             }, function (err, comments) {
                 if (err) {
@@ -2788,7 +2797,7 @@ module.exports = function (app, express) {
 
                                         var publicUrl;
 
-                                        if(user.userDetails.linkedin) {
+                                        if (user.userDetails.linkedin) {
                                             if (user.userDetails.facebook.publicurl) {
                                                 publicUrl = user.userDetails.linkedin.publicurl;
                                             }

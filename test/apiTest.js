@@ -45,6 +45,35 @@ describe("/profile not accessible", function () {
     });
 });
 
+describe("/rate/facebook/getID requires email", function () {
+    it('should respond with an email not found message', function (done) {
+        httpServer
+            .post('/rate/facebook/getID')
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .end(function (err, res) {
+                if (err) done(err);
+                res.body.should.have.property('error');
+                done();
+            });
+    });
+});
+
+describe("/rate/facebook/getID requires email", function () {
+    it('should respond with uid and success message', function (done) {
+        httpServer
+            .post('/rate/facebook/getID')
+            .send({"email": "gambit1024@gmail.com"})
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .end(function (err, res) {
+                if (err) done(err);
+                res.body.should.have.property('success', true);
+                res.body.should.have.property('uid', "100000211592969");
+                done();
+            });
+    });
+});
 
 //
 // describe("New user creation test", function() {
