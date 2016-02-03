@@ -56,7 +56,8 @@
                 <!--</li>-->
                 <!-- <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li> -->
                 <li style="margin-right: 20px; margin-top: 10px; ">
-                    <a class="page-scroll" href="/getAllOrganizations"><span class="glyphicon glyphicon-th-list"></span> Registered Organizations </a>
+                    <a class="page-scroll" href="/getAllOrganizations"><span class="glyphicon glyphicon-th-list"></span>
+                        Registered Organizations </a>
                 </li>
                 <li style="margin-right: 20px; margin-top: 10px; ">
                     <a class="page-scroll" href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a>
@@ -128,12 +129,12 @@
                         </div>
                         <% } else { %>
                         <div class="btn-group btn-group-justified">
-                          <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                            <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
                         </div>
                         <% } %>
                         <% } else { %>
                         <div class="btn-group btn-group-justified">
-                          <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                            <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
                         </div>
                         <% } %>
                     </div>
@@ -282,9 +283,12 @@
         </div>
         <div class="col-xs-12 col-sm-6 col-md-9">
 
-          <div class="panel panel-default">
-              <div class="panel-body" style="padding: 10px; font-size: 40px; text-align: center; background-color: #0084B4; color: #fff; border-radius: 4px;">My LinkedIn Ratings</div>
-          </div>
+            <div class="panel panel-default">
+                <div class="panel-body"
+                     style="padding: 10px; font-size: 40px; text-align: center; background-color: #0084B4; color: #fff; border-radius: 4px;">
+                    My LinkedIn Ratings
+                </div>
+            </div>
 
             <div id="spinner" align="center" style="margin-top:50px; font-size:xx-large;"><i
                         class="fa fa-circle-o-notch fa-spin"></i> Loading
@@ -304,8 +308,10 @@
     {{#each this}}
     <div class="panel panel-default">
         <div class="panel-heading" style="font-size: 18px;">
-          {{{claim}}}
-          <button type="button" class="btn btn-default" style="padding: 0px 16px;" data-claimid={{claimid}} data-myid={{myid}} data-claim="{{claim}}" onclick="getClaimComments(this)">View Comments</button>
+            {{{claim}}}
+            <button type="button" class="btn btn-default" style="padding: 0px 16px;" data-claimid={{claimid}}
+                    data-myid={{myid}} data-claim="{{claim}}" onclick="getClaimComments(this)">View Comments
+            </button>
         </div>
         <div class="panel-body">
             <div id={{claimid}} style="min-width: 310px; max-width: 800px; height: 120px; margin: 0"></div>
@@ -315,54 +321,53 @@
 </script>
 
 <script id="comments-template" type="x-handlebars-template">
-  {{#each comments}}
+    {{#each comments}}
     <li>{{ comment }}</li>
-  {{/each}}
+    {{/each}}
 </script>
 
 <!-- Modal -->
 <div id="commentsModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
+    <div class="modal-dialog">
 
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <div class="modal-title" id='commenttitle'>Comments for claim : </div>
-      </div>
-      <div class="modal-body">
-        <div id='commentlist'></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="modal-title" id='commenttitle'>Comments for claim :</div>
+            </div>
+            <div class="modal-body">
+                <div id='commentlist'></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-
-  </div>
 </div>
 
 <script type="text/javascript">
-  function getClaimComments(button){
-    var claimid = button.getAttribute("data-claimid");
-    var claim = button.getAttribute("data-claim");
-    var myid = button.getAttribute("data-myid");
+    function getClaimComments(button) {
+        var claimid = button.getAttribute("data-claimid");
+        var claim = button.getAttribute("data-claim");
+        var myid = button.getAttribute("data-myid");
 
-    $.post("/rate/linkedin/getClaimComments",
-    {
-        myid: myid,
-        claimid: claimid
-    },
-    function(data, status){
+        $.post("/rate/linkedin/getClaimComments",
+                {
+                    myid: myid,
+                    claimid: claimid
+                },
+                function (data, status) {
 
-        var theTemplateScript = $("#comments-template").html();
+                    var theTemplateScript = $("#comments-template").html();
 
-        var theTemplate = Handlebars.compile(theTemplateScript);
+                    var theTemplate = Handlebars.compile(theTemplateScript);
 
-        $('#commentlist').html(theTemplate(data));
-        $('#commenttitle').html(claim);
-        $('#commentsModal').modal('show');
-    });
-  }
+                    $('#commentlist').html(theTemplate(data));
+                    $('#commenttitle').html(claim);
+                    $('#commentsModal').modal('show');
+                });
+    }
 </script>
 
 <script type="text/javascript">

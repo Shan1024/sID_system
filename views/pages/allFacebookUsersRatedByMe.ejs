@@ -56,7 +56,8 @@
                 <!--</li>-->
                 <!-- <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li> -->
                 <li style="margin-right: 20px; margin-top: 10px; ">
-                    <a class="page-scroll" href="/getAllOrganizations"><span class="glyphicon glyphicon-th-list"></span> Registered Organizations </a>
+                    <a class="page-scroll" href="/getAllOrganizations"><span class="glyphicon glyphicon-th-list"></span>
+                        Registered Organizations </a>
                 </li>
                 <li style="margin-right: 20px; margin-top: 10px; ">
                     <a class="page-scroll" href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a>
@@ -128,12 +129,12 @@
                         </div>
                         <% } else { %>
                         <div class="btn-group btn-group-justified">
-                          <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                            <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
                         </div>
                         <% } %>
                         <% } else { %>
                         <div class="btn-group btn-group-justified">
-                          <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                            <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
                         </div>
                         <% } %>
                     </div>
@@ -282,7 +283,9 @@
         </div>
         <div class="col-xs-12 col-sm-6 col-md-9">
             <div class="panel panel-default">
-                <div class="panel-body" style="margin:10px; padding: 0px; font-size: 20px; text-align: center">Facebook Profiles Rated by Me</div>
+                <div class="panel-body" style="margin:10px; padding: 0px; font-size: 20px; text-align: center">Facebook
+                    Profiles Rated by Me
+                </div>
             </div>
 
             <div id="spinner" align="center" style="margin-top:50px; font-size:xx-large;"><i
@@ -290,12 +293,12 @@
             </div>
 
             <div class="ratedbyme-contentarea">
-              <div class="col-xs-12 col-sm-12 col-md-6" style="padding-left: 0;">
-                <div class="ratedbyme-contentarea-leftPanel"></div>
-              </div>
-              <div class="col-xs-12 col-sm-12 col-md-6" style="padding-left: 0; padding-right: 0;">
-                <div class="ratedbyme-contentarea-rightPanel"></div>
-              </div>
+                <div class="col-xs-12 col-sm-12 col-md-6" style="padding-left: 0;">
+                    <div class="ratedbyme-contentarea-leftPanel"></div>
+                </div>
+                <div class="col-xs-12 col-sm-12 col-md-6" style="padding-left: 0; padding-right: 0;">
+                    <div class="ratedbyme-contentarea-rightPanel"></div>
+                </div>
             </div>
 
         </div>
@@ -310,8 +313,8 @@
     {{#data}}
     <div class="panel panel-default">
         <div class="panel-body" style="margin:10px; padding: 0px;">
-          <img src="https://graph.facebook.com/v2.3/{{targetid.uid}}/picture?width=80&height=80">
-          <a href="https://facebook.com/{{targetid.uid}}" target="_blank"><strong>{{targetid.name}}</strong></a><br>
+            <img src="https://graph.facebook.com/v2.3/{{targetid.uid}}/picture?width=80&height=80">
+            <a href="https://facebook.com/{{targetid.uid}}" target="_blank"><strong>{{targetid.name}}</strong></a><br>
         </div>
     </div>
     {{/data}}
@@ -361,9 +364,13 @@
                 leftPanel.data = [];
                 rightPanel.data = [];
 
-                for(var i = 0; i < response.data.length ; i++){
-                  if(i%2 == 0){ leftPanel.data.push(response.data[i]);}
-                  else{rightPanel.data.push(response.data[i]);}
+                for (var i = 0; i < response.data.length; i++) {
+                    if (i % 2 == 0) {
+                        leftPanel.data.push(response.data[i]);
+                    }
+                    else {
+                        rightPanel.data.push(response.data[i]);
+                    }
                 }
 
                 $(".ratedbyme-contentarea-leftPanel").append(theTemplate(leftPanel));

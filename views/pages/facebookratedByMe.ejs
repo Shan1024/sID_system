@@ -56,7 +56,8 @@
                 <!--</li>-->
                 <!-- <li><a href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a></li> -->
                 <li style="margin-right: 20px; margin-top: 10px; ">
-                    <a class="page-scroll" href="/getAllOrganizations"><span class="glyphicon glyphicon-th-list"></span> Registered Organizations </a>
+                    <a class="page-scroll" href="/getAllOrganizations"><span class="glyphicon glyphicon-th-list"></span>
+                        Registered Organizations </a>
                 </li>
                 <li style="margin-right: 20px; margin-top: 10px; ">
                     <a class="page-scroll" href="/logout"><span class="glyphicon glyphicon-log-in"></span> Sign Out </a>
@@ -128,12 +129,12 @@
                         </div>
                         <% } else { %>
                         <div class="btn-group btn-group-justified">
-                          <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                            <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
                         </div>
                         <% } %>
                         <% } else { %>
                         <div class="btn-group btn-group-justified">
-                          <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
+                            <a href="/connect/facebook" class="btn btn-primary">Connect Facebook</a>
                         </div>
                         <% } %>
                     </div>
@@ -283,7 +284,10 @@
         <div class="col-xs-12 col-sm-6 col-md-9">
 
             <div class="panel panel-default">
-                <div class="panel-body" style="padding: 10px; font-size: 40px; text-align: center; background-color: #0084B4; color: #fff; border-radius: 4px;">Facebook Profiles Rated by Me</div>
+                <div class="panel-body"
+                     style="padding: 10px; font-size: 40px; text-align: center; background-color: #0084B4; color: #fff; border-radius: 4px;">
+                    Facebook Profiles Rated by Me
+                </div>
             </div>
 
             <div id="spinner" align="center" style="margin-top:50px; font-size:xx-large;"><i
@@ -301,115 +305,117 @@
 </div>
 
 <div id="popover_content_wrapper" style="display: none;">
-  <div style="padding: 10px;">
-    <div class="row">
-      <a href="/facebookratedByMe"onclick="getNewRating(1)"><img src="/icons/claimT.png" style="height: 20px;">Accept</a>
+    <div style="padding: 10px;">
+        <div class="row">
+            <a href="/facebookratedByMe" onclick="getNewRating(1)"><img src="/icons/claimT.png" style="height: 20px;">Accept</a>
+        </div>
+        <div class="row">
+            <a href="/facebookratedByMe" onclick="getNewRating(0)"><img src="/icons/claimC.png" style="height: 20px;">No
+                Idea</a>
+        </div>
+        <div class="row">
+            <a href="/facebookratedByMe" onclick="getNewRating(-1)"><img src="/icons/claimR.png" style="height: 20px;">Reject</a>
+        </div>
+        <div class="row">
+            <button type="button" class="btn btn-default" onclick="getClaimComments(this)">My Comment</button>
+        </div>
     </div>
-    <div class="row">
-      <a href="/facebookratedByMe" onclick="getNewRating(0)"><img src="/icons/claimC.png" style="height: 20px;">No Idea</a>
-    </div>
-    <div class="row">
-      <a href="/facebookratedByMe" onclick="getNewRating(-1)"><img src="/icons/claimR.png" style="height: 20px;">Reject</a>
-    </div>
-    <div class="row">
-      <button type="button" class="btn btn-default" onclick="getClaimComments(this)">My Comment</button>
-    </div>
-  </div>
 </div>
 
 <!-- Modal -->
 <div id="mycommentsModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
+    <div class="modal-dialog">
 
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <div class="modal-title" id='commenttitle'></div>
-      </div>
-      <div class="modal-body">
-        <p id='commenttip'>You have not commented on this claim yet.</p>
-        <textarea id="mycomment" rows="8" style="width: 100%;"></textarea>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="saveNewComment()">Save</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <div class="modal-title" id='commenttitle'></div>
+            </div>
+            <div class="modal-body">
+                <p id='commenttip'>You have not commented on this claim yet.</p>
+                <textarea id="mycomment" rows="8" style="width: 100%;"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="saveNewComment()">Save
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
     </div>
-
-  </div>
 </div>
 
 <script>
-function getClaimComments(button) {
-    var claimid = $('#popover_content_wrapper').attr("data-claimid");
-    var claim = $('#popover_content_wrapper').attr("data-claim");
-    var myid = $('#popover_content_wrapper').attr("data-myid");
-    var targetid = $('#popover_content_wrapper').attr("data-targetid");
+    function getClaimComments(button) {
+        var claimid = $('#popover_content_wrapper').attr("data-claimid");
+        var claim = $('#popover_content_wrapper').attr("data-claim");
+        var myid = $('#popover_content_wrapper').attr("data-myid");
+        var targetid = $('#popover_content_wrapper').attr("data-targetid");
 
 
-    // console.log(claimid);
-    // console.log(myid);
-    // console.log(targetid);
+        // console.log(claimid);
+        // console.log(myid);
+        // console.log(targetid);
 
-    $.post("/rate/facebook/getClaimComment",
-    {
-        myid: myid,
-        targetid: targetid,
-        claimid: claimid
-    },
-    function(data, status){
-        // alert("Data: " + data + "\nStatus: " + status);
-        console.log(JSON.stringify(data, null, "\t"));
-        // console.log(data);
+        $.post("/rate/facebook/getClaimComment",
+                {
+                    myid: myid,
+                    targetid: targetid,
+                    claimid: claimid
+                },
+                function (data, status) {
+                    // alert("Data: " + data + "\nStatus: " + status);
+                    console.log(JSON.stringify(data, null, "\t"));
+                    // console.log(data);
 
 
-        $('[data-toggle="popover"]').popover('hide');
-        $('#commenttitle').html('My comment on claim: ' + claim);
+                    $('[data-toggle="popover"]').popover('hide');
+                    $('#commenttitle').html('My comment on claim: ' + claim);
 
-        if(data.comments.length > 0 ){
-          $('#commenttip').hide();
-          $('#mycomment').html(data.comments[0].comment);
-        }else{
-          $('#commenttip').show();
-          $('#mycomment').html(' ');
-        }
+                    if (data.comments.length > 0) {
+                        $('#commenttip').hide();
+                        $('#mycomment').html(data.comments[0].comment);
+                    } else {
+                        $('#commenttip').show();
+                        $('#mycomment').html(' ');
+                    }
 
-        $('#mycommentsModal').modal('show');
-    });
-}
+                    $('#mycommentsModal').modal('show');
+                });
+    }
 </script>
 
 <script type="text/javascript">
-  function saveNewComment(){
-    var text = $('textarea#mycomment').val();
-    console.log(text);
-  }
+    function saveNewComment() {
+        var text = $('textarea#mycomment').val();
+        console.log(text);
+    }
 </script>
 
 <script>
-function getNewRating(rating) {
-    var claimid = $('#popover_content_wrapper').attr("data-claimid");
-    var claim = $('#popover_content_wrapper').attr("data-claim");
-    var myid = $('#popover_content_wrapper').attr("data-myid");
-    var targetid = $('#popover_content_wrapper').attr("data-targetid");
+    function getNewRating(rating) {
+        var claimid = $('#popover_content_wrapper').attr("data-claimid");
+        var claim = $('#popover_content_wrapper').attr("data-claim");
+        var myid = $('#popover_content_wrapper').attr("data-myid");
+        var targetid = $('#popover_content_wrapper').attr("data-targetid");
 
 
-    console.log(claimid);
+        console.log(claimid);
 
-    $.post("/rate/facebook/addRating",
-    {
-        myid: myid,
-        targetid: targetid,
-        claimid: claimid,
-        claim: claim,
-        rating: rating
-    },
-    function(data, status){
-        // alert("Data: " + data + "\nStatus: " + status);
-        console.log(data);
-    });
-}
+        $.post("/rate/facebook/addRating",
+                {
+                    myid: myid,
+                    targetid: targetid,
+                    claimid: claimid,
+                    claim: claim,
+                    rating: rating
+                },
+                function (data, status) {
+                    // alert("Data: " + data + "\nStatus: " + status);
+                    console.log(data);
+                });
+    }
 </script>
 
 <script id="ratedbyme-template" type="x-handlebars-template">
@@ -429,7 +435,8 @@ function getNewRating(rating) {
 
             <ul class="fa-ul">
                 {{#entries}}
-                <li data-claimid={{claimid}} data-claim="{{claim}}" data-myid={{mysid}} data-targetid={{targetsid}}><i class="fa-li fa fa-comment"></i>{{{claim}}}
+                <li data-claimid={{claimid}} data-claim="{{claim}}" data-myid={{mysid}} data-targetid={{targetsid}}><i
+                            class="fa-li fa fa-comment"></i>{{{claim}}}
                     {{#ifCond rating 1}}
                     <a data-toggle="popover"><img src="/icons/claimT.png" style="height: 20px;"></a>
                     {{else}}
@@ -498,34 +505,36 @@ function getNewRating(rating) {
                 $(".ratedbyme-contentarea").append(theTemplate(response));
 
                 // $('[data-toggle="popover"]').popover();
-                $('[data-toggle="popover"]').popover({ trigger: "manual" , html: true,
-                content: function() {
-                  return $('#popover_content_wrapper').html();
-                },
-                animation:false})
-                    .on("mouseenter", function () {
-                        var _this = this;
-                        $(this).popover("show");
-                        $(".popover").on("mouseleave", function () {
-                            $(_this).popover('hide');
-                        });
-                    }).on("mouseleave", function () {
-                        var _this = this;
-                        setTimeout(function () {
-                            if (!$(".popover:hover").length) {
-                                $(_this).popover("hide");
-                            }
-                        }, 300);
-                    }).on("shown.bs.popover", function(){
-                        var _this =  this;
-                        // alert('The popover is now fully shown.');
-                        // var temp = _this.closest( "li" ).getAttribute("data-claimid");
-                        var closest = _this.closest("li");
-                        $('#popover_content_wrapper').attr("data-claimid", closest.getAttribute("data-claimid"))
-                          .attr("data-myid", closest.getAttribute("data-myid"))
-                          .attr("data-targetid", closest.getAttribute("data-targetid"))
-                          .attr("data-claim", closest.getAttribute("data-claim"));
-                    });
+                $('[data-toggle="popover"]').popover({
+                            trigger: "manual", html: true,
+                            content: function () {
+                                return $('#popover_content_wrapper').html();
+                            },
+                            animation: false
+                        })
+                        .on("mouseenter", function () {
+                            var _this = this;
+                            $(this).popover("show");
+                            $(".popover").on("mouseleave", function () {
+                                $(_this).popover('hide');
+                            });
+                        }).on("mouseleave", function () {
+                    var _this = this;
+                    setTimeout(function () {
+                        if (!$(".popover:hover").length) {
+                            $(_this).popover("hide");
+                        }
+                    }, 300);
+                }).on("shown.bs.popover", function () {
+                    var _this = this;
+                    // alert('The popover is now fully shown.');
+                    // var temp = _this.closest( "li" ).getAttribute("data-claimid");
+                    var closest = _this.closest("li");
+                    $('#popover_content_wrapper').attr("data-claimid", closest.getAttribute("data-claimid"))
+                            .attr("data-myid", closest.getAttribute("data-myid"))
+                            .attr("data-targetid", closest.getAttribute("data-targetid"))
+                            .attr("data-claim", closest.getAttribute("data-claim"));
+                });
 
             }
         });
