@@ -751,6 +751,149 @@ module.exports = function (app, passport) {
 
     });
 
+    var checkLinkedIn = function (req, res, user, name, facebook, facebookData, linkedinData) {
+
+        var facbookUID = null;
+
+        if (facebook.uid) {
+            facbookUID = facebook.uid;
+        }
+
+        var facebookOverall = "N";
+        if (user.facebook.overallRatingLevel) {
+            facebookOverall = user.facebook.overallRatingLevel;
+        }
+        var linkedinOverall = "N";
+        if (user.linkedin.overallRatingLevel) {
+            linkedinOverall = user.linkedin.overallRatingLevel;
+        }
+        if (facebookOverall)
+
+            if (user.userDetails.linkedin) {
+                console.log("Linkedin found");
+                LinkedIn.findOne({
+                    _id: user.userDetails.linkedin
+                }, function (err, linkedin) {
+                    if (err) {
+                        console.log("Error occurred");
+                        res.render('usersummaryoverall.ejs', {
+                            user: req.user,
+                            name: name,
+                            facebook: facebookData,
+                            linkedin: linkedinData,
+                            facebook_uid: facbookUID,
+                            linkedin_url: null,
+                            facebookOverall: facebookOverall,
+                            linkedinOverall: linkedinOverall
+                        });
+                    } else {
+                        if (linkedin) {
+
+                            Claim.find({
+                                myid: linkedin.uid
+                            }, function (err, claims) {
+
+                                if (err) {
+                                    console.log("Error occurred");
+                                    res.render('usersummaryoverall.ejs', {
+                                        user: req.user,
+                                        name: name,
+                                        facebook: facebookData,
+                                        linkedin: linkedinData,
+                                        facebook_uid: facbookUID,
+                                        linkedin_url: linkedin.uid,
+                                        facebookOverall: facebookOverall,
+                                        linkedinOverall: linkedinOverall
+                                    });
+                                } else {
+                                    if (claims) {
+
+                                        console.log("Claims found");
+                                        yes = 0;
+                                        no = 0;
+                                        notSure = 0;
+
+                                        for (var i = 0; i < claims.length; i++) {
+                                            yes += claims[i].yes;
+                                            no += claims[i].no;
+                                            notSure += claims[i].notSure;
+                                        }
+
+                                        linkedinData = [
+                                            {
+                                                label: "Yes",
+                                                value: yes
+                                            },
+                                            {
+                                                label: "No",
+                                                value: no
+                                            },
+                                            {
+                                                label: "Not Sure",
+                                                value: notSure
+                                            }
+                                        ];
+
+                                        console.log(chalk.blue("linkedinData: " + JSON.stringify(linkedinData, null, "\t")));
+
+                                        res.render('usersummaryoverall.ejs', {
+                                            user: req.user,
+                                            name: name,
+                                            facebook: facebookData,
+                                            linkedin: linkedinData,
+                                            facebook_uid: facbookUID,
+                                            linkedin_url: linkedin.uid,
+                                            facebookOverall: facebookOverall,
+                                            linkedinOverall: linkedinOverall
+                                        });
+
+                                    } else {
+                                        console.log("No claims found");
+                                        res.render('usersummaryoverall.ejs', {
+                                            user: req.user,
+                                            name: name,
+                                            facebook: facebookData,
+                                            linkedin: linkedinData,
+                                            facebook_uid: facbookUID,
+                                            linkedin_url: linkedin.uid,
+                                            facebookOverall: facebookOverall,
+                                            linkedinOverall: linkedinOverall
+                                        });
+                                    }
+                                }
+                            });
+                        } else {
+                            console.log("No linkedin found");
+                            res.render('usersummaryoverall.ejs', {
+                                user: req.user,
+                                name: name,
+                                facebook: facebookData,
+                                linkedin: linkedinData,
+                                facebook_uid: facbookUID,
+                                linkedin_url: linkedin.uid,
+                                facebookOverall: facebookOverall,
+                                linkedinOverall: linkedinOverall
+                            });
+                        }
+                    }
+                });
+            } else {
+                console.log("No linkedin account linked");
+
+                console.log(chalk.blue("facebookData: " + JSON.stringify(facebookData, null, "\t")));
+
+                res.render('usersummaryoverall.ejs', {
+                    user: req.user,
+                    name: name,
+                    facebook: facebookData,
+                    linkedin: linkedinData,
+                    facebook_uid: facbookUID,
+                    linkedin_url: null,
+                    facebookOverall: facebookOverall,
+                    linkedinOverall: linkedinOverall
+                });
+            }
+    };
 
     var sendSuggestions = function (req, res) {
 
@@ -773,6 +916,10 @@ module.exports = function (app, passport) {
                 res.render('usersummarysuggestions.ejs', {user: req.user, suggestions: data});
             });
         } else {
+
+            var facebookOverall = "N";
+            var linkedinOverall = "N";
+
             User.findOne({
                 _id: id
             }, function (err, user) {
@@ -784,6 +931,12 @@ module.exports = function (app, passport) {
 
                         console.log("User found");
 
+                        if (user.facebook.overallRatingLevel) {
+                            facebookOverall = user.facebook.overallRatingLevel;
+                        }
+                        if (user.linkedin.overallRatingLevel) {
+                            linkedinOverall = user.linkedin.overallRatingLevel;
+                        }
                         var facebookData = [
                             {"label": "Yes", "value": 0},
                             {"label": "No", "value": 0},
@@ -808,10 +961,18 @@ module.exports = function (app, passport) {
                                         facebook: facebookData,
                                         linkedin: linkedinData,
                                         facebook_uid: null,
-                                        linkedin_url: null
+                                        linkedin_url: null,
+                                        facebookOverall: facebookOverall,
+                                        linkedinOverall: linkedinOverall
                                     });
                                 } else {
                                     if (facebook) {
+
+                                        var facbookUID = null;
+
+                                        if (facebook.uid) {
+                                            facbookUID = facebook.uid;
+                                        }
 
                                         Claim.find({
                                             myid: facebook.uid
@@ -824,8 +985,10 @@ module.exports = function (app, passport) {
                                                     name: name,
                                                     facebook: facebookData,
                                                     linkedin: linkedinData,
-                                                    facebook_uid: facebook.uid,
-                                                    linkedin_url: null
+                                                    facebook_uid: facbookUID,
+                                                    linkedin_url: null,
+                                                    facebookOverall: facebookOverall,
+                                                    linkedinOverall: linkedinOverall
                                                 });
                                             } else {
                                                 if (claims) {
@@ -847,118 +1010,7 @@ module.exports = function (app, passport) {
 
                                                     console.log(chalk.blue("facebookData: " + JSON.stringify(facebookData, null, "\t")));
 
-                                                    if (user.userDetails.linkedin) {
-                                                        console.log("Linkedin found");
-                                                        LinkedIn.findOne({
-                                                            _id: user.userDetails.linkedin
-                                                        }, function (err, linkedin) {
-                                                            if (err) {
-                                                                console.log("Error occurred");
-                                                                res.render('usersummaryoverall.ejs', {
-                                                                    user: req.user,
-                                                                    name: name,
-                                                                    facebook: facebookData,
-                                                                    linkedin: linkedinData,
-                                                                    facebook_uid: facebook.uid,
-                                                                    linkedin_url: null
-                                                                });
-                                                            } else {
-                                                                if (linkedin) {
-
-                                                                    Claim.find({
-                                                                        myid: linkedin.uid
-                                                                    }, function (err, claims) {
-
-                                                                        if (err) {
-                                                                            console.log("Error occurred");
-                                                                            res.render('usersummaryoverall.ejs', {
-                                                                                user: req.user,
-                                                                                name: name,
-                                                                                facebook: facebookData,
-                                                                                linkedin: linkedinData,
-                                                                                facebook_uid: facebook.uid,
-                                                                                linkedin_url: linkedin.uid
-                                                                            });
-                                                                        } else {
-                                                                            if (claims) {
-
-                                                                                console.log("Claims found");
-                                                                                yes = 0;
-                                                                                no = 0;
-                                                                                notSure = 0;
-
-                                                                                for (var i = 0; i < claims.length; i++) {
-                                                                                    yes += claims[i].yes;
-                                                                                    no += claims[i].no;
-                                                                                    notSure += claims[i].notSure;
-                                                                                }
-
-                                                                                linkedinData = [
-                                                                                    {
-                                                                                        label: "Yes",
-                                                                                        value: yes
-                                                                                    },
-                                                                                    {
-                                                                                        label: "No",
-                                                                                        value: no
-                                                                                    },
-                                                                                    {
-                                                                                        label: "Not Sure",
-                                                                                        value: notSure
-                                                                                    }
-                                                                                ];
-
-                                                                                console.log(chalk.blue("linkedinData: " + JSON.stringify(linkedinData, null, "\t")));
-
-                                                                                res.render('usersummaryoverall.ejs', {
-                                                                                    user: req.user,
-                                                                                    name: name,
-                                                                                    facebook: facebookData,
-                                                                                    linkedin: linkedinData,
-                                                                                    facebook_uid: facebook.uid,
-                                                                                    linkedin_url: linkedin.uid
-                                                                                });
-
-                                                                            } else {
-                                                                                console.log("No claims found");
-                                                                                res.render('usersummaryoverall.ejs', {
-                                                                                    user: req.user,
-                                                                                    name: name,
-                                                                                    facebook: facebookData,
-                                                                                    linkedin: linkedinData,
-                                                                                    facebook_uid: facebook.uid,
-                                                                                    linkedin_url: linkedin.uid
-                                                                                });
-                                                                            }
-                                                                        }
-                                                                    });
-                                                                } else {
-                                                                    console.log("No linkedin found");
-                                                                    res.render('usersummaryoverall.ejs', {
-                                                                        user: req.user,
-                                                                        name: name,
-                                                                        facebook: facebookData,
-                                                                        linkedin: linkedinData,
-                                                                        facebook_uid: facebook.uid,
-                                                                        linkedin_url: linkedin.uid
-                                                                    });
-                                                                }
-                                                            }
-                                                        });
-                                                    } else {
-                                                        console.log("No linkedin account linked");
-
-                                                        console.log(chalk.blue("facebookData: " + JSON.stringify(facebookData, null, "\t")));
-
-                                                        res.render('usersummaryoverall.ejs', {
-                                                            user: req.user,
-                                                            name: name,
-                                                            facebook: facebookData,
-                                                            linkedin: linkedinData,
-                                                            facebook_uid: facebook.uid,
-                                                            linkedin_url: null
-                                                        });
-                                                    }
+                                                    checkLinkedIn(req, res, user, name, facebook, facebookData, linkedinData);
 
                                                 } else {
                                                     console.log("No claims found");
@@ -967,29 +1019,43 @@ module.exports = function (app, passport) {
                                                         name: name,
                                                         facebook: facebookData,
                                                         linkedin: linkedinData,
-                                                        facebook_uid: facebook.uid,
-                                                        linkedin_url: null
+                                                        facebook_uid: facbookUID,
+                                                        linkedin_url: null,
+                                                        facebookOverall: facebookOverall,
+                                                        linkedinOverall: linkedinOverall
                                                     });
                                                 }
                                             }
                                         });
                                     } else {
-                                        console.log("No facebook found");
-                                        res.render('usersummaryoverall.ejs', {
-                                            user: req.user,
-                                            name: name,
-                                            facebook: facebookData,
-                                            linkedin: linkedinData,
-                                            facebook_uid: null,
-                                            linkedin_url: null
-                                        });
+
+                                        checkLinkedIn(req, res, user, name, facebook, facebookData, linkedinData);
+                                        //console.log("No facebook found");
+                                        //res.render('usersummaryoverall.ejs', {
+                                        //    user: req.user,
+                                        //    name: name,
+                                        //    facebook: facebookData,
+                                        //    linkedin: linkedinData,
+                                        //    facebook_uid: null,
+                                        //    linkedin_url: null
+                                        //});
                                     }
                                 }
                             });
+                        } else {
+                            checkLinkedIn(req, res, user, name, facebook, facebookData, linkedinData);
                         }
                     } else {
                         console.log("No user found");
-                        res.render('usersummaryoverall.ejs', {user: req.user, name: name, facebook: [], linkedin: []});
+                        res.render('usersummaryoverall.ejs', {
+                            user: req.user, name: name,
+                            facebook: [],
+                            linkedin: [],
+                            facebook_uid: null,
+                            linkedin_url: null,
+                            facebookOverall: facebookOverall,
+                            linkedinOverall: linkedinOverall
+                        });
                     }
                 }
             });
