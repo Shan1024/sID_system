@@ -481,9 +481,11 @@
                 if (data.ratingLevel == 'T') {
                     profileRating = 'Your profile appears to be authentic.';
                 } else if (data.ratingLevel == 'C') {
-                    profileRating = 'Your profile needs more ratings'
-                } else {
-                    profileRating = 'Your profile claims have been rejected by a majority of users'
+                    profileRating = 'Your profile needs more ratings';
+                } else if(data.ratingLevel == 'R'){
+                    profileRating = 'Your profile claims have been rejected by a majority of users';
+                } else{
+                    profileRating = 'No one has rated your profile yet.';
                 }
                 var $content = $('#facebook-overall');
                 $content.append("<br><div class='text-center' style='height: 32px;'>" + profileRating + "</div><br>");
@@ -508,9 +510,11 @@
                 if (data.ratingLevel == 'T') {
                     profileRating = 'Your profile appears to be authentic.';
                 } else if (data.ratingLevel == 'C') {
-                    profileRating = 'Your profile needs more ratings'
-                } else {
-                    profileRating = 'Your profile claims have been rejected by a majority of users'
+                    profileRating = 'Your profile needs more ratings';
+                } else if (data.ratingLevel == 'R') {
+                    profileRating = 'Your profile claims have been rejected by a majority of users';
+                } else{
+                    profileRating = 'No one has rated your profile yet.';
                 }
                 var $content = $('#linkedin-overall');
                 $content.append("<br><div class='text-center' style='height: 32px;'>" + profileRating + "</div><br>");

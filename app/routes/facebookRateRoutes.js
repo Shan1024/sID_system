@@ -1423,10 +1423,10 @@ module.exports = function (app, express) {
                     });
                 });
             } else {
-                return res.json({error: "Already a member: ", user: myUser.userDetails, org: organization});
+                return res.json({error: "Already a member: ", user: myUser.userDetails, org: organization, errorCode: 1});
             }
         } else {
-            return res.json({error: "Already requested membership: ", user: myUser.userDetails, org: organization});
+            return res.json({error: "Already requested membership: ", user: myUser.userDetails, org: organization, errorCode: 2});
         }
     };
 
