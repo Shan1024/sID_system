@@ -567,7 +567,7 @@ module.exports = function (app, passport) {
         }
     });
 
-    app.get('/getAllOrganizations', isLoggedIn, function (req, res) {
+    app.get('/getAllOrganizations', function (req, res) {
         res.render('allOrganizations.ejs', {user: req.user});
     });
 
