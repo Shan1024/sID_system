@@ -1398,7 +1398,7 @@ module.exports = function (app, express) {
             userid: myUser._id,
             fbid: req.body.myid,
             secret: secret,
-            username: myUser.userDetails.local.firstname,
+            username: myUser.userDetails.local.firstname + " " + myUser.userDetails.local.lastname,
             email: myUser.userDetails.local.email
         };
 
